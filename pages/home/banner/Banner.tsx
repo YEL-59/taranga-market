@@ -1,95 +1,96 @@
-import React from "react";
-import Img from "@/assets/images/banner-bg.png";
-import SearchHero from "@/clientcomponent/page";
 import Image from "next/image";
+import BannerBg from "@/assets/images/banner-bg.png";
+import SearchHero from "@/clientcomponent/page";
 
+// Import your feature icons
 import Img1 from "@/assets/images/img1.png";
 import Img2 from "@/assets/images/img2.png";
 import Img3 from "@/assets/images/img3.png";
 import Img4 from "@/assets/images/img4.png";
 
 const Banner = () => {
+  const features = [
+    {
+      id: 1,
+      img: Img1,
+      title: "100% Verified",
+      desc: "Every listing is personally verified",
+    },
+    {
+      id: 2,
+      img: Img2,
+      title: "Secure Payments",
+      desc: "Your transactions are protected",
+    },
+    { id: 3, img: Img3, title: "Local Support", desc: "Help is always nearby" },
+    {
+      id: 4,
+      img: Img4,
+      title: "Fast Delivery",
+      desc: "Get items in record time",
+    },
+  ];
+
   return (
-    <>
-      {/* set the bg i imported the img   */}
-      <div
-        className="w-full relative  h-[659px] bg-white flex items-center justify-center"
-        style={{
-          backgroundImage: `url(${Img.src})`,
-          backgroundSize: "cover",
-          backgroundPosition: "center",
-        }}
-      >
-        <div className="flex flex-col items-center justify-center align-middle mb-20 gap-4 w-full text-center">
-          <h1 className="text-center  font-[Inter] text-[60px] not-italic font-medium leading-[80px] max-w-4xl">
+    <section className="relative w-full h-[659px] flex flex-col items-center">
+      {/* Background Image Container */}
+      <div className="absolute inset-0 z-0">
+        <Image
+          src={BannerBg}
+          alt="Banner Background"
+          fill
+          priority
+          className="object-fit object-center"
+        />
+      </div>
+
+      {/* Main Content Content */}
+      <div className="container relative z-10 mx-auto px-4 pt-20 pb-32 flex flex-col items-center">
+        {/* Heading Section */}
+        <div className="max-w-4xl text-center mb-10">
+          <h1 className="text-[32px] md:text-[50px] lg:text-[60px] font-medium leading-[1.2] md:leading-[80px] text-[#1a2e35] font-[Inter]">
             A Simple Marketplace to Find and Contact Local Sellers
           </h1>
-          <p className="text-center mt-4 font-[Inter] text-[20px] not-italic font-normal leading-[32px] text-gray-600 max-w-2xl">
+          <p className="mt-6 text-[16px] md:text-[20px] text-gray-600 font-normal leading-[1.6]  mx-auto font-[Inter]">
             Lorem ipsum dolor sit amet consectetur. Dictum congue eros at
             ullamcorper.
           </p>
+        </div>
 
-          <div className="w-full max-w-5xl">
-            <SearchHero />
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-5 absolute -bottom-20">
-            <div className="bg-white rounded-lg p-5 border border-[#D1D5DB] [box-shadow:0_1.593px_6.373px_0_rgba(29,_126,_135,_0.10)] px-5">
-              <div className="flex text-center items-center justify-center gap-6">
-                <Image src={Img1} alt="App Preview" width={100} height={100} />
-              </div>
-              <div>
-                <h1 className="text-[#000] text-center  text-[14px] not-italic font-semibold leading-[19.119px]">
-                  100% Verified
-                </h1>
-                <p className="text-[#676F7E] text-center font-[Inter] text-[12px] not-italic font-normal leading-[15.932px]">
-                  Every listing is personally verified
-                </p>
-              </div>
-            </div>
-            <div className="bg-white rounded-lg p-3 border border-[#D1D5DB] [box-shadow:0_1.593px_6.373px_0_rgba(29,_126,_135,_0.10)] px-5">
-              <div className="flex text-center items-center justify-center gap-6">
-                <Image src={Img2} alt="App Preview" width={100} height={100} />
-              </div>
-              <div>
-                <h1 className="text-[#000] text-center  text-[14px] not-italic font-semibold leading-[19.119px]">
-                  100% Verified
-                </h1>
-                <p className="text-[#676F7E] text-center font-[Inter] text-[12px] not-italic font-normal leading-[15.932px]">
-                  Every listing is personally verified
-                </p>
-              </div>
-            </div>
-            <div className="bg-white rounded-lg p-3 border border-[#D1D5DB] [box-shadow:0_1.593px_6.373px_0_rgba(29,_126,_135,_0.10)] px-5">
-              <div className="flex text-center items-center justify-center gap-6">
-                <Image src={Img3} alt="App Preview" width={100} height={100} />
-              </div>
-              <div>
-                <h1 className="text-[#000] text-center  text-[14px] not-italic font-semibold leading-[19.119px]">
-                  100% Verified
-                </h1>
-                <p className="text-[#676F7E] text-center font-[Inter] text-[12px] not-italic font-normal leading-[15.932px]">
-                  Every listing is personally verified
-                </p>
-              </div>
-            </div>
-            <div className="bg-white rounded-lg p-3 border border-[#D1D5DB] [box-shadow:0_1.593px_6.373px_0_rgba(29,_126,_135,_0.10)] px-5">
-              <div className="flex text-center items-center justify-center gap-6">
-                <Image src={Img4} alt="App Preview" width={100} height={100} />
-              </div>
-              <div>
-                <h1 className="text-[#000] text-center  text-[14px] not-italic font-semibold leading-[19.119px]">
-                  100% Verified
-                </h1>
-                <p className="text-[#676F7E] text-center font-[Inter] text-[12px] not-italic font-normal leading-[15.932px]">
-                  Every listing is personally verified
-                </p>
-              </div>
-            </div>
-          </div>
+        {/* Search Component Wrapper */}
+        <div className="w-full max-w-5xl transition-transform hover:scale-[1.01] duration-300">
+          <SearchHero />
         </div>
       </div>
-    </>
+
+      {/* Floating Features Grid */}
+      <div className=" px-4 relative z-20 bottom-20">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          {features.map((item) => (
+            <div
+              key={item.id}
+              className="bg-white rounded-2xl p-4 px-5 border border-gray-100 shadow-[0_8px_30px_rgb(0,0,0,0.04)] hover:shadow-xl transition-shadow duration-300 flex flex-col items-center text-center"
+            >
+              <div className="mb-4 ">
+                <Image
+                  src={item.img}
+                  alt={item.title}
+                  width={100}
+                  height={100}
+                  className="object-contain"
+                />
+              </div>
+              <h3 className="text-[#000] text-[16px] font-semibold mb-1">
+                {item.title}
+              </h3>
+              <p className="text-[#676F7E] font-[Inter] text-[13px] leading-relaxed">
+                {item.desc}
+              </p>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
   );
 };
 
