@@ -4,6 +4,7 @@ import { MapPin, Heart, ArrowRight, Calendar, Gauge } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import Link from 'next/link';
 
 // Mock data for recent items
 const recentItems = [
@@ -157,10 +158,10 @@ const Recentlist = () => {
                     <h2 className="text-3xl font-extrabold text-gray-900 tracking-tight">
                         Recent Listing
                     </h2>
-                    <a href="#" className="group flex items-center gap-1.5 text-[15px] font-semibold text-gray-800 transition-colors hover:text-gray-600">
+                    <Link href="/all-items" className="group flex items-center gap-1.5 text-[15px] font-semibold text-gray-800 transition-colors hover:text-gray-600">
                         View all 
                         <ArrowRight className="h-4.5 w-4.5 transition-transform group-hover:translate-x-1" />
-                    </a>
+                    </Link>
                 </div>
 
                 {/* Grid */}
