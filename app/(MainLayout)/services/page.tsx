@@ -1,7 +1,10 @@
 import Services from "@/features/services/Services";
+import { Suspense } from "react";
 
 export default function ServicesPage() {
     return (
-        <Services />
+        <Suspense fallback={<div>Loading...</div>}>
+            <Services />
+        </Suspense>
     );
 }

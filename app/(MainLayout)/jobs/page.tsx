@@ -1,7 +1,10 @@
 import Jobs from "@/features/jobs/Jods";
+import { Suspense } from "react";
 
 export default function JobsPage() {
     return (
-        <Jobs />
+        <Suspense fallback={<div>Loading...</div>}>
+            <Jobs />
+        </Suspense>
     );
 }
