@@ -184,7 +184,19 @@ const Category = () => {
           {categories.map((category, index) => (
             <Link
               key={index}
-              href={category.name === "Vehicles" ? "/vehicles" : "/all-items"}
+              href={
+                category.name === "Vehicles" 
+                  ? "/vehicles" 
+                  : category.name === "Real Estate" 
+                  ? "/properties"
+                  : category.name === "Products"
+                  ? "/products"
+                  : category.name === "Services"
+                  ? "/services"
+                  : category.name === "Job"
+                  ? "/jobs"
+                  : "/all-items"
+              } 
               className="border border-gray-300 p-5 rounded-lg hover:shadow-lg transition-shadow cursor-pointer text-center flex flex-col items-center justify-center h-full w-full"
             >
               <div
