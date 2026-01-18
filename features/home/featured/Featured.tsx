@@ -24,7 +24,7 @@ const featuredItems = [
     {
         id: 102,
         type: 'Product',
-        image: 'https://images.unsplash.com/photo-1673324545330-811ccecc2778?q=80&w=600&auto=format&fit=crop',
+        image: 'https://images.unsplash.com/photo-1592286927505-2fd0d3e2c7d4?q=80&w=600&auto=format&fit=crop',
         title: 'iPhone 14 Pro Max 256GB - Gold',
         location: 'Plateau, Dakar',
         price: '650,000 XOF',

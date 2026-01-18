@@ -1,36 +1,164 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 🌟 Taranga Market
 
-## Getting Started
+**Taranga Market** is a comprehensive online marketplace platform built with Next.js, designed specifically for Senegal. Browse and discover vehicles, properties, electronics, professional services, and job opportunities all in one place.
 
-First, run the development server:
+## ✨ Features
 
+- 🚗 **Vehicles Marketplace** - Cars, motorcycles, and more
+- 🏠 **Property Listings** - Rentals, sales, and commercial spaces
+- 📱 **Electronics & Phones** - Latest gadgets and devices
+- 🛠️ **Professional Services** - Plumbing, cleaning, design, and more
+- 💼 **Job Board** - Career opportunities across industries
+- ❤️ **Favorites System** - Save and manage your favorite listings
+- 🔍 **Advanced Filtering** - Find exactly what you need
+- 📱 **Fully Responsive** - Optimized for mobile, tablet, and desktop
+- 🎨 **Modern UI/UX** - Beautiful, intuitive interface
+
+## 📚 Documentation
+
+- **[User Guide](./USER_GUIDE.md)** - Comprehensive guide for using the platform
+- **[Quick Start](./QUICK_START.md)** - Get started in minutes
+
+## 🚀 Getting Started
+
+### Prerequisites
+- Node.js 18+ 
+- pnpm (recommended) or npm
+
+### Installation
+
+1. Clone the repository:
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+git clone https://github.com/YEL-59/taranga-market.git
+cd taranga-market
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+2. Install dependencies:
+```bash
+pnpm install
+# or
+npm install
+```
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+3. Run the development server:
+```bash
+pnpm dev
+# or
+npm run dev
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+4. Open [http://localhost:3000](http://localhost:3000) in your browser
 
-## Learn More
+### Build for Production
 
-To learn more about Next.js, take a look at the following resources:
+```bash
+pnpm build
+pnpm start
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## 🛠️ Tech Stack
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+- **Framework**: Next.js 16 (App Router)
+- **Language**: TypeScript
+- **Styling**: Tailwind CSS
+- **UI Components**: Shadcn UI
+- **Icons**: Lucide React
+- **Image Optimization**: Next.js Image
+- **State Management**: React Context API
 
-## Deploy on Vercel
+## 📁 Project Structure
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+```
+taranga-market/
+├── app/                    # Next.js app directory
+│   ├── (MainLayout)/      # Main layout pages
+│   │   ├── vehicles/      # Vehicles category
+│   │   ├── properties/    # Properties category
+│   │   ├── products/      # Products/Phones category
+│   │   ├── services/      # Services category
+│   │   ├── jobs/          # Jobs category
+│   │   └── favorites/     # Favorites page
+│   └── layout.tsx         # Root layout
+├── features/              # Feature modules
+│   ├── vehicles/         # Vehicle components & data
+│   ├── properties/       # Property components & data
+│   ├── phones/           # Phone/Product components & data
+│   ├── services/         # Service components & data
+│   ├── jobs/             # Job components & data
+│   ├── home/             # Homepage sections
+│   └── allitems/         # All items page
+├── components/           # Shared UI components
+│   └── ui/              # Shadcn UI components
+├── context/             # React Context providers
+├── shared/              # Shared components (navbar, footer)
+└── public/              # Static assets
+```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## 🎨 Key Features Explained
+
+### Category Pages
+Each category (Vehicles, Properties, Products, Services, Jobs) has:
+- Dedicated filtering sidebar
+- Grid layout with responsive cards
+- Detail view with image galleries
+- Seller information and contact options
+
+### Filtering System
+- Location-based filtering
+- Price range selection
+- Category-specific filters (e.g., make/model for vehicles)
+- Real-time results update
+
+### Favorites
+- Save items across all categories
+- Persistent storage using Context API
+- Quick access from navigation bar
+- Easy management and removal
+
+### Responsive Design
+- Mobile-first approach
+- Touch-optimized interactions
+- Adaptive layouts for all screen sizes
+- Mobile filter drawer
+
+## 🔧 Development
+
+### Available Scripts
+
+- `pnpm dev` - Start development server
+- `pnpm build` - Build for production
+- `pnpm start` - Start production server
+- `pnpm lint` - Run ESLint
+
+### Code Style
+- TypeScript for type safety
+- ESLint for code quality
+- Prettier for formatting (recommended)
+
+## 📝 Contributing
+
+Contributions are welcome! Please feel free to submit a Pull Request.
+
+## 📄 License
+
+This project is licensed under the MIT License.
+
+## 👥 Authors
+
+- **YEL-59** - [GitHub Profile](https://github.com/YEL-59)
+
+## 🙏 Acknowledgments
+
+- Next.js team for the amazing framework
+- Shadcn for the beautiful UI components
+- Unsplash for high-quality images
+- All contributors and users
+
+## 📞 Support
+
+For support, please open an issue in the GitHub repository or contact the development team.
+
+---
+
+**Built with ❤️ for Senegal** 🇸🇳
+

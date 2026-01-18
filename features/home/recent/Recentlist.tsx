@@ -23,7 +23,7 @@ const recentItems = [
     {
         id: 103, // Phone
         type: 'Product',
-        image: 'https://images.unsplash.com/photo-1677464303429-19965d1d6199?q=80&w=600&auto=format&fit=crop',
+        image: 'https://images.unsplash.com/photo-1610945415295-d9bbf067e59c?q=80&w=600&auto=format&fit=crop',
         title: 'Samsung Galaxy S23 Ultra - Phantom Black',
         location: 'Dakar',
         price: '700,000 XOF',
