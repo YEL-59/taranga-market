@@ -23,9 +23,12 @@ interface NavLink {
   href: string;
 }
 
+import { useFavorites } from "@/context/FavoritesContext";
+
 const Navbar: React.FC = () => {
   const pathname = usePathname();
   const [language, setLanguage] = useState<"En" | "Fn">("En");
+  const { favorites } = useFavorites();
 
   const navLinks: NavLink[] = [
     { name: "Home", href: "/" },
@@ -95,10 +98,15 @@ const Navbar: React.FC = () => {
           </div>
 
           {/* Favorites */}
-          <button className="flex items-center gap-1 text-[#565E69] hover:text-[#227c85]">
+          <Link href="/favorites" className="flex items-center gap-1.5 text-[#565E69] hover:text-[#227c85] relative">
             <Heart className="w-5 h-5" />
             <span className="text-sm font-medium font-[Inter]">Favorites</span>
-          </button>
+            {favorites.length > 0 && (
+              <span className="absolute -top-2 -right-2 flex h-4 w-4 items-center justify-center rounded-full bg-orange-500 text-[10px] font-bold text-white">
+                {favorites.length}
+              </span>
+            )}
+          </Link>
 
           <CommonButton label="Login/Sign up" />
         </div>
@@ -132,6 +140,20 @@ const Navbar: React.FC = () => {
                       {link.name}
                     </Link>
                   ))}
+                  <Link
+                    href="/favorites"
+                    className="flex items-center justify-between px-4 py-3 rounded-xl text-lg font-medium text-[#565E69] hover:bg-gray-100"
+                  >
+                    <div className="flex items-center gap-2">
+                        <Heart className="w-6 h-6" />
+                        <span>Favorites</span>
+                    </div>
+                    {favorites.length > 0 && (
+                        <span className="bg-orange-500 text-white text-xs font-bold px-2.5 py-1 rounded-full">
+                            {favorites.length}
+                        </span>
+                    )}
+                  </Link>
                 </div>
 
                 <hr />

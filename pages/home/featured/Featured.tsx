@@ -1,3 +1,5 @@
+"use client";
+
 import React from 'react';
 import Image from 'next/image';
 import { MapPin, Heart, ArrowRight, Calendar, Gauge } from 'lucide-react';
@@ -5,6 +7,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
+import { useFavorites } from '@/context/FavoritesContext';
 
 // Mock data for featured items
 const featuredItems = [
@@ -45,6 +48,9 @@ const featuredItems = [
 ];
 
 const FeaturedCard = ({ item }: { item: typeof featuredItems[0] }) => {
+    const { toggleFavorite, isFavorite } = useFavorites();
+    const fav = isFavorite(item.id);
+
     return (
         <Card className="overflow-hidden border border-gray-100 bg-white shadow-[0_2px_10px_rgba(0,0,0,0.04)] transition-all hover:shadow-[0_4px_20px_rgba(0,0,0,0.08)] group flex flex-col h-full rounded-[20px] p-2.5">
             {/* Image Container */}
@@ -65,8 +71,13 @@ const FeaturedCard = ({ item }: { item: typeof featuredItems[0] }) => {
                 </Badge>
                 
                 {/* Heart Button */}
-                <button className="absolute right-2.5 top-2.5 flex h-7 w-7 items-center justify-center rounded-lg bg-white/95 text-[#F97316] shadow-sm transition-colors hover:bg-white">
-                    <Heart className="h-4 w-4" strokeWidth={2.5} />
+                <button 
+                    onClick={() => toggleFavorite(item)}
+                    className={`absolute right-2.5 top-2.5 flex h-7 w-7 items-center justify-center rounded-lg shadow-sm transition-colors ${
+                        fav ? "bg-[#F97316] text-white" : "bg-white/95 text-[#F97316] hover:bg-white"
+                    }`}
+                >
+                    <Heart className={`h-4 w-4 ${fav ? "fill-current" : ""}`} strokeWidth={2.5} />
                 </button>
             </div>
 
