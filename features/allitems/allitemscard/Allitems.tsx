@@ -7,6 +7,9 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { useFavorites } from '@/context/FavoritesContext';
+import Link from 'next/link';
+
+import { motion } from 'framer-motion';
 
 // Mock data for initial items
 const initialItems = [
@@ -110,6 +113,22 @@ const initialItems = [
         price: '15,000 XOF',
     },
 ];
+const getDetailLink = (item: any) => {
+    switch (item.type) {
+        case 'Vehicle':
+            return `/vehicles?id=${item.id}`;
+        case 'Product':
+            return `/products?id=${item.id}`;
+        case 'Service':
+            return `/services?id=${item.id}`;
+        case 'Property':
+            return `/properties?id=${item.id}`;
+        case 'Job':
+             return `/jobs?id=${item.id}`;
+        default:
+            return `/all-items?id=${item.id}`;
+    }
+};
 
 const ListingCard = ({ item }: { item: typeof initialItems[0] }) => {
     const { toggleFavorite, isFavorite } = useFavorites();
@@ -117,7 +136,7 @@ const ListingCard = ({ item }: { item: typeof initialItems[0] }) => {
 
     return (
         <Card className="overflow-hidden border border-gray-100 bg-white shadow-[0_2px_10px_rgba(0,0,0,0.04)] transition-all hover:shadow-[0_4px_20px_rgba(0,0,0,0.08)] group flex flex-col h-full rounded-[20px] p-2.5">
-            {/* Image Container */}
+            {/* Image and content ... */}
             <div className="relative aspect-[16/10] w-full overflow-hidden bg-gray-100 rounded-[15px]">
                 <Image
                     src={item.image}
@@ -137,7 +156,7 @@ const ListingCard = ({ item }: { item: typeof initialItems[0] }) => {
                 
                 {/* Heart Button */}
                 <button 
-                    onClick={() => toggleFavorite(item)}
+                    onClick={() => toggleFavorite({ ...item, image: item.image })}
                     className={`absolute right-2.5 top-2.5 flex h-7 w-7 items-center justify-center rounded-lg shadow-sm transition-colors ${
                         fav ? "bg-[#F97316] text-white" : "bg-white/95 text-[#F97316] hover:bg-white"
                     }`}
@@ -177,16 +196,18 @@ const ListingCard = ({ item }: { item: typeof initialItems[0] }) => {
                         </span>
                     </div>
 
-                    <Button 
-                        variant={item.featured ? "default" : "outline"} 
-                        className={`w-full rounded-xl font-semibold text-[13px] h-10 transition-all ${
-                            item.featured 
-                            ? "bg-[#1D7E87] hover:bg-[#16636a] text-white border-0 shadow-sm" 
-                            : "bg-white border-gray-100 text-gray-600 hover:bg-[#1D7E87] hover:text-white hover:border-[#1D7E87]"
-                        }`}
-                    >
-                        View Details
-                    </Button>
+                    <Link href={getDetailLink(item)} className="block w-full">
+                        <Button 
+                            variant={item.featured ? "default" : "outline"} 
+                            className={`w-full rounded-xl font-semibold text-[13px] h-10 transition-all ${
+                                item.featured 
+                                ? "bg-[#1D7E87] hover:bg-[#16636a] text-white border-0 shadow-sm" 
+                                : "bg-white border-gray-100 text-gray-600 hover:bg-[#1D7E87] hover:text-white hover:border-[#1D7E87]"
+                            }`}
+                        >
+                            View Details
+                        </Button>
+                    </Link>
                 </div>
             </CardContent>
         </Card>
@@ -219,7 +240,15 @@ const Allitems = () => {
                 {/* Grid */}
                 <div className="grid grid-cols-1 gap-7 sm:grid-cols-2 lg:grid-cols-4">
                     {initialItems.slice(0, visibleItems).map((item, index) => (
-                        <ListingCard key={`${item.id}-${index}`} item={item} />
+                        <motion.div
+                            key={`${item.id}-${index}`}
+                            initial={{ opacity: 0, y: 20 }}
+                            whileInView={{ opacity: 1, y: 0 }}
+                            viewport={{ once: true, margin: "-50px" }}
+                            transition={{ duration: 0.4, delay: (index % 4) * 0.1 }}
+                        >
+                            <ListingCard item={item} />
+                        </motion.div>
                     ))}
                 </div>
 

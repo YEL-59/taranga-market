@@ -1,30 +1,50 @@
+"use client";
+
 import React from 'react';
 import { Search, MapPin, ChevronDown } from 'lucide-react';
 import Image from 'next/image';
+import { motion } from 'framer-motion';
 
 const Hero = () => {
     return (
         <section className="relative w-full h-[400px] flex items-center justify-center overflow-hidden">
             {/* Background Image with Overlay */}
             <div className="absolute inset-0 z-0">
-                <Image
-                    src="https://images.unsplash.com/photo-1560518883-ce09059eeffa?q=80&w=1920&auto=format&fit=crop"
-                    alt="Hero Background"
-                    fill
-                    className="object-cover"
-                    priority
-                />
+                <motion.div 
+                    className="relative w-full h-full"
+                    initial={{ scale: 1.1 }}
+                    animate={{ scale: 1 }}
+                    transition={{ duration: 10, ease: "linear" }}
+                >
+                    <Image
+                        src="https://images.unsplash.com/photo-1560518883-ce09059eeffa?q=80&w=1920&auto=format&fit=crop"
+                        alt="Hero Background"
+                        fill
+                        className="object-cover"
+                        priority
+                    />
+                </motion.div>
                 <div className="absolute inset-0 bg-black/60" />
             </div>
 
             {/* Content */}
             <div className="container relative z-10 mx-auto px-4 flex flex-col items-center">
-                <h1 className="text-white text-4xl md:text-5xl font-bold mb-10 tracking-tight">
+                <motion.h1 
+                    className="text-white text-4xl md:text-5xl font-bold mb-10 tracking-tight"
+                    initial={{ y: -30, opacity: 0 }}
+                    animate={{ y: 0, opacity: 1 }}
+                    transition={{ duration: 0.8, delay: 0.2 }}
+                >
                     Find your Need
-                </h1>
+                </motion.h1>
 
                 {/* Search Bar */}
-                <div className="w-full max-w-4xl bg-white rounded-2xl md:rounded-full shadow-2xl p-2 flex flex-col md:flex-row items-center gap-2 md:gap-0">
+                <motion.div 
+                    className="w-full max-w-4xl bg-white rounded-2xl md:rounded-full shadow-2xl p-2 flex flex-col md:flex-row items-center gap-2 md:gap-0"
+                    initial={{ y: 30, opacity: 0 }}
+                    animate={{ y: 0, opacity: 1 }}
+                    transition={{ duration: 0.8, delay: 0.4 }}
+                >
                     {/* Select Category */}
                     <div className="flex-1 w-full px-6 py-3 border-b md:border-b-0 md:border-r border-gray-100 flex flex-col">
                         <span className="text-[13px] font-bold text-gray-900 mb-0.5">Select category</span>
@@ -54,7 +74,7 @@ const Hero = () => {
                             <span>Search</span>
                         </button>
                     </div>
-                </div>
+                </motion.div>
             </div>
         </section>
     );

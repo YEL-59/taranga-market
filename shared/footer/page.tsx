@@ -1,12 +1,21 @@
+"use client";
+
 import React from 'react';
 import Image from 'next/image';
 import { MapPin, Phone, Mail, Facebook, Instagram, MessageCircle } from 'lucide-react';
 import Link from 'next/link';
 import Img from "@/assets/images/footer.png";
+import { motion } from "framer-motion";
 
 const Footer = () => {
     return (
-        <footer className="w-full bg-[#1B2232] text-white pt-20 pb-10">
+        <motion.footer 
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
+            viewport={{ once: true }}
+            transition={{ duration: 1, ease: "easeOut" }}
+            className="w-full bg-[#1B2232] text-white pt-20 pb-10"
+        >
             <div className="container mx-auto px-4">
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 lg:gap-8 mb-16">
                     {/* Brand Section */}
@@ -92,7 +101,7 @@ const Footer = () => {
                     </p>
                 </div>
             </div>
-        </footer>
+        </motion.footer>
     );
 }
 

@@ -155,10 +155,10 @@ export const vehicleData = [
         price: "13,500,000 XOF",
         numericPrice: 13500000,
         location: "Thies",
-        image: "https://images.unsplash.com/photo-1541899481282-d53bffe3c35d?q=80&w=1200&auto=format&fit=crop",
+        image: "https://images.unsplash.com/photo-1606148695344-b6cb50450f99?q=80&w=1200&auto=format&fit=crop",
         thumbs: [
-            "https://images.unsplash.com/photo-1541899481282-d53bffe3c35d?q=80&w=400&auto=format&fit=crop",
-            "https://images.unsplash.com/photo-1606148695344-b6cb50450f99?q=80&w=400&auto=format&fit=crop"
+            "https://images.unsplash.com/photo-1606148695344-b6cb50450f99?q=80&w=400&auto=format&fit=crop",
+            "https://images.unsplash.com/photo-1541899481282-d53bffe3c35d?q=80&w=400&auto=format&fit=crop"
         ],
         meta: {
             year: "2017",
@@ -175,6 +175,251 @@ export const vehicleData = [
             image: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?q=80&w=100&auto=format&fit=crop"
         },
         description: "Well maintained Audi A4 S-Line. Sporty looks with great fuel economy."
+    },
+    {
+        id: 7,
+        title: "Range Rover Sport 2020 HSE Dynamic",
+        type: "Vehicle",
+        price: "48,000,000 XOF",
+        numericPrice: 48000000,
+        location: "Dakar",
+        image: "https://images.unsplash.com/photo-1606664515524-ed2f786a0bd6?q=80&w=1200&auto=format&fit=crop",
+        thumbs: [
+            "https://images.unsplash.com/photo-1606664515524-ed2f786a0bd6?q=80&w=400&auto=format&fit=crop",
+            "https://images.unsplash.com/photo-1533473359331-0135ef1b58bf?q=80&w=400&auto=format&fit=crop"
+        ],
+        meta: {
+            year: "2020",
+            mileage: "35,000 km",
+            transmission: "Automatic",
+            make: "Land Rover",
+            model: "Range Rover Sport",
+            fuelType: "Diesel",
+            engineSize: "3.0L"
+        },
+        seller: {
+            name: "Luxury SUVs Senegal",
+            since: "Member since Aug 2021",
+            image: "https://images.unsplash.com/photo-1570295999919-56ceb5ecca61?q=80&w=100&auto=format&fit=crop"
+        },
+        description: "Dominant road presence and luxurious interior. This Range Rover Sport is ready for anything."
+    },
+    {
+        id: 8,
+        title: "Hyundai Tucson 2019 GLS",
+        type: "Vehicle",
+        price: "12,000,000 XOF",
+        numericPrice: 12000000,
+        location: "Mbour",
+        image: "https://images.unsplash.com/photo-1582216954269-e58f23737522?q=80&w=1200&auto=format&fit=crop",
+        thumbs: [
+            "https://images.unsplash.com/photo-1582216954269-e58f23737522?q=80&w=400&auto=format&fit=crop",
+            "https://images.unsplash.com/photo-1552519507-da3b142c6e3d?q=80&w=400&auto=format&fit=crop"
+        ],
+        meta: {
+            year: "2019",
+            mileage: "55,000 km",
+            transmission: "Automatic",
+            make: "Hyundai",
+            model: "Tucson",
+            fuelType: "Petrol",
+            engineSize: "2.0L"
+        },
+        seller: {
+            name: "CarHub Mbour",
+            since: "Member since Nov 2020",
+            image: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?q=80&w=100&auto=format&fit=crop"
+        },
+        description: "Practical and reliable compact SUV, great for families and city driving."
+    },
+    {
+        id: 9,
+        title: "Jeep Wrangler Unlimited Rubicon 2021",
+        type: "Vehicle",
+        price: "32,000,000 XOF",
+        numericPrice: 32000000,
+        location: "Dakar",
+        image: "https://images.unsplash.com/photo-1506469717960-433cebe3f07d?q=80&w=1200&auto=format&fit=crop",
+        thumbs: [
+            "https://images.unsplash.com/photo-1506469717960-433cebe3f07d?q=80&w=400&auto=format&fit=crop"
+        ],
+        meta: {
+            year: "2021",
+            mileage: "15,000 km",
+            transmission: "Automatic",
+            make: "Jeep",
+            model: "Wrangler",
+            fuelType: "Petrol",
+            engineSize: "3.6L"
+        },
+        seller: {
+            name: "Adventure Auto",
+            since: "Member since Dec 2021",
+            image: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=100&auto=format&fit=crop"
+        },
+        description: "The ultimate off-road vehicle. Go anywhere and do anything with this Rubicon."
+    },
+    {
+        id: 10,
+        title: "Volkswagen Golf GTI 2018 Performance Pack",
+        type: "Vehicle",
+        price: "16,000,000 XOF",
+        numericPrice: 16000000,
+        location: "Dakar",
+        image: "https://images.unsplash.com/photo-1504983376250-48b894107127?q=80&w=1200&auto=format&fit=crop",
+        thumbs: [
+            "https://images.unsplash.com/photo-1504983376250-48b894107127?q=80&w=400&auto=format&fit=crop"
+        ],
+        meta: {
+            year: "2018",
+            mileage: "70,000 km",
+            transmission: "Automatic",
+            make: "Volkswagen",
+            model: "Golf",
+            fuelType: "Petrol",
+            engineSize: "2.0T"
+        },
+        seller: {
+            name: "Euro Tuning",
+            since: "Member since July 2019",
+            image: "https://images.unsplash.com/photo-1527980965255-d3b416303d12?q=80&w=100&auto=format&fit=crop"
+        },
+        description: "The original hot hatch. Fun to drive, practical, and built with German quality."
+    },
+    {
+        id: 11,
+        title: "Kia Sportage 2023 GT-Line",
+        type: "Vehicle",
+        price: "22,000,000 XOF",
+        numericPrice: 22000000,
+        location: "Ziguinchor",
+        image: "https://images.unsplash.com/photo-1608630768393-294711883bd6?q=80&w=1200&auto=format&fit=crop",
+        thumbs: [
+            "https://images.unsplash.com/photo-1608630768393-294711883bd6?q=80&w=400&auto=format&fit=crop"
+        ],
+        meta: {
+            year: "2023",
+            mileage: "2,000 km",
+            transmission: "Automatic",
+            make: "Kia",
+            model: "Sportage",
+            fuelType: "Hybrid",
+            engineSize: "1.6T"
+        },
+        seller: {
+            name: "Kia Ziguinchor",
+            since: "Member since Oct 2023",
+            image: "https://images.unsplash.com/photo-1528892952291-009c663ce843?q=80&w=100&auto=format&fit=crop"
+        },
+        description: "Brand new styling and cutting edge tech. This Kia Sportage is a head turner."
+    },
+    {
+        id: 12,
+        title: "Tesla Model 3 Long Range 2021",
+        type: "Vehicle",
+        price: "28,000,000 XOF",
+        numericPrice: 28000000,
+        location: "Dakar",
+        image: "https://images.unsplash.com/photo-1560958089-b8a1929cea89?q=80&w=1200&auto=format&fit=crop",
+        thumbs: [
+            "https://images.unsplash.com/photo-1560958089-b8a1929cea89?q=80&w=400&auto=format&fit=crop"
+        ],
+        meta: {
+            year: "2021",
+            mileage: "20,000 km",
+            transmission: "Automatic",
+            make: "Tesla",
+            model: "Model 3",
+            fuelType: "Electric",
+            engineSize: "N/A"
+        },
+        seller: {
+            name: "EcoDrive Senegal",
+            since: "Member since Jan 2022",
+            image: "https://images.unsplash.com/photo-1537511446984-935f663eb1f4?q=80&w=100&auto=format&fit=crop"
+        },
+        description: "Future proof your driving with this electric marvel. Autopilot included."
+    },
+    {
+        id: 13,
+        title: "Chevrolet Camaro SS 2016",
+        type: "Vehicle",
+        price: "20,000,000 XOF",
+        numericPrice: 20000000,
+        location: "Dakar",
+        image: "https://images.unsplash.com/photo-1552519507-da3b142c6e3d?q=80&w=1200&auto=format&fit=crop",
+        thumbs: [
+            "https://images.unsplash.com/photo-1552519507-da3b142c6e3d?q=80&w=400&auto=format&fit=crop"
+        ],
+        meta: {
+            year: "2016",
+            mileage: "60,000 km",
+            transmission: "Automatic",
+            make: "Chevrolet",
+            model: "Camaro",
+            fuelType: "Petrol",
+            engineSize: "6.2L"
+        },
+        seller: {
+            name: "American Muscle DK",
+            since: "Member since Sep 2017",
+            image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=100&auto=format&fit=crop"
+        },
+        description: "Classic American muscle car sound and power. V8 engine roars like a beast."
+    },
+    {
+        id: 14,
+        title: "Nissan Patrol Y62 V8 Titanium",
+        type: "Vehicle",
+        price: "40,000,000 XOF",
+        numericPrice: 40000000,
+        location: "Dakar",
+        image: "https://images.unsplash.com/photo-1549399542-7e3f8b79c341?q=80&w=1200&auto=format&fit=crop",
+        thumbs: [
+            "https://images.unsplash.com/photo-1549399542-7e3f8b79c341?q=80&w=400&auto=format&fit=crop"
+        ],
+        meta: {
+            year: "2019",
+            mileage: "45,000 km",
+            transmission: "Automatic",
+            make: "Nissan",
+            model: "Patrol",
+            fuelType: "Petrol",
+            engineSize: "5.6L"
+        },
+        seller: {
+            name: "4x4 Experts",
+            since: "Member since March 2020",
+            image: "https://images.unsplash.com/photo-1499996860823-5214fcc65f8f?q=80&w=100&auto=format&fit=crop"
+        },
+        description: "The Hero of All Terrain. Spacious, powerful, and incredibly comfortable."
+    },
+    {
+        id: 15,
+        title: "Porsche Macan S 2020",
+        type: "Vehicle",
+        price: "42,000,000 XOF",
+        numericPrice: 42000000,
+        location: "Dakar",
+        image: "https://images.unsplash.com/photo-1503376763036-066120622c74?q=80&w=1200&auto=format&fit=crop",
+        thumbs: [
+            "https://images.unsplash.com/photo-1503376763036-066120622c74?q=80&w=400&auto=format&fit=crop"
+        ],
+        meta: {
+            year: "2020",
+            mileage: "28,000 km",
+            transmission: "Automatic",
+            make: "Porsche",
+            model: "Macan",
+            fuelType: "Petrol",
+            engineSize: "3.0T"
+        },
+        seller: {
+            name: "German Auto",
+            since: "Member since June 2021",
+            image: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?q=80&w=100&auto=format&fit=crop"
+        },
+        description: "Sports car performance in a compact SUV package. Porsche handling and prestige."
     }
 ];
 

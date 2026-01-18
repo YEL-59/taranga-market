@@ -14,17 +14,39 @@ import {
     SheetTrigger,
 } from "@/components/ui/sheet";
 
+import { useSearchParams, useRouter } from 'next/navigation';
+
+// ... existing imports
+
 const Services = () => {
+    const searchParams = useSearchParams();
+    const router = useRouter();
     const [view, setView] = useState<'list' | 'detail'>('list');
     const [selectedItem, setSelectedItem] = useState<any>(null);
     const [isMobileFilterOpen, setIsMobileFilterOpen] = useState(false);
     
+    // ... filters ...
     const [filters, setFilters] = useState({
         city: '',
         category: '',
         minPrice: '',
         maxPrice: ''
     });
+
+    // Check URL params
+    React.useEffect(() => {
+        const id = searchParams.get('id');
+        if (id) {
+            const item = serviceData.find(v => v.id === parseInt(id));
+            if (item) {
+                setSelectedItem(item);
+                setView('detail');
+            }
+        } else {
+            setView('list');
+            setSelectedItem(null);
+        }
+    }, [searchParams]);
 
     const filteredData = useMemo(() => {
         return serviceData.filter(item => {
@@ -41,6 +63,13 @@ const Services = () => {
         setSelectedItem(item);
         setView('detail');
         window.scrollTo({ top: 0, behavior: 'smooth' });
+        router.push(`/services?id=${item.id}`, { scroll: false });
+    };
+
+    const handleBack = () => {
+        setView('list');
+        setSelectedItem(null);
+        router.push('/services', { scroll: false });
     };
 
     const handleReset = () => {
@@ -152,7 +181,7 @@ const Services = () => {
                 ) : (
                     <ServiceDetailView 
                         item={selectedItem} 
-                        onBack={() => setView('list')} 
+                        onBack={handleBack} 
                     />
                 )}
             </div>

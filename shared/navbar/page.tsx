@@ -25,6 +25,10 @@ interface NavLink {
 
 import { useFavorites } from "@/context/FavoritesContext";
 
+import { motion } from "framer-motion";
+
+// ... existing imports
+
 const Navbar: React.FC = () => {
   const pathname = usePathname();
   const [language, setLanguage] = useState<"En" | "Fn">("En");
@@ -38,16 +42,23 @@ const Navbar: React.FC = () => {
   // Helper for active styles
   const getLinkStyles = (href: string) =>
     pathname === href
-      ? "bg-[#227c85] text-white"
-      : "text-[#565E69] hover:bg-gray-100 text-gray-600";
+      ? "text-white bg-[#227c85]" // Active state with background
+      : "text-[#565E69] hover:text-[#227c85]"; // Inactive state
 
   return (
-    <div className="bg-white shadow-sm sticky top-0 z-50">
+    <motion.div 
+      initial={{ y: -100, opacity: 0 }}
+      animate={{ y: 0, opacity: 1 }}
+      transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
+      className="bg-white shadow-sm sticky top-0 z-50"
+    >
       <nav className="container mx-auto flex items-center justify-between px-4 md:px-6 py-4">
         {/* --- LEFT: LOGO --- */}
         <div className="flex items-center gap-2 shrink-0">
           <Link href="/">
-            <Image src={Img} alt="Logo" width={120} height={40} priority />
+            <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+               <Image src={Img} alt="Logo" width={120} height={40} priority />
+            </motion.div>
           </Link>
         </div>
 
@@ -58,11 +69,20 @@ const Navbar: React.FC = () => {
               <Link
                 key={link.name}
                 href={link.href}
-                className={`px-6 py-2 rounded-full text-[16px] font-medium transition-all ${getLinkStyles(
-                  link.href
-                )}`}
+                className="relative px-6 py-2 rounded-full text-[16px] font-medium transition-colors"
+                // Styles moved to children/motion or handled via class logic below
               >
-                {link.name}
+                  {pathname === link.href && (
+                      <motion.span
+                        layoutId="nav-pill"
+                        className="absolute inset-0 bg-[#227c85] rounded-full"
+                        style={{ zIndex: -1 }} // Put behind text
+                        transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
+                      />
+                  )}
+                  <span className={`${pathname === link.href ? "text-white" : "text-[#565E69] hover:text-[#227c85]"}`}>
+                    {link.name}
+                  </span>
               </Link>
             ))}
           </div>
@@ -182,7 +202,7 @@ const Navbar: React.FC = () => {
           </Sheet>
         </div>
       </nav>
-    </div>
+    </motion.div>
   );
 };
 

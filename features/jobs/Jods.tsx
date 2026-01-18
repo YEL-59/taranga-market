@@ -14,11 +14,18 @@ import {
     SheetTrigger,
 } from "@/components/ui/sheet";
 
+import { useSearchParams, useRouter } from 'next/navigation';
+
+// ... existing imports
+
 const Jobs = () => {
+    const searchParams = useSearchParams();
+    const router = useRouter();
     const [view, setView] = useState<'list' | 'detail'>('list');
     const [selectedItem, setSelectedItem] = useState<any>(null);
     const [isMobileFilterOpen, setIsMobileFilterOpen] = useState(false);
     
+    // ... filters ...
     const [filters, setFilters] = useState({
         city: '',
         jobType: '',
@@ -29,6 +36,22 @@ const Jobs = () => {
         maxPrice: ''
     });
 
+    // Check URL params
+    React.useEffect(() => {
+        const id = searchParams.get('id');
+        if (id) {
+            const item = jobData.find(v => v.id === parseInt(id));
+            if (item) {
+                setSelectedItem(item);
+                setView('detail');
+            }
+        } else {
+            setView('list');
+            setSelectedItem(null);
+        }
+    }, [searchParams]);
+
+    // ... filteredData ...
     const filteredData = useMemo(() => {
         return jobData.filter(item => {
             const matchesCity = !filters.city || item.city === filters.city;
@@ -49,6 +72,13 @@ const Jobs = () => {
         setSelectedItem(item);
         setView('detail');
         window.scrollTo({ top: 0, behavior: 'smooth' });
+        router.push(`/jobs?id=${item.id}`, { scroll: false });
+    };
+
+    const handleBack = () => {
+        setView('list');
+        setSelectedItem(null);
+        router.push('/jobs', { scroll: false });
     };
 
     const handleReset = () => {
@@ -163,7 +193,7 @@ const Jobs = () => {
                 ) : (
                     <JobDetailView 
                         item={selectedItem} 
-                        onBack={() => setView('list')} 
+                        onBack={handleBack} 
                     />
                 )}
             </div>

@@ -2,6 +2,7 @@
 
 import React, { useState, useMemo } from 'react';
 import { ChevronLeft, SlidersHorizontal } from 'lucide-react';
+import { useSearchParams, useRouter } from 'next/navigation';
 import FilterSidebar from './components/FilterSidebar';
 import VehicleCard from './components/VehicleCard';
 import VehicleDetailView from './components/VehicleDetailView';
@@ -15,6 +16,8 @@ import {
 } from "@/components/ui/sheet";
 
 const Vehicle = () => {
+    const searchParams = useSearchParams();
+    const router = useRouter();
     const [view, setView] = useState<'list' | 'detail'>('list');
     const [selectedItem, setSelectedItem] = useState<any>(null);
     const [isMobileFilterOpen, setIsMobileFilterOpen] = useState(false);
@@ -30,6 +33,22 @@ const Vehicle = () => {
         transmission: [] as string[],
         fuelType: ''
     });
+
+    // Check URL params on mount or change
+    React.useEffect(() => {
+        const id = searchParams.get('id');
+        if (id) {
+            const item = vehicleData.find(v => v.id === parseInt(id));
+            if (item) {
+                setSelectedItem(item);
+                setView('detail');
+            }
+        } else {
+            // If no ID, always revert to list view
+            setView('list');
+            setSelectedItem(null);
+        }
+    }, [searchParams]);
 
     // ... filteredData logic remains same ...
     const filteredData = useMemo(() => {
@@ -56,6 +75,13 @@ const Vehicle = () => {
         setSelectedItem(item);
         setView('detail');
         window.scrollTo({ top: 0, behavior: 'smooth' });
+        router.push(`/vehicles?id=${item.id}`, { scroll: false });
+    };
+
+    const handleBackToList = () => {
+        setView('list');
+        setSelectedItem(null);
+        router.push('/vehicles', { scroll: false });
     };
 
     const handleReset = () => {

@@ -12,74 +12,91 @@ import { useFavorites } from '@/context/FavoritesContext';
 // Mock data for recent items
 const recentItems = [
     {
-        id: 1,
-        type: 'Service',
-        image: 'https://images.unsplash.com/photo-1581244277943-fe4a9c77718e?q=80&w=600&auto=format&fit=crop',
-        title: 'Plumbing & Emergency Repair Service',
-        location: 'Dakar',
-        price: '15,000 XOF',
-    },
-    {
-        id: 2,
-        type: 'Product',
-        image: 'https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?q=80&w=600&auto=format&fit=crop',
-        title: 'iPhone 14 Pro Max 256GB - Brand New Sealed',
-        location: 'Dakar',
-        price: '15,000 XOF',
-    },
-    {
-        id: 3,
-        type: 'Service',
-        image: 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=600&auto=format&fit=crop',
-        title: 'Professional Plumbing Services',
-        location: 'Dakar',
-        price: '15,000 XOF',
-    },
-    {
-        id: 4,
-        type: 'Property',
-        image: 'https://images.unsplash.com/photo-1600596542815-2a4d9f6fac86?q=80&w=600&auto=format&fit=crop',
-        title: 'Professional Plumbing Services',
-        location: 'Dakar',
-        price: '15,000 XOF',
-    },
-    {
-        id: 5,
-        type: 'Service',
-        image: 'https://images.unsplash.com/photo-1581244277943-fe4a9c77718e?q=80&w=600&auto=format&fit=crop',
-        title: 'Plumbing & Emergency Repair Service',
-        location: 'Dakar',
-        price: '15,000 XOF',
-    },
-    {
-        id: 6,
-        type: 'Product',
-        image: 'https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?q=80&w=600&auto=format&fit=crop',
-        title: 'iPhone 14 Pro Max 256GB - Brand New Sealed',
-        location: 'Dakar',
-        price: '15,000 XOF',
-    },
-    {
-        id: 7,
+        id: 12, // Vehicle
         type: 'Vehicle',
-        image: 'https://images.unsplash.com/photo-1542282088-fe8426682b8f?q=80&w=600&auto=format&fit=crop',
-        title: 'Toyota Corolla 2018 - Excellent condition',
+        image: 'https://images.unsplash.com/photo-1560958089-b8a1929cea89?q=80&w=600&auto=format&fit=crop',
+        title: 'Tesla Model 3 Long Range 2021',
         location: 'Dakar',
-        price: '15,000 XOF',
-        meta: { year: 2018, mileage: '65,000 km' },
-        featured: true
+        price: '28,000,000 XOF',
+        meta: { year: '2021', mileage: '20,000 km' }
     },
     {
-        id: 8,
-        type: 'Property',
-        image: 'https://images.unsplash.com/photo-1600596542815-2a4d9f6fac86?q=80&w=600&auto=format&fit=crop',
-        title: 'Professional Plumbing Services',
+        id: 103, // Phone
+        type: 'Product',
+        image: 'https://images.unsplash.com/photo-1677464303429-19965d1d6199?q=80&w=600&auto=format&fit=crop',
+        title: 'Samsung Galaxy S23 Ultra - Phantom Black',
         location: 'Dakar',
-        price: '15,000 XOF',
+        price: '700,000 XOF',
+    },
+    {
+        id: 2, // Property
+        type: 'Property',
+        image: 'https://images.unsplash.com/photo-1613490493576-7fde63acd811?q=80&w=600&auto=format&fit=crop',
+        title: 'Luxury Villa with Swimming Pool',
+        location: 'Mbour, Saly',
+        price: '450,000 XOF/month',
+    },
+    {
+        id: 206, // Service
+        type: 'Service',
+        image: 'https://images.unsplash.com/photo-1547658719-da2b51169166?q=80&w=600&auto=format&fit=crop',
+        title: 'Web Design & Development',
+        location: 'Remote',
+        price: '150,000 XOF',
+    },
+    {
+        id: 301, // Job
+        type: 'Job',
+        image: 'https://images.unsplash.com/photo-1498050108023-c5249f4df085?q=80&w=600&auto=format&fit=crop',
+        title: 'Senior Software Developer - Full Stack',
+        location: 'Dakar',
+        price: '1,500,000 CFA',
+    },
+    {
+        id: 7, // Vehicle
+        type: 'Vehicle',
+        image: 'https://images.unsplash.com/photo-1606664515524-ed2f786a0bd6?q=80&w=600&auto=format&fit=crop',
+        title: 'Range Rover Sport 2020 HSE Dynamic',
+        location: 'Dakar',
+        price: '48,000,000 XOF',
+        meta: { year: '2020', mileage: '35,000 km' }
+    },
+    {
+        id: 105, // Phone (Product)
+        type: 'Product',
+        image: 'https://images.unsplash.com/photo-1606144042614-b2417e99c4e3?q=80&w=600&auto=format&fit=crop',
+        title: 'Sony PlayStation 5 Console',
+        location: 'Dakar',
+        price: '350,000 XOF',
+    },
+    {
+        id: 4, // Property
+        type: 'Property',
+        image: 'https://images.unsplash.com/photo-1515263487990-61b07816b324?q=80&w=600&auto=format&fit=crop',
+        title: 'Seaside Condo for Sale',
+        location: 'Mamelles, Dakar',
+        price: '120,000,000 XOF',
     },
 ];
 
-const ListingCard = ({ item }: { item: typeof recentItems[0] }) => {
+const getDetailLink = (item: any) => {
+    switch (item.type) {
+        case 'Vehicle':
+            return `/vehicles?id=${item.id}`;
+        case 'Product':
+            return `/products?id=${item.id}`;
+        case 'Service':
+            return `/services?id=${item.id}`;
+        case 'Property':
+            return `/properties?id=${item.id}`;
+        case 'Job':
+            return `/jobs?id=${item.id}`;
+        default:
+            return `/all-items?id=${item.id}`;
+    }
+};
+
+const ListingCard = ({ item }: { item: any }) => {
     const { toggleFavorite, isFavorite } = useFavorites();
     const fav = isFavorite(item.id);
 
@@ -144,16 +161,18 @@ const ListingCard = ({ item }: { item: typeof recentItems[0] }) => {
                         </span>
                     </div>
 
-                    <Button 
-                        variant={item.featured ? "default" : "outline"} 
-                        className={`w-full rounded-xl font-semibold text-[13px] h-10 transition-all ${
-                            item.featured 
-                            ? "bg-[#2A8E8E] hover:bg-[#1D7E87] text-white border-0" 
-                            : "bg-white border-gray-100 text-gray-600 hover:bg-[#1D7E87] hover:text-white hover:border-[#1D7E87]"
-                        }`}
-                    >
-                        View Details
-                    </Button>
+                    <Link href={getDetailLink(item)} className="block w-full">
+                        <Button 
+                            variant={item.featured ? "default" : "outline"} 
+                            className={`w-full rounded-xl font-semibold text-[13px] h-10 transition-all ${
+                                item.featured 
+                                ? "bg-[#2A8E8E] hover:bg-[#1D7E87] text-white border-0" 
+                                : "bg-white border-gray-100 text-gray-600 hover:bg-[#1D7E87] hover:text-white hover:border-[#1D7E87]"
+                            }`}
+                        >
+                            View Details
+                        </Button>
+                    </Link>
                 </div>
             </CardContent>
         </Card>

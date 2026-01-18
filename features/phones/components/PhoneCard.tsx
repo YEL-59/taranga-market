@@ -18,7 +18,10 @@ const PhoneCard: React.FC<PhoneCardProps> = ({ item, onClick }) => {
     const fav = isFavorite(item.id);
 
     return (
-        <Card className="overflow-hidden border border-gray-100 bg-white shadow-[0_2px_10px_rgba(0,0,0,0.04)] transition-all hover:shadow-[0_4px_20px_rgba(0,0,0,0.08)] group flex flex-col h-full rounded-[20px] p-2.5">
+        <Card 
+            onClick={onClick}
+            className="overflow-hidden border border-gray-100 bg-white shadow-[0_2px_10px_rgba(0,0,0,0.04)] transition-all hover:shadow-[0_4px_20px_rgba(0,0,0,0.08)] group flex flex-col h-full rounded-[20px] p-2.5 cursor-pointer"
+        >
             <div className="relative aspect-[16/10] w-full overflow-hidden bg-gray-100 rounded-[15px]">
                 <Image src={item.image} alt={item.title} fill className="object-cover transition-transform duration-500 group-hover:scale-105" />
                 <Badge className="absolute left-2.5 top-2.5 rounded-full px-3 py-0.5 text-[11px] font-semibold bg-white/95 text-gray-800 hover:bg-white border-0 shadow-sm">Product</Badge>
@@ -49,7 +52,10 @@ const PhoneCard: React.FC<PhoneCardProps> = ({ item, onClick }) => {
                         <span className="text-[13.5px] font-bold text-[#F97316] whitespace-nowrap">{item.price}</span>
                     </div>
                     <Button 
-                        onClick={onClick}
+                        onClick={(e) => {
+                            e.stopPropagation();
+                            onClick();
+                        }}
                         variant="outline"
                         className="w-full rounded-xl font-semibold text-[13px] h-10 transition-all bg-white border-gray-100 text-gray-600 hover:bg-[#1D7E87] hover:text-white hover:border-[#1D7E87]"
                     >

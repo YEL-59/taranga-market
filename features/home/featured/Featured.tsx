@@ -12,42 +12,62 @@ import { useFavorites } from '@/context/FavoritesContext';
 // Mock data for featured items
 const featuredItems = [
     {
-        id: 1,
-        type: 'Service',
-        image: 'https://images.unsplash.com/photo-1581244277943-fe4a9c77718e?q=80&w=600&auto=format&fit=crop', // Plumber
-        title: 'Plumbing & Emergency Repair Service',
-        location: 'Dakar',
-        price: '15,000 XOF',
-    },
-    {
-        id: 2,
-        type: 'Product',
-        image: 'https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?q=80&w=600&auto=format&fit=crop', // Tech/Phone
-        title: 'iPhone 14 Pro Max 256GB - Brand New Sealed',
-        location: 'Dakar',
-        price: '15,000 XOF',
-    },
-    {
-        id: 3,
+        id: 5,
         type: 'Vehicle',
-        image: 'https://images.unsplash.com/photo-1542282088-fe8426682b8f?q=80&w=600&auto=format&fit=crop', // Car
-        title: 'Toyota Corolla 2018 - Excellent condition',
+        image: 'https://images.unsplash.com/photo-1555215695-3004980ad54e?q=80&w=600&auto=format&fit=crop',
+        title: 'BMW X5 xDrive40i 2022 Luxury SUV',
         location: 'Dakar',
-        price: '15,000 XOF',
-        meta: { year: 2018, mileage: '65,000 km' },
+        price: '55,000,000 XOF',
+        meta: { year: '2022', mileage: '5,000 km' },
         featured: true
     },
     {
-        id: 4,
+        id: 102,
+        type: 'Product',
+        image: 'https://images.unsplash.com/photo-1673324545330-811ccecc2778?q=80&w=600&auto=format&fit=crop',
+        title: 'iPhone 14 Pro Max 256GB - Gold',
+        location: 'Plateau, Dakar',
+        price: '650,000 XOF',
+        featured: true
+    },
+    {
+        id: 11,
         type: 'Property',
-        image: 'https://images.unsplash.com/photo-1600596542815-2a4d9f6fac86?q=80&w=600&auto=format&fit=crop', // House
-        title: 'Professional Plumbing Services',
-        location: 'Dakar',
-        price: '15,000 XOF',
+        image: 'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?q=80&w=600&auto=format&fit=crop',
+        title: 'Penthouse with City Views',
+        location: 'Point E, Dakar',
+        price: '850,000 XOF/month',
+        featured: true
+    },
+    {
+        id: 207,
+        type: 'Service',
+        image: 'https://images.unsplash.com/photo-1516035069371-29a1b244cc32?q=80&w=600&auto=format&fit=crop',
+        title: 'Wedding & Event Photography',
+        location: 'Saint-Louis',
+        price: '200,000 XOF',
+        featured: true
     },
 ];
 
-const FeaturedCard = ({ item }: { item: typeof featuredItems[0] }) => {
+const getDetailLink = (item: any) => {
+    switch (item.type) {
+        case 'Vehicle':
+            return `/vehicles?id=${item.id}`;
+        case 'Product':
+            return `/products?id=${item.id}`;
+        case 'Service':
+            return `/services?id=${item.id}`;
+        case 'Property':
+            return `/properties?id=${item.id}`;
+        case 'Job':
+            return `/jobs?id=${item.id}`;
+        default:
+            return `/all-items?id=${item.id}`;
+    }
+};
+
+const FeaturedCard = ({ item }: { item: any }) => {
     const { toggleFavorite, isFavorite } = useFavorites();
     const fav = isFavorite(item.id);
 
@@ -72,7 +92,7 @@ const FeaturedCard = ({ item }: { item: typeof featuredItems[0] }) => {
                 
                 {/* Heart Button */}
                 <button 
-                    onClick={() => toggleFavorite(item)}
+                    onClick={() => toggleFavorite({ ...item, image: item.image })}
                     className={`absolute right-2.5 top-2.5 flex h-7 w-7 items-center justify-center rounded-lg shadow-sm transition-colors ${
                         fav ? "bg-[#F97316] text-white" : "bg-white/95 text-[#F97316] hover:bg-white"
                     }`}
@@ -112,16 +132,18 @@ const FeaturedCard = ({ item }: { item: typeof featuredItems[0] }) => {
                         </span>
                     </div>
 
-                    <Button 
-                        variant={item.featured ? "default" : "outline"} 
-                        className={`w-full rounded-xl font-semibold text-[13px] h-10 transition-all ${
-                            item.featured 
-                            ? "bg-[#2A8E8E] hover:bg-[#1D7E87] text-white border-0" 
-                            : "bg-white border-gray-100 text-gray-600 hover:bg-[#1D7E87] hover:text-white hover:border-[#1D7E87]"
-                        }`}
-                    >
-                        View Details
-                    </Button>
+                    <Link href={getDetailLink(item)} className="block w-full">
+                        <Button 
+                            variant={item.featured ? "default" : "outline"} 
+                            className={`w-full rounded-xl font-semibold text-[13px] h-10 transition-all ${
+                                item.featured 
+                                ? "bg-[#2A8E8E] hover:bg-[#1D7E87] text-white border-0" 
+                                : "bg-white border-gray-100 text-gray-600 hover:bg-[#1D7E87] hover:text-white hover:border-[#1D7E87]"
+                            }`}
+                        >
+                            View Details
+                        </Button>
+                    </Link>
                 </div>
             </CardContent>
         </Card>

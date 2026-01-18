@@ -2,6 +2,8 @@
 
 import React, { useState, useMemo } from 'react';
 import { ChevronLeft, SlidersHorizontal, Package } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { useSearchParams, useRouter } from 'next/navigation';
 import FilterSidebar from './components/FilterSidebar';
 import PhoneCard from './components/PhoneCard';
 import PhoneDetailView from './components/PhoneDetailView';
@@ -15,6 +17,8 @@ import {
 } from "@/components/ui/sheet";
 
 const Phones = () => {
+    const searchParams = useSearchParams();
+    const router = useRouter();
     const [view, setView] = useState<'list' | 'detail'>('list');
     const [selectedItem, setSelectedItem] = useState<any>(null);
     const [isMobileFilterOpen, setIsMobileFilterOpen] = useState(false);
@@ -26,6 +30,21 @@ const Phones = () => {
         minPrice: '',
         maxPrice: ''
     });
+
+    // Check URL params
+    React.useEffect(() => {
+        const id = searchParams.get('id');
+        if (id) {
+            const item = phoneData.find(v => v.id === parseInt(id));
+            if (item) {
+                setSelectedItem(item);
+                setView('detail');
+            }
+        } else {
+            setView('list');
+            setSelectedItem(null);
+        }
+    }, [searchParams]);
 
     const filteredData = useMemo(() => {
         return phoneData.filter(item => {
@@ -43,6 +62,13 @@ const Phones = () => {
         setSelectedItem(item);
         setView('detail');
         window.scrollTo({ top: 0, behavior: 'smooth' });
+        router.push(`/products?id=${item.id}`, { scroll: false });
+    };
+
+    const handleBack = () => {
+        setView('list');
+        setSelectedItem(null);
+        router.push('/products', { scroll: false });
     };
 
     const handleReset = () => {
@@ -58,8 +84,16 @@ const Phones = () => {
     return (
         <section className="w-full min-h-screen bg-[#FAFAFA]">
             <div className="container mx-auto px-4 py-8 lg:py-12">
-                {view === 'list' ? (
-                    <div className="space-y-8 lg:space-y-10">
+                <AnimatePresence mode="wait">
+                    {view === 'list' ? (
+                        <motion.div 
+                            key="list"
+                            initial={{ opacity: 0, x: -20 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            exit={{ opacity: 0, x: -20 }}
+                            transition={{ duration: 0.5 }}
+                            className="space-y-8 lg:space-y-10"
+                        >
                         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                             <div>
                                 <h1 className="text-3xl lg:text-4xl font-extrabold text-[#1B2232] tracking-tight">Products</h1>
@@ -71,7 +105,6 @@ const Phones = () => {
                                     {filteredData.length} results
                                 </span>
                                 
-                                {/* Mobile Filter Toggle */}
                                 <Sheet open={isMobileFilterOpen} onOpenChange={setIsMobileFilterOpen}>
                                     <SheetTrigger asChild>
                                         <button className="lg:hidden flex items-center gap-2 bg-[#1D7E87] text-white px-5 py-2.5 rounded-xl font-bold text-sm shadow-lg shadow-[#1D7E87]/20 transition-all hover:scale-105 active:scale-95">
@@ -117,12 +150,18 @@ const Phones = () => {
                             <div className="flex-1 space-y-12">
                                 {filteredData.length > 0 ? (
                                     <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6 lg:gap-8">
-                                        {filteredData.map((item) => (
-                                            <PhoneCard 
-                                                key={item.id} 
-                                                item={item} 
-                                                onClick={() => handleViewDetail(item)}
-                                            />
+                                        {filteredData.map((item, index) => (
+                                            <motion.div
+                                                key={item.id}
+                                                initial={{ opacity: 0, y: 20 }}
+                                                animate={{ opacity: 1, y: 0 }}
+                                                transition={{ duration: 0.4, delay: index * 0.05 }}
+                                            >
+                                                <PhoneCard 
+                                                    item={item} 
+                                                    onClick={() => handleViewDetail(item)}
+                                                />
+                                            </motion.div>
                                         ))}
                                     </div>
                                 ) : (
@@ -151,13 +190,22 @@ const Phones = () => {
                                 )}
                             </div>
                         </div>
-                    </div>
-                ) : (
-                    <PhoneDetailView 
-                        item={selectedItem} 
-                        onBack={() => setView('list')} 
-                    />
-                )}
+                        </motion.div>
+                    ) : (
+                        <motion.div 
+                            key="detail"
+                            initial={{ opacity: 0, x: 20 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            exit={{ opacity: 0, x: 20 }}
+                            transition={{ duration: 0.5 }}
+                        >
+                            <PhoneDetailView 
+                                item={selectedItem} 
+                                onBack={handleBack} 
+                            />
+                        </motion.div>
+                    )}
+                </AnimatePresence>
             </div>
         </section>
     );
