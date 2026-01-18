@@ -2,29 +2,22 @@ import React from 'react';
 import Image from 'next/image';
 import { MapPin, Phone, Mail, Facebook, Instagram, MessageCircle } from 'lucide-react';
 import Link from 'next/link';
+import Img from "@/assets/images/footer.png";
 
 const Footer = () => {
     return (
-        <footer className="w-full bg-[#0F172A] text-white pt-20 pb-10">
+        <footer className="w-full bg-[#1B2232] text-white pt-20 pb-10">
             <div className="container mx-auto px-4">
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 lg:gap-8 mb-16">
                     {/* Brand Section */}
                     <div className="flex flex-col gap-6">
                         <div className="flex items-center gap-2">
-                            <div className="relative w-10 h-10 bg-white rounded-full flex items-center justify-center p-1 overflow-hidden">
-                                {/* Using a placeholder tree-like icon/SVG to match the logo in the image */}
-                                <svg 
-                                    viewBox="0 0 24 24" 
-                                    className="w-full h-full text-green-600" 
-                                    fill="currentColor"
-                                >
-                                    <path d="M12 2C13.5 2 14.5 3 14.5 3S13.5 4 12 4C10.5 4 9.5 3 9.5 3S10.5 2 12 2M12 5C15.5 5 18 7.5 18 10C18 11.5 17 12.5 16 13.5C15 14.5 14 15 14 17H10C10 15 9 14.5 8 13.5C7 12.5 6 11.5 6 10C6 7.5 8.5 5 12 5M11 18H13V22H11V18Z" />
-                                </svg>
-                            </div>
-                            <div className="flex flex-col leading-tight">
-                                <span className="text-xl font-bold tracking-tight">Teranga</span>
-                                <span className="text-xl font-bold tracking-tight text-[#4ADE80]">Market</span>
-                            </div>
+
+                            <Image src={Img} alt="Logo" width={150} height={150}  /> 
+
+                         
+                            
+                           
                         </div>
                         
                         <p className="text-gray-400 text-[14.5px] leading-relaxed max-w-[280px]">
