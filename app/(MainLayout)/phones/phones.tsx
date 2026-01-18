@@ -1,4 +1,4 @@
-import Phones from "@/pages/phones/Phones";
+import Phones from "@/features/phones/Phones";
 
 
 export default function PhonesPage() {

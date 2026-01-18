@@ -1,4 +1,4 @@
-import Properties from "@/pages/properties/Properties";
+import Properties from "@/features/properties/Properties";
 
 
 export default function PropertiesPage() {

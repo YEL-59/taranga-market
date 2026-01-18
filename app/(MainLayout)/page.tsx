@@ -1,9 +1,9 @@
-import Banner from "@/pages/home/banner/Banner";
-import Category from "@/pages/home/category/page";
-import Featured from "@/pages/home/featured/Featured";
-import Recentlist from "@/pages/home/recent/Recentlist";
-import ChoseUs from "@/pages/home/choseus/Choseus";
-import Testimonials from "@/pages/testimonials/Testimonials";
+import Banner from "@/features/home/banner/Banner";
+import Category from "@/features/home/category/page";
+import Featured from "@/features/home/featured/Featured";
+import Recentlist from "@/features/home/recent/Recentlist";
+import ChoseUs from "@/features/home/choseus/Choseus";
+import Testimonials from "@/features/testimonials/Testimonials";
 
 export default function Home() {
   return (

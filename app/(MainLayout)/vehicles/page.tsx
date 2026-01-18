@@ -1,4 +1,4 @@
-import Vehicle from "@/pages/vehicles/Vehicle";
+import Vehicle from "@/features/vehicles/Vehicle";
 
 export default function VehiclesPage() {
     return (

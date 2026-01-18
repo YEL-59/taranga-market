@@ -1,4 +1,4 @@
-import Jobs from "@/pages/jobs/Jods";
+import Jobs from "@/features/jobs/Jods";
 
 export default function JobsPage() {
     return (
