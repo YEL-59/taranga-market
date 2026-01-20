@@ -224,7 +224,7 @@ const Testimonials = () => {
           cursor: pointer;
         }
         .testimonial-dots .swiper-pagination-bullet-active {
-          background: #ef6639;
+          background: #227c85;
           width: 25px;
           border-radius: 5px;
         }
