@@ -36,7 +36,7 @@ const Navbar: React.FC = () => {
 
   const navLinks: NavLink[] = [
     { name: "Home", href: "/" },
-    { name: "Categories", href: "/all-items" },
+    { name: "All Items", href: "/all-items" },
   ];
 
   // Helper for active styles
