@@ -36,6 +36,10 @@ const Navbar: React.FC = () => {
 
   const navLinks: NavLink[] = [
     { name: "Home", href: "/" },
+    { name: "Vehicles", href: "/vehicles" },
+    { name: "Properties", href: "/properties" },
+    { name: "Services", href: "/services" },
+    { name: "Jobs", href: "/jobs" },
     { name: "All Items", href: "/all-items" },
   ];
 
@@ -128,7 +132,9 @@ const Navbar: React.FC = () => {
             )}
           </Link>
 
-          <CommonButton label="Login/Sign up" />
+          <Link href="/login">
+            <CommonButton label="Login/Sign up" />
+          </Link>
         </div>
 
         {/* --- MOBILE: SHADCN SHEET --- */}
@@ -196,7 +202,9 @@ const Navbar: React.FC = () => {
                   </div>
                 </div>
 
-                <CommonButton label="Login/Sign up" />
+                 <Link href="/login">
+                   <CommonButton label="Login/Sign up" className="w-full" />
+                 </Link>
               </div>
             </SheetContent>
           </Sheet>
