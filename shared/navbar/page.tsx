@@ -41,6 +41,7 @@ const Navbar: React.FC = () => {
     { name: "Services", href: "/services" },
     { name: "Jobs", href: "/jobs" },
     { name: "All Items", href: "/all-items" },
+    { name: "Dashboard", href: "/dashboard" },
   ];
 
   // Helper for active styles
