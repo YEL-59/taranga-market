@@ -36,12 +36,12 @@ const Navbar: React.FC = () => {
 
   const navLinks: NavLink[] = [
     { name: "Home", href: "/" },
-    { name: "Vehicles", href: "/vehicles" },
-    { name: "Properties", href: "/properties" },
-    { name: "Services", href: "/services" },
-    { name: "Jobs", href: "/jobs" },
+    // { name: "Vehicles", href: "/vehicles" },
+    // { name: "Properties", href: "/properties" },
+    // { name: "Services", href: "/services" },
+    // { name: "Jobs", href: "/jobs" },
     { name: "All Items", href: "/all-items" },
-    { name: "Dashboard", href: "/dashboard" },
+    //{ name: "Dashboard", href: "/dashboard" },
   ];
 
   // Helper for active styles
@@ -74,7 +74,7 @@ const Navbar: React.FC = () => {
               <Link
                 key={link.name}
                 href={link.href}
-                className="relative px-6 py-2 rounded-full text-[16px] font-medium transition-colors"
+                className="relative px-4 py-2 rounded-full text-[16px] truncate font-medium transition-colors"
                 // Styles moved to children/motion or handled via class logic below
               >
                   {pathname === link.href && (

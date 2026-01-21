@@ -4,6 +4,7 @@ import Featured from "@/features/home/featured/Featured";
 import Recentlist from "@/features/home/recent/Recentlist";
 import ChoseUs from "@/features/home/choseus/Choseus";
 import Testimonials from "@/features/testimonials/Testimonials";
+import Marque from "@/features/Marque/Marque";
 
 export default function Home() {
   return (
@@ -13,7 +14,8 @@ export default function Home() {
       <Featured />
   
       <Recentlist />
-      <Testimonials />
+      <Marque/>
+      {/* <Testimonials /> */}
       <ChoseUs />
     </div>
   );

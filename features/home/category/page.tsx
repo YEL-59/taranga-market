@@ -174,13 +174,13 @@ const Category = () => {
   ];
 
   return (
-    <div className="flex items-center justify-center h-[60vh] py-12 px-4">
+    <div className="flex items-center justify-center py-20">
       <div className="w-full container mx-auto">
-        <h2 className="text-center font-[Inter] text-[36px] not-italic font-bold leading-[normal] mb-8">
+        <h2 className="text-center font-[Inter] text-[36px] not-italic font-bold leading-[normal] mb-18">
           Explore by Category
         </h2>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-5 justify-center items-center">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-5 justify-center items-center ">
           {categories.map((category, index) => (
             <Link
               key={index}
