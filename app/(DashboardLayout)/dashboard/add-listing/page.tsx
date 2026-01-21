@@ -61,7 +61,7 @@ const addListingSchema = z.object({
   title: z.string().min(10, "Title must be at least 10 characters"),
   category: z.string().min(1, "Please select a category"),
   price: z.string().min(1, "Price is required"),
-  currency: z.string().default("CFA"),
+  currency: z.string(),
   location: z.string().min(1, "Location is required"),
   description: z.string().min(20, "Description must be at least 20 characters"),
   phone: z.string().min(10, "Valid phone number is required"),
@@ -78,7 +78,7 @@ const addListingSchema = z.object({
   vehicleColor: z.string().optional(),
   vehicleCondition: z.string().optional(),
   vehicleEngineSize: z.string().optional(),
-  vehicleFeatures: z.array(z.string()).default([]),
+  vehicleFeatures: z.array(z.string()),
 
   // Properties (Extensive)
   propertyType: z.string().optional(),
@@ -88,7 +88,7 @@ const addListingSchema = z.object({
   propertySize: z.string().optional(),
   propertyFurnished: z.string().optional(),
   propertyFloor: z.string().optional(),
-  propertyAmenities: z.array(z.string()).default([]),
+  propertyAmenities: z.array(z.string()),
   
   // Products/Electronics (Extensive)
   productBrand: z.string().optional(),
@@ -97,7 +97,7 @@ const addListingSchema = z.object({
   productStorage: z.string().optional(),
   productRam: z.string().optional(),
   productWarranty: z.string().optional(),
-  productIncludes: z.array(z.string()).default([]),
+  productIncludes: z.array(z.string()),
   
   // Jobs (Extensive)
   jobRole: z.string().optional(),
@@ -108,13 +108,13 @@ const addListingSchema = z.object({
   jobWorkMode: z.string().optional(),
   jobSalaryMin: z.string().optional(),
   jobSalaryMax: z.string().optional(),
-  jobBenefits: z.array(z.string()).default([]),
+  jobBenefits: z.array(z.string()),
 
   // Services (Extensive)
   serviceProviderStatus: z.string().optional(),
   serviceExperience: z.string().optional(),
   servicePricingModel: z.string().optional(),
-  serviceAvailability: z.array(z.string()).default([]),
+  serviceAvailability: z.array(z.string()),
   serviceWebsite: z.string().optional(),
 })
 
@@ -128,9 +128,11 @@ export default function AddListingPage() {
       title: "",
       category: "",
       price: "",
+      currency: "CFA",
       location: "",
       description: "",
       phone: "",
+      whatsapp: "",
       vehicleFeatures: [],
       propertyAmenities: [],
       productIncludes: [],

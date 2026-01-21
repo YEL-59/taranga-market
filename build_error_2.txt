@@ -1,0 +1,55 @@
+
+> taranga-market@0.1.0 build C:\Users\Tofayel\Desktop\taranga-market
+> next build
+
+ΓÜá Warning: Next.js inferred your workspace root, but it may not be correct.
+ We detected multiple lockfiles and selected the directory of C:\Users\Tofayel\package-lock.json as the root directory.
+ To silence this warning, set `turbopack.root` in your Next.js config, or consider removing one of the lockfiles if it's not needed.
+   See https://nextjs.org/docs/app/api-reference/config/next-config-js/turbopack#root-directory for more information.
+ Detected additional lockfiles: 
+   * C:\Users\Tofayel\Desktop\taranga-market\pnpm-lock.yaml
+
+Γû▓ Next.js 16.1.1 (Turbopack)
+
+  Creating an optimized production build ...
+Γ£ô Compiled successfully in 3.3s
+  Running TypeScript ...
+  Collecting page data using 11 workers ...
+  Generating static pages using 11 workers (0/28) ...
+  Generating static pages using 11 workers (7/28) 
+  Generating static pages using 11 workers (14/28) 
+  Generating static pages using 11 workers (21/28) 
+Γ£ô Generating static pages using 11 workers (28/28) in 757.3ms
+  Finalizing page optimization ...
+
+Route (app)
+Γöî Γùï /
+Γö£ Γùï /_not-found
+Γö£ Γùï /about
+Γö£ Γùï /all-items
+Γö£ Γùï /contact
+Γö£ Γùï /cookies
+Γö£ Γùï /dashboard
+Γö£ Γùï /dashboard/add-listing
+Γö£ Γùï /dashboard/my-listings
+Γö£ Γùï /dashboard/profile
+Γö£ Γùï /dashboard/profile/password
+Γö£ Γùï /faq
+Γö£ Γùï /favorites
+Γö£ Γùï /forgot-password
+Γö£ Γùï /help
+Γö£ Γùï /jobs
+Γö£ Γùï /login
+Γö£ Γùï /privacy
+Γö£ Γùï /products
+Γö£ Γùï /properties
+Γö£ Γùï /register
+Γö£ Γùï /reset-password
+Γö£ Γùï /services
+Γö£ Γùï /terms
+Γö£ Γùï /vehicles
+Γöö Γùï /verify-otp
+
+
+Γùï  (Static)  prerendered as static content
+
