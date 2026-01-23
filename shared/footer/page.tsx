@@ -4,7 +4,7 @@ import React from 'react';
 import Image from 'next/image';
 import { MapPin, Phone, Mail, Facebook, Instagram, MessageCircle, Twitter, Linkedin } from 'lucide-react';
 import Link from 'next/link';
-import Img from "@/assets/images/footer.png";
+import Img from "@/assets/images/nav-logo.png";
 import { motion } from "framer-motion";
 
 const Footer = () => {
@@ -21,7 +21,7 @@ const Footer = () => {
                     {/* Brand Section */}
                     <div className="flex flex-col gap-6">
                         <Link href="/" className="flex items-center gap-2">
-                            <Image src={Img} alt="Taranga Market Logo" width={150} height={150} className="hover:opacity-80 transition-opacity" /> 
+                            <Image src={Img} alt="Taranga Market Logo" width={150} height={200} className="hover:opacity-80 transition-opacity" /> 
                         </Link>
                         
                         <p className="text-gray-400 text-[14.5px] leading-relaxed max-w-[280px]">

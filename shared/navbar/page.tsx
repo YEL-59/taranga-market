@@ -15,7 +15,7 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet";
 
-import Img from "@/assets/images/logo-nav.png";
+import Img from "@/assets/images/nav-logo.png";
 import CommonButton from "@/common/commonButton/CommonButton";
 
 interface NavLink {
@@ -62,7 +62,7 @@ const Navbar: React.FC = () => {
         <div className="flex items-center gap-2 shrink-0">
           <Link href="/">
             <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-               <Image src={Img} alt="Logo" width={120} height={40} priority />
+               <Image src={Img} alt="Logo" width={100} height={200} priority />
             </motion.div>
           </Link>
         </div>

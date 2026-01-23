@@ -24,7 +24,7 @@ const ChoseUs = () => {
         <section className="w-full py-20 bg-[#E6F9F9]/50">
             <div className="container mx-auto px-4">
                 <h2 className="text-[32px] font-extrabold text-gray-900 text-center mb-16 tracking-tight">
-                    Why Choose SenMarket?
+                    Why Choose Teranga Market ?
                 </h2>
 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-12 text-center max-w-6xl mx-auto">
