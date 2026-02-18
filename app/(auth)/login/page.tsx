@@ -21,6 +21,7 @@ import { Input } from "@/components/ui/input"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Separator } from "@/components/ui/separator"
 import { useAuth } from "@/hooks/useAuth"
+import Img from "@/assets/images/nav-logo.png";
 
 const loginSchema = z.object({
   email: z.string().email({ message: "Invalid email address" }),
@@ -47,9 +48,9 @@ export default function LoginPage() {
 
   return (
     <div className="space-y-6">
-      <div className="text-center space-y-2">
+      {/* <div className="text-center space-y-2">
         <h1 className="text-2xl font-bold tracking-tight text-slate-900">Login</h1>
-      </div>
+      </div> */}
 
 
       <Form {...form}>

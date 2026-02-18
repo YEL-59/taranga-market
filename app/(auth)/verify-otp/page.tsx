@@ -62,7 +62,7 @@ function VerifyOtpForm() {
   return (
     <div className="space-y-6">
       <div className="flex flex-col items-center gap-4">
-        <Image src={logo} alt="Logo" width={140} height={60} className="mb-4" />
+        {/* <Image src={logo} alt="Logo" width={140} height={60} className="mb-4" /> */}
         <h1 className="text-2xl font-bold tracking-tight text-slate-900">OTP Verification</h1>
         <p className="text-sm text-slate-500 text-center leading-relaxed">
           Enter the verification code we send you on:<br />

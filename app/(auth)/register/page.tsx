@@ -76,9 +76,9 @@ export default function RegisterPage() {
 
   return (
     <div className="space-y-6">
-      <div className="text-center space-y-2">
+      {/* <div className="text-center space-y-2">
         <h1 className="text-2xl font-bold tracking-tight text-slate-900">Register</h1>
-      </div>
+      </div> */}
       {/* 
       <Button variant="outline" className="w-full flex items-center justify-center gap-2 h-12 text-slate-600 font-medium" type="button">
         <svg viewBox="0 0 24 24" className="h-5 w-5" xmlns="http://www.w3.org/2000/svg">
