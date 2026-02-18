@@ -5,6 +5,9 @@ import { useForm } from "react-hook-form"
 import * as z from "zod"
 import Link from "next/link"
 import Image from "next/image"
+import { useSearchParams, useRouter } from "next/navigation"
+import { useAuth } from "@/hooks/useAuth"
+import { Suspense } from "react"
 import logo from "@/assets/images/logo-nav.png"
 
 import { Button } from "@/components/ui/button"
@@ -29,6 +32,19 @@ const otpSchema = z.object({
 })
 
 export default function VerifyOtpPage() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <VerifyOtpForm />
+    </Suspense>
+  )
+}
+
+function VerifyOtpForm() {
+  const searchParams = useSearchParams()
+  const email = searchParams.get("email") || ""
+  const { verifyOtp, isLoading, error } = useAuth()
+  const router = useRouter()
+
   const form = useForm<z.infer<typeof otpSchema>>({
     resolver: zodResolver(otpSchema),
     defaultValues: {
@@ -36,8 +52,11 @@ export default function VerifyOtpPage() {
     },
   })
 
-  function onSubmit(values: z.infer<typeof otpSchema>) {
-    console.log(values)
+  async function onSubmit(values: z.infer<typeof otpSchema>) {
+    const result = await verifyOtp(values.otp)
+    if (result.success) {
+      router.push(`/reset-password?email=${email}`)
+    }
   }
 
   return (
@@ -47,12 +66,17 @@ export default function VerifyOtpPage() {
         <h1 className="text-2xl font-bold tracking-tight text-slate-900">OTP Verification</h1>
         <p className="text-sm text-slate-500 text-center leading-relaxed">
           Enter the verification code we send you on:<br />
-          <span className="font-medium text-slate-700">Alberts******@gmail.com</span>
+          <span className="font-medium text-slate-700">{email}</span>
         </p>
       </div>
 
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8 flex flex-col items-center">
+          {error && (
+            <div className="bg-red-50 text-red-500 p-3 rounded-md text-sm font-medium w-full">
+              {error}
+            </div>
+          )}
           <FormField
             control={form.control}
             name="otp"
@@ -75,8 +99,8 @@ export default function VerifyOtpPage() {
             )}
           />
 
-          <Button type="submit" className="w-full h-12 bg-[#1b7d81] hover:bg-[#16666a] text-white text-base font-semibold">
-            Continue
+          <Button type="submit" className="w-full h-12 bg-[#1b7d81] hover:bg-[#16666a] text-white text-base font-semibold" disabled={isLoading}>
+            {isLoading ? "Verifying..." : "Continue"}
           </Button>
         </form>
       </Form>

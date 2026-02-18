@@ -8,6 +8,9 @@ import { Eye, EyeOff } from "lucide-react"
 import { useState } from "react"
 import Image from "next/image"
 import logo from "@/assets/images/logo-nav.png"
+import { useSearchParams, useRouter } from "next/navigation"
+import { useAuth } from "@/hooks/useAuth"
+import { Suspense } from "react"
 
 import { Button } from "@/components/ui/button"
 import {
@@ -29,8 +32,20 @@ const resetSchema = z.object({
 })
 
 export default function ResetPasswordPage() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <ResetPasswordForm />
+    </Suspense>
+  )
+}
+
+function ResetPasswordForm() {
   const [showPassword, setShowPassword] = useState(false)
   const [showConfirmPassword, setShowConfirmPassword] = useState(false)
+  const searchParams = useSearchParams()
+  const email = searchParams.get("email") || ""
+  const { resetPassword, isLoading, error } = useAuth()
+  const router = useRouter()
 
   const form = useForm<z.infer<typeof resetSchema>>({
     resolver: zodResolver(resetSchema),
@@ -40,8 +55,16 @@ export default function ResetPasswordPage() {
     },
   })
 
-  function onSubmit(values: z.infer<typeof resetSchema>) {
-    console.log(values)
+  async function onSubmit(values: z.infer<typeof resetSchema>) {
+    const apiData = {
+      email,
+      new_password: values.password,
+      new_password_confirmation: values.confirmPassword,
+    }
+    const result = await resetPassword(apiData)
+    if (result.success) {
+      router.push("/login")
+    }
   }
 
   return (
@@ -54,6 +77,11 @@ export default function ResetPasswordPage() {
 
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+          {error && (
+            <div className="bg-red-50 text-red-500 p-3 rounded-md text-sm font-medium">
+              {error}
+            </div>
+          )}
           <FormField
             control={form.control}
             name="password"
@@ -110,8 +138,8 @@ export default function ResetPasswordPage() {
             )}
           />
 
-          <Button type="submit" className="w-full h-12 bg-[#1b7d81] hover:bg-[#16666a] text-white text-base font-semibold">
-            Login Now
+          <Button type="submit" className="w-full h-12 bg-[#1b7d81] hover:bg-[#16666a] text-white text-base font-semibold" disabled={isLoading}>
+            {isLoading ? "Resetting..." : "Reset Password"}
           </Button>
         </form>
       </Form>

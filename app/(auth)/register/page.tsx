@@ -19,6 +19,7 @@ import {
 import { Input } from "@/components/ui/input"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Separator } from "@/components/ui/separator"
+import { useAuth } from "@/hooks/useAuth"
 import {
   Select,
   SelectContent,
@@ -59,8 +60,18 @@ export default function RegisterPage() {
     },
   })
 
-  function onSubmit(values: z.infer<typeof registerSchema>) {
-    console.log(values)
+  const { register, isLoading, error } = useAuth()
+
+  async function onSubmit(values: z.infer<typeof registerSchema>) {
+    const apiData = {
+      role: values.role,
+      first_name: values.firstName,
+      last_name: values.lastName,
+      email: values.email,
+      password: values.password,
+      password_confirmation: values.confirmPassword,
+    }
+    await register(apiData)
   }
 
   return (
@@ -68,7 +79,7 @@ export default function RegisterPage() {
       <div className="text-center space-y-2">
         <h1 className="text-2xl font-bold tracking-tight text-slate-900">Register</h1>
       </div>
-
+      {/* 
       <Button variant="outline" className="w-full flex items-center justify-center gap-2 h-12 text-slate-600 font-medium" type="button">
         <svg viewBox="0 0 24 24" className="h-5 w-5" xmlns="http://www.w3.org/2000/svg">
           <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4" />
@@ -86,10 +97,15 @@ export default function RegisterPage() {
         <div className="relative flex justify-center text-xs uppercase">
           <span className="bg-white px-2 text-muted-foreground font-medium italic">Or</span>
         </div>
-      </div>
+      </div> */}
 
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+          {error && (
+            <div className="bg-red-50 text-red-500 p-3 rounded-md text-sm font-medium">
+              {error}
+            </div>
+          )}
           <FormField
             control={form.control}
             name="role"
@@ -231,8 +247,8 @@ export default function RegisterPage() {
             )}
           />
 
-          <Button type="submit" className="w-full h-12 bg-[#1b7d81] hover:bg-[#16666a] text-white text-base font-semibold">
-            Register
+          <Button type="submit" className="w-full h-12 bg-[#1b7d81] hover:bg-[#16666a] text-white text-base font-semibold" disabled={isLoading}>
+            {isLoading ? "Registering..." : "Register"}
           </Button>
         </form>
       </Form>

@@ -17,6 +17,8 @@ import {
   FormMessage,
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
+import { useAuth } from "@/hooks/useAuth"
+import { useRouter } from "next/navigation"
 
 const forgotPasswordSchema = z.object({
   email: z.string().email({ message: "Invalid email address" }),
@@ -30,9 +32,14 @@ export default function ForgotPasswordPage() {
     },
   })
 
-  function onSubmit(values: z.infer<typeof forgotPasswordSchema>) {
-    console.log(values)
-    // In a real app, redirect to verify-otp
+  const { sendOtp, isLoading, error } = useAuth()
+  const router = useRouter()
+
+  async function onSubmit(values: z.infer<typeof forgotPasswordSchema>) {
+    const result = await sendOtp(values.email)
+    if (result.success) {
+      router.push(`/verify-otp?email=${values.email}`)
+    }
   }
 
   return (
@@ -45,6 +52,11 @@ export default function ForgotPasswordPage() {
 
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+          {error && (
+            <div className="bg-red-50 text-red-500 p-3 rounded-md text-sm font-medium">
+              {error}
+            </div>
+          )}
           <FormField
             control={form.control}
             name="email"
@@ -59,8 +71,8 @@ export default function ForgotPasswordPage() {
             )}
           />
 
-          <Button type="submit" className="w-full h-12 bg-[#1b7d81] hover:bg-[#16666a] text-white text-base font-semibold">
-            Continue
+          <Button type="submit" className="w-full h-12 bg-[#1b7d81] hover:bg-[#16666a] text-white text-base font-semibold" disabled={isLoading}>
+            {isLoading ? "Sending..." : "Continue"}
           </Button>
         </form>
       </Form>
