@@ -72,11 +72,6 @@ function VerifyOtpForm() {
 
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8 flex flex-col items-center">
-          {error && (
-            <div className="bg-red-50 text-red-500 p-3 rounded-md text-sm font-medium w-full">
-              {error}
-            </div>
-          )}
           <FormField
             control={form.control}
             name="otp"

@@ -22,7 +22,7 @@ export const loginService = async (data: any): Promise<AuthResponse> => {
 
         const responseData = await response.json();
 
-        if (responseData.success) {
+        if (responseData.success && responseData.data) {
             const cookieStore = await cookies();
             cookieStore.set("token", responseData.data.token, {
                 path: "/",
@@ -33,6 +33,15 @@ export const loginService = async (data: any): Promise<AuthResponse> => {
             cookieStore.set("user", JSON.stringify(responseData.data.user), {
                 path: "/",
             });
+            return responseData;
+        }
+
+        // Normalize quirk: success: true but data: null means a business failure
+        if (responseData.success && !responseData.data) {
+            return {
+                success: false,
+                message: responseData.message || "Invalid credentials"
+            };
         }
 
         return responseData;
@@ -53,7 +62,7 @@ export const registerService = async (data: any): Promise<AuthResponse> => {
 
         const responseData = await response.json();
 
-        if (responseData.success) {
+        if (responseData.success && responseData.data) {
             const cookieStore = await cookies();
             cookieStore.set("token", responseData.data.token, {
                 path: "/",
@@ -64,6 +73,15 @@ export const registerService = async (data: any): Promise<AuthResponse> => {
             cookieStore.set("user", JSON.stringify(responseData.data.user), {
                 path: "/",
             });
+            return responseData;
+        }
+
+        // Normalize quirk: success: true but data: null means a business failure
+        if (responseData.success && !responseData.data) {
+            return {
+                success: false,
+                message: responseData.message || "Registration failed"
+            };
         }
 
         return responseData;
@@ -145,7 +163,16 @@ export const getProfileInfoService = async (): Promise<AuthResponse> => {
             },
         });
 
-        return await response.json();
+        const responseData = await response.json();
+
+        if (responseData.success && responseData.data?.user) {
+            // Keep the user cookie fresh with the latest data
+            cookieStore.set("user", JSON.stringify(responseData.data.user), {
+                path: "/",
+            });
+        }
+
+        return responseData;
     } catch (error: any) {
         return { success: false, message: error.message || "Something went wrong" };
     }
@@ -174,5 +201,124 @@ export const logoutService = async () => {
         cookieStore.delete("token");
         cookieStore.delete("user");
         return { success: true, message: "Logged out locally" };
+    }
+};
+
+export const updateProfileService = async (data: any): Promise<AuthResponse> => {
+    try {
+        const cookieStore = await cookies();
+        const token = cookieStore.get("token")?.value;
+
+        if (!token) {
+            return { success: false, message: "No token found" };
+        }
+
+        const response = await fetch(`${NEXT_PUBLIC_BASE_API}/update-profileinfo`, {
+            method: "POST",
+            headers: {
+                "Authorization": `Bearer ${token}`,
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify(data),
+        });
+
+        const responseData = await response.json();
+
+        if (responseData.success && responseData.data) {
+            // Update the user cookie with new data
+            cookieStore.set("user", JSON.stringify(responseData.data), {
+                path: "/",
+            });
+        }
+
+        return responseData;
+    } catch (error: any) {
+        return { success: false, message: error.message || "Something went wrong" };
+    }
+};
+
+export const changeProfilePhotoService = async (formData: FormData): Promise<AuthResponse> => {
+    try {
+        const cookieStore = await cookies();
+        const token = cookieStore.get("token")?.value;
+
+        if (!token) {
+            return { success: false, message: "No token found" };
+        }
+
+        const response = await fetch(`${NEXT_PUBLIC_BASE_API}/change-profile-photo`, {
+            method: "POST",
+            headers: {
+                "Authorization": `Bearer ${token}`,
+            },
+            body: formData,
+        });
+
+        const responseData = await response.json();
+
+        if (responseData.success && responseData.data) {
+            cookieStore.set("user", JSON.stringify(responseData.data), {
+                path: "/",
+            });
+        }
+
+        return responseData;
+    } catch (error: any) {
+        return { success: false, message: error.message || "Something went wrong" };
+    }
+};
+
+export const removeProfilePhotoService = async (): Promise<AuthResponse> => {
+    try {
+        const cookieStore = await cookies();
+        const token = cookieStore.get("token")?.value;
+
+        if (!token) {
+            return { success: false, message: "No token found" };
+        }
+
+        const response = await fetch(`${NEXT_PUBLIC_BASE_API}/remove-profile-photo`, {
+            method: "POST",
+            headers: {
+                "Authorization": `Bearer ${token}`,
+                "Content-Type": "application/json",
+            },
+        });
+
+        const responseData = await response.json();
+
+        if (responseData.success && responseData.data) {
+            cookieStore.set("user", JSON.stringify(responseData.data), {
+                path: "/",
+            });
+        }
+
+        return responseData;
+    } catch (error: any) {
+        return { success: false, message: error.message || "Something went wrong" };
+    }
+};
+
+export const changePasswordService = async (data: any): Promise<AuthResponse> => {
+    try {
+        const cookieStore = await cookies();
+        const token = cookieStore.get("token")?.value;
+
+        if (!token) {
+            return { success: false, message: "No token found" };
+        }
+
+        const response = await fetch(`${NEXT_PUBLIC_BASE_API}/change-password`, {
+            method: "POST",
+            headers: {
+                "Authorization": `Bearer ${token}`,
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify(data),
+        });
+
+        return await response.json();
+    } catch (error: any) {
+        return { success: false, message: error.message || "Something went wrong" };
     }
 };

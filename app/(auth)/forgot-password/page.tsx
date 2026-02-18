@@ -52,11 +52,6 @@ export default function ForgotPasswordPage() {
 
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-          {error && (
-            <div className="bg-red-50 text-red-500 p-3 rounded-md text-sm font-medium">
-              {error}
-            </div>
-          )}
           <FormField
             control={form.control}
             name="email"

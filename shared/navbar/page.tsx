@@ -62,6 +62,12 @@ const Navbar: React.FC = () => {
       ? "text-white bg-[#227c85]" // Active state with background
       : "text-[#565E69] hover:text-[#227c85]"; // Inactive state
 
+  // Compute display name safely
+  const displayName = user?.full_name || `${user?.first_name || ""} ${user?.last_name || ""}`.trim() || "User";
+
+  const baseUrl = "https://raymondred.thesyndicates.team/";
+  const photoUrl = user?.profile_photo ? (user.profile_photo.startsWith('http') ? user.profile_photo : `${baseUrl}${user.profile_photo}`) : "";
+
   return (
     <motion.div
       initial={{ y: -100, opacity: 0 }}
@@ -147,39 +153,62 @@ const Navbar: React.FC = () => {
           {user ? (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <div className="flex items-center gap-2 cursor-pointer outline-none">
-                  <Avatar className="h-9 w-9 border-2 border-emerald-500/20">
-                    <AvatarImage src={user.profile_photo} alt={user.full_name} />
-                    <AvatarFallback className="bg-emerald-100 text-emerald-700 font-bold uppercase">
-                      {user.full_name?.[0] || user.email?.[0]}
-                    </AvatarFallback>
-                  </Avatar>
-                  <div className="flex flex-col">
-                    <span className="text-sm font-semibold text-slate-700 leading-tight truncate max-w-[100px]">
-                      {user.full_name}
+                <div className="flex items-center gap-3 pl-3 pr-1 py-1 rounded-full border border-slate-100 hover:border-emerald-500/30 hover:bg-slate-50 transition-all cursor-pointer outline-none group">
+                  <div className="flex flex-col items-end hidden xl:flex">
+                    <span className="text-sm font-bold text-slate-700 leading-tight truncate max-w-[120px] group-hover:text-[#227c85]">
+                      {displayName}
                     </span>
-                    <span className="text-[11px] text-slate-500 leading-tight capitalize">
+                    <span className="text-[10px] text-slate-400 leading-tight capitalize font-medium">
                       {user.role}
                     </span>
                   </div>
+                  <Avatar className="h-9 w-9 border-2 border-slate-100 group-hover:border-emerald-500/50 transition-colors">
+                    <AvatarImage src={photoUrl} alt={displayName} />
+                    <AvatarFallback className="bg-emerald-100 text-emerald-700 font-bold uppercase text-xs">
+                      {displayName?.[0]}
+                    </AvatarFallback>
+                  </Avatar>
                 </div>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-56 mt-2">
-                <DropdownMenuLabel>My Account</DropdownMenuLabel>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem asChild>
-                  <Link href="/profile" className="flex items-center gap-2 cursor-pointer">
-                    <UserIcon className="w-4 h-4" />
-                    <span>Profile Info</span>
+              <DropdownMenuContent align="end" className="w-64 mt-2 p-2 rounded-xl shadow-xl border-slate-100">
+                <div className="flex items-center gap-3 p-3 bg-slate-50 rounded-lg mb-2">
+                  <Avatar className="h-10 w-10 border-2 border-white shadow-sm">
+                    <AvatarImage src={photoUrl} alt={displayName} />
+                    <AvatarFallback className="bg-emerald-100 text-emerald-700 font-bold uppercase">
+                      {displayName?.[0]}
+                    </AvatarFallback>
+                  </Avatar>
+                  <div className="flex flex-col min-w-0">
+                    <span className="text-sm font-bold text-slate-800 truncate">
+                      {displayName}
+                    </span>
+                    <span className="text-[11px] text-slate-500 truncate">
+                      {user.email}
+                    </span>
+                  </div>
+                </div>
+
+                <DropdownMenuSeparator className="bg-slate-100" />
+
+                <DropdownMenuItem asChild className="rounded-lg py-2.5 my-0.5 focus:bg-emerald-50 focus:text-emerald-700 cursor-pointer">
+                  <Link href="/profile" className="flex items-center gap-3 w-full">
+                    <div className="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-slate-600 group-focus:bg-emerald-100 group-focus:text-emerald-600">
+                      <UserIcon className="w-4 h-4" />
+                    </div>
+                    <span className="font-medium">Profile Info</span>
                   </Link>
                 </DropdownMenuItem>
-                <DropdownMenuSeparator />
+
+                <DropdownMenuSeparator className="bg-slate-100" />
+
                 <DropdownMenuItem
                   onClick={() => logout()}
-                  className="text-red-600 focus:text-red-700 focus:bg-red-50 flex items-center gap-2 cursor-pointer"
+                  className="rounded-lg py-2.5 my-0.5 text-red-600 focus:text-red-700 focus:bg-red-50 flex items-center gap-3 cursor-pointer"
                 >
-                  <LogOut className="w-4 h-4" />
-                  <span>Logout</span>
+                  <div className="w-8 h-8 rounded-full bg-red-50 flex items-center justify-center">
+                    <LogOut className="w-4 h-4" />
+                  </div>
+                  <span className="font-medium">Logout</span>
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
@@ -256,36 +285,41 @@ const Navbar: React.FC = () => {
 
                 {user ? (
                   <div className="flex flex-col gap-4">
-                    <div className="flex items-center gap-3 p-3 bg-slate-50 rounded-xl">
-                      <Avatar className="h-12 w-12 border-2 border-emerald-500/20">
-                        <AvatarImage src={user.profile_photo} alt={user.full_name} />
-                        <AvatarFallback className="bg-emerald-100 text-emerald-700 font-bold uppercase text-lg">
-                          {user.full_name?.[0] || user.email?.[0]}
+                    <div className="flex items-center gap-4 p-4 bg-slate-50 rounded-2xl border border-slate-100 shadow-sm">
+                      <Avatar className="h-14 w-14 border-2 border-emerald-500/20 shadow-sm">
+                        <AvatarImage src={photoUrl} alt={displayName} />
+                        <AvatarFallback className="bg-emerald-100 text-emerald-700 font-bold uppercase text-xl">
+                          {displayName?.[0]}
                         </AvatarFallback>
                       </Avatar>
-                      <div className="flex flex-col">
-                        <span className="text-base font-bold text-slate-900 leading-tight">
-                          {user.full_name}
+                      <div className="flex flex-col min-w-0">
+                        <span className="text-base font-bold text-slate-900 leading-tight truncate">
+                          {displayName}
                         </span>
-                        <span className="text-sm text-slate-500 leading-tight capitalize">
+                        <span className="text-xs text-slate-500 leading-tight mt-0.5 truncate">
+                          {user.email}
+                        </span>
+                        <span className="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-100 text-emerald-700 w-fit mt-1.5 uppercase tracking-wide">
                           {user.role}
                         </span>
                       </div>
                     </div>
-                    <Link
-                      href="/profile"
-                      className="flex items-center gap-3 px-4 py-3 rounded-xl text-lg font-medium text-slate-600 hover:bg-slate-100 transition-colors"
-                    >
-                      <UserIcon className="w-6 h-6" />
-                      <span>Profile Info</span>
-                    </Link>
-                    <button
-                      onClick={() => logout()}
-                      className="flex items-center gap-3 px-4 py-3 rounded-xl text-lg font-medium text-red-600 hover:bg-red-50 transition-colors w-full text-left"
-                    >
-                      <LogOut className="w-6 h-6" />
-                      <span>Logout</span>
-                    </button>
+                    <div className="grid grid-cols-1 gap-2">
+                      <Link
+                        href="/profile"
+                        className="flex items-center gap-3 px-4 py-4 rounded-xl text-lg font-semibold text-slate-700 bg-white border border-slate-100 hover:bg-slate-50 hover:border-emerald-200 transition-all shadow-sm"
+                      >
+                        <UserIcon className="w-6 h-6 text-emerald-600" />
+                        <span>Profile Info</span>
+                      </Link>
+                      <button
+                        onClick={() => logout()}
+                        className="flex items-center gap-3 px-4 py-4 rounded-xl text-lg font-semibold text-red-600 bg-white border border-slate-100 hover:bg-red-50 hover:border-red-100 transition-all shadow-sm w-full text-left"
+                      >
+                        <LogOut className="w-6 h-6" />
+                        <span>Logout</span>
+                      </button>
+                    </div>
                   </div>
                 ) : (
                   <Link href="/login">
@@ -298,6 +332,7 @@ const Navbar: React.FC = () => {
         </div>
       </nav>
     </motion.div >
+
   );
 };
 

@@ -18,6 +18,7 @@ export const metadata: Metadata = {
 };
 
 import { FavoritesProvider } from "@/context/FavoritesContext";
+import { Toaster } from "sonner";
 
 export default function RootLayout({
   children,
@@ -29,6 +30,7 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
+        <Toaster position="top-center" richColors />
         <FavoritesProvider>
           {children}
         </FavoritesProvider>
