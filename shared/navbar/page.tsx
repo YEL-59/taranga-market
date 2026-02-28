@@ -199,6 +199,20 @@ const Navbar: React.FC = () => {
                   </Link>
                 </DropdownMenuItem>
 
+                {user?.role === "provider" && (
+                  <>
+                    <DropdownMenuSeparator className="bg-slate-100" />
+                    <DropdownMenuItem asChild className="rounded-lg py-2.5 my-0.5 focus:bg-emerald-50 focus:text-emerald-700 cursor-pointer">
+                      <Link href="/dashboard" className="flex items-center gap-3 w-full">
+                        <div className="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-slate-600 group-focus:bg-emerald-100 group-focus:text-emerald-600">
+                          <UserIcon className="w-4 h-4" />
+                        </div>
+                        <span className="font-medium">Provider Dashboard</span>
+                      </Link>
+                    </DropdownMenuItem>
+                  </>
+                )}
+
                 <DropdownMenuSeparator className="bg-slate-100" />
 
                 <DropdownMenuItem
@@ -312,6 +326,15 @@ const Navbar: React.FC = () => {
                         <UserIcon className="w-6 h-6 text-emerald-600" />
                         <span>Profile Info</span>
                       </Link>
+                      {user?.role === "provider" && (
+                        <Link
+                          href="/dashboard"
+                          className="flex items-center gap-3 px-4 py-4 rounded-xl text-lg font-semibold text-slate-700 bg-white border border-slate-100 hover:bg-slate-50 hover:border-emerald-200 transition-all shadow-sm"
+                        >
+                          <UserIcon className="w-6 h-6 text-emerald-600" />
+                          <span>Provider Dashboard</span>
+                        </Link>
+                      )}
                       <button
                         onClick={() => logout()}
                         className="flex items-center gap-3 px-4 py-4 rounded-xl text-lg font-semibold text-red-600 bg-white border border-slate-100 hover:bg-red-50 hover:border-red-100 transition-all shadow-sm w-full text-left"
