@@ -4,6 +4,7 @@ import React from "react"
 import Sidebar from "@/features/dashboard/components/Sidebar"
 import Topbar from "@/features/dashboard/components/Topbar"
 import { usePathname } from "next/navigation"
+import { useAuth } from "@/hooks/useAuth"
 
 export default function DashboardLayout({
   children,
@@ -11,7 +12,12 @@ export default function DashboardLayout({
   children: React.ReactNode
 }) {
   const pathname = usePathname()
-  
+  const { getProfile } = useAuth()
+
+  React.useEffect(() => {
+    getProfile()
+  }, [])
+
   const getTitle = () => {
     if (pathname.includes("/profile/password")) return "Password"
     if (pathname.includes("/profile")) return "Profile"
