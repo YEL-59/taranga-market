@@ -4,12 +4,12 @@ import Link from "next/link"
 import React from "react"
 import Image from "next/image"
 import { usePathname } from "next/navigation"
-import { 
-  LayoutDashboard, 
-  ListOrdered, 
-  PlusCircle, 
-  UserCircle, 
-  LogOut 
+import {
+  LayoutDashboard,
+  ListOrdered,
+  PlusCircle,
+  UserCircle,
+  LogOut
 } from "lucide-react"
 import logo from "@/assets/images/logo-nav.png"
 import { cn } from "@/lib/utils"
@@ -48,9 +48,9 @@ export default function Sidebar() {
   const [openDropdowns, setOpenDropdowns] = React.useState<string[]>(["Profile"])
 
   const toggleDropdown = (name: string) => {
-    setOpenDropdowns(prev => 
-      prev.includes(name) 
-        ? prev.filter(d => d !== name) 
+    setOpenDropdowns(prev =>
+      prev.includes(name)
+        ? prev.filter(d => d !== name)
         : [...prev, name]
     )
   }
@@ -83,7 +83,7 @@ export default function Sidebar() {
                   className={cn(
                     "flex items-center justify-between w-full gap-3 px-4 py-3 rounded-xl transition-all duration-300 group",
                     isActive && !isOpen
-                      ? "bg-[#1b7d81] text-white" 
+                      ? "bg-[#1b7d81] text-white"
                       : "text-slate-400 hover:text-white hover:bg-white/5"
                   )}
                 >
@@ -99,7 +99,7 @@ export default function Sidebar() {
                     isOpen && "rotate-180"
                   )} />
                 </button>
-                
+
                 <div className={cn(
                   "overflow-hidden transition-all duration-300 space-y-1 ml-4",
                   isOpen ? "max-h-40 opacity-100 py-1" : "max-h-0 opacity-0"
@@ -112,8 +112,8 @@ export default function Sidebar() {
                         href={sub.href}
                         className={cn(
                           "block px-8 py-2.5 rounded-xl text-sm font-medium transition-all",
-                          isSubActive 
-                            ? "text-white bg-[#1b7d81]/40" 
+                          isSubActive
+                            ? "text-white bg-[#1b7d81]/40"
                             : "text-slate-500 hover:text-white hover:bg-white/5"
                         )}
                       >
@@ -132,8 +132,8 @@ export default function Sidebar() {
               href={link.href}
               className={cn(
                 "flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-300 group",
-                isActive 
-                  ? "bg-[#1b7d81] text-white" 
+                isActive
+                  ? "bg-[#1b7d81] text-white"
                   : "text-slate-400 hover:text-white hover:bg-white/5"
               )}
             >
@@ -147,12 +147,12 @@ export default function Sidebar() {
         })}
       </nav>
 
-      <div className="p-4 mt-auto">
+      {/* <div className="p-4 mt-auto">
         <button className="flex items-center gap-3 px-4 py-3 w-full text-slate-400 hover:text-orange-500 hover:bg-orange-500/10 rounded-xl transition-all group">
           <LogOut className="w-5 h-5 group-hover:text-orange-500" />
           <span className="font-medium text-orange-400">Sign Out</span>
         </button>
-      </div>
+      </div> */}
     </div>
   )
 }
