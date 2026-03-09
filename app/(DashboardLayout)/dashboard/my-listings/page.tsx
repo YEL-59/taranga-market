@@ -17,7 +17,7 @@ import {
   DialogFooter,
 } from "@/components/ui/dialog"
 
-const tabs = ["All", "Active", "Pending", "Sold"]
+const tabs = ["All", "Active", "Pending"]  //"Sold"
 
 export default function MyListingsPage() {
   const [activeTab, setActiveTab] = useState("All")
@@ -223,9 +223,9 @@ export default function MyListingsPage() {
                         </td>
                         <td className="px-6 py-5">
                           <div className="flex items-center justify-end gap-1.5">
-                            <button className="p-2 text-blue-500 hover:bg-blue-50 rounded-xl transition-all active:scale-90" title="Edit">
+                            {/* <button className="p-2 text-blue-500 hover:bg-blue-50 rounded-xl transition-all active:scale-90" title="Edit">
                               <Edit2 className="w-4 h-4" />
-                            </button>
+                            </button> */}
                             <button
                               onClick={() => handleViewDetails(item.id)}
                               className="p-2 text-slate-400 hover:bg-slate-100 rounded-xl transition-all active:scale-90"

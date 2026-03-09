@@ -1,31 +1,45 @@
 "use client"
 
 import React from "react"
-import { Bell } from "lucide-react"
+import { Bell, LayoutDashboard, UserCircle, ListOrdered, LogOut } from "lucide-react"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { useAuth } from "@/hooks/useAuth"
+import Link from "next/link"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
 
 interface TopbarProps {
   title: string
 }
 
 export default function Topbar({ title }: TopbarProps) {
+  const { user, logout } = useAuth()
+  const displayName = user?.full_name || `${user?.first_name || ""} ${user?.last_name || ""}`.trim() || user?.name || "User"
+  const photoUrl = user?.profile_photo || ""
+
   return (
     <header className="h-[72px] bg-white border-b border-slate-100 flex items-center justify-between px-8 sticky top-0 z-40">
       <h1 className="text-xl font-bold text-slate-900">{title}</h1>
-      
+
       <div className="flex items-center gap-6">
-        <button className="relative p-2 text-slate-400 hover:text-slate-600 transition-colors">
+        {/* <button className="relative p-2 text-slate-400 hover:text-slate-600 transition-colors">
           <Bell className="w-5 h-5" />
           <span className="absolute top-2 right-2 w-2 h-2 bg-orange-500 rounded-full border-2 border-white"></span>
-        </button>
+        </button> */}
 
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <div className="flex items-center gap-3 cursor-pointer group">
-              <span className="text-sm font-semibold text-slate-700 group-hover:text-emerald-600 transition-colors">Esther Howard</span>
+              <span className="text-sm font-semibold text-slate-700 group-hover:text-emerald-600 transition-colors uppercase tracking-tight">{displayName}</span>
               <Avatar className="w-9 h-9 border-2 border-slate-50 group-hover:border-emerald-100 transition-all">
-                <AvatarImage src="https://github.com/shadcn.png" />
-                <AvatarFallback>EH</AvatarFallback>
+                <AvatarImage src={photoUrl} />
+                <AvatarFallback className="bg-emerald-50 text-emerald-700 font-bold">{displayName?.[0]}</AvatarFallback>
               </Avatar>
             </div>
           </DropdownMenuTrigger>
@@ -51,7 +65,10 @@ export default function Topbar({ title }: TopbarProps) {
               </Link>
             </DropdownMenuItem>
             <DropdownMenuSeparator />
-            <DropdownMenuItem className="text-red-500 focus:text-red-600 focus:bg-red-50 cursor-pointer gap-2 py-2.5">
+            <DropdownMenuItem
+              onClick={() => logout()}
+              className="text-red-500 focus:text-red-600 focus:bg-red-50 cursor-pointer gap-2 py-2.5"
+            >
               <LogOut className="w-4 h-4" />
               <span>Sign out</span>
             </DropdownMenuItem>
@@ -62,13 +79,3 @@ export default function Topbar({ title }: TopbarProps) {
   )
 }
 
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
-import Link from "next/link"
-import { LayoutDashboard, UserCircle, ListOrdered, LogOut } from "lucide-react"

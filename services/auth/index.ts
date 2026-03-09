@@ -1,6 +1,7 @@
 "use server";
 
 import { cookies } from "next/headers";
+import { redirect } from "next/navigation";
 
 const NEXT_PUBLIC_BASE_API = "https://raymondred.thesyndicates.team/api";
 
@@ -31,6 +32,9 @@ export const loginService = async (data: any): Promise<AuthResponse> => {
                 sameSite: "strict",
             });
             cookieStore.set("user", JSON.stringify(responseData.data.user), {
+                path: "/",
+            });
+            cookieStore.set("role", responseData.data.user.role, {
                 path: "/",
             });
             return responseData;
@@ -71,6 +75,9 @@ export const registerService = async (data: any): Promise<AuthResponse> => {
                 sameSite: "strict",
             });
             cookieStore.set("user", JSON.stringify(responseData.data.user), {
+                path: "/",
+            });
+            cookieStore.set("role", responseData.data.user.role, {
                 path: "/",
             });
             return responseData;
@@ -166,8 +173,11 @@ export const getProfileInfoService = async (): Promise<AuthResponse> => {
         const responseData = await response.json();
 
         if (responseData.success && responseData.data?.user) {
-            // Keep the user cookie fresh with the latest data
+            // Keep the user and role cookies fresh with the latest data
             cookieStore.set("user", JSON.stringify(responseData.data.user), {
+                path: "/",
+            });
+            cookieStore.set("role", responseData.data.user.role, {
                 path: "/",
             });
         }
@@ -184,22 +194,28 @@ export const logoutService = async () => {
         const token = cookieStore.get("token")?.value;
 
         if (token) {
-            await fetch(`${NEXT_PUBLIC_BASE_API}/logout`, {
-                method: "POST",
-                headers: {
-                    "Authorization": `Bearer ${token}`,
-                    "Content-Type": "application/json",
-                },
-            });
+            try {
+                await fetch(`${NEXT_PUBLIC_BASE_API}/logout`, {
+                    method: "POST",
+                    headers: {
+                        "Authorization": `Bearer ${token}`,
+                        "Content-Type": "application/json",
+                    },
+                });
+            } catch (apiError) {
+                console.error("External logout API error:", apiError);
+            }
         }
 
         cookieStore.delete("token");
         cookieStore.delete("user");
-        return { success: true, message: "Logout successful" };
+        cookieStore.delete("role");
+        return { success: true, message: "Logged out successfully" };
     } catch (error) {
         const cookieStore = await cookies();
         cookieStore.delete("token");
         cookieStore.delete("user");
+        cookieStore.delete("role");
         return { success: true, message: "Logged out locally" };
     }
 };
@@ -229,6 +245,11 @@ export const updateProfileService = async (data: any): Promise<AuthResponse> => 
             cookieStore.set("user", JSON.stringify(responseData.data), {
                 path: "/",
             });
+            if (responseData.data.role) {
+                cookieStore.set("role", responseData.data.role, {
+                    path: "/",
+                });
+            }
         }
 
         return responseData;

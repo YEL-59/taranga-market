@@ -2,103 +2,70 @@
 
 import React from 'react';
 import Image from 'next/image';
-import { MapPin, Heart, ArrowRight, Calendar, Gauge } from 'lucide-react';
+import { MapPin, Heart, ArrowRight, Calendar, Gauge, Loader2 } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import { useFavorites } from '@/context/FavoritesContext';
-
-// Mock data for featured items
-const featuredItems = [
-    {
-        id: 5,
-        type: 'Vehicle',
-        image: 'https://images.unsplash.com/photo-1555215695-3004980ad54e?q=80&w=600&auto=format&fit=crop',
-        title: 'BMW X5 xDrive40i 2022 Luxury SUV',
-        location: 'Dakar',
-        price: '55,000,000 XOF',
-        meta: { year: '2022', mileage: '5,000 km' },
-        featured: true
-    },
-    {
-        id: 102,
-        type: 'Product',
-        image: 'https://images.unsplash.com/photo-1592286927505-2fd0d3e2c7d4?q=80&w=600&auto=format&fit=crop',
-        title: 'iPhone 14 Pro Max 256GB - Gold',
-        location: 'Plateau, Dakar',
-        price: '650,000 XOF',
-        featured: true
-    },
-    {
-        id: 11,
-        type: 'Property',
-        image: 'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?q=80&w=600&auto=format&fit=crop',
-        title: 'Penthouse with City Views',
-        location: 'Point E, Dakar',
-        price: '850,000 XOF/month',
-        featured: true
-    },
-    {
-        id: 207,
-        type: 'Service',
-        image: 'https://images.unsplash.com/photo-1516035069371-29a1b244cc32?q=80&w=600&auto=format&fit=crop',
-        title: 'Wedding & Event Photography',
-        location: 'Saint-Louis',
-        price: '200,000 XOF',
-        featured: true
-    },
-];
+import { useFeaturedProducts } from '@/hooks/useFeaturedProducts';
 
 const getDetailLink = (item: any) => {
-    switch (item.type) {
-        case 'Vehicle':
-            return `/vehicles?id=${item.id}`;
-        case 'Product':
-            return `/products?id=${item.id}`;
-        case 'Service':
-            return `/services?id=${item.id}`;
-        case 'Property':
-            return `/properties?id=${item.id}`;
-        case 'Job':
-            return `/jobs?id=${item.id}`;
-        default:
-            return `/all-items?id=${item.id}`;
-    }
+    return `/featured-details?id=${item.id}`;
 };
 
 const FeaturedCard = ({ item }: { item: any }) => {
-    const { toggleFavorite, isFavorite } = useFavorites();
+    const { toggleFavorite, isFavorite, isCustomer } = useFavorites();
     const fav = isFavorite(item.id);
+
+    const image = item.featured_image || item.image || '';
+
+    // Map category_id to a name if possible, or use a default
+    const categoryNames: Record<number, string> = {
+        1: 'Service',
+        2: 'Vehicle',
+        3: 'Product',
+        4: 'Property',
+        5: 'Job'
+    };
+
+    const type = item.category?.name || categoryNames[item.category_id] || 'Product';
+    const price = item.price ? (item.price.toString().includes('XOF') ? item.price : `${Number(item.price).toLocaleString()} XOF`) : 'Price on request';
 
     return (
         <Card className="overflow-hidden border border-gray-100 bg-white shadow-[0_2px_10px_rgba(0,0,0,0.04)] transition-all hover:shadow-[0_4px_20px_rgba(0,0,0,0.08)] group flex flex-col h-full rounded-[20px] p-2.5">
             {/* Image Container */}
             <div className="relative aspect-[16/10] w-full overflow-hidden bg-gray-100 rounded-[15px]">
-                <Image
-                    src={item.image}
-                    alt={item.title}
-                    fill
-                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 25vw"
-                    className="object-cover transition-transform duration-500 group-hover:scale-105"
-                />
-                
+                {image && (
+                    <Image
+                        src={image}
+                        alt={item.title}
+                        fill
+                        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 25vw"
+                        className="object-cover transition-transform duration-500 group-hover:scale-105"
+                    />
+                )}
+
                 {/* Badge */}
-                <Badge 
+                <Badge
                     className="absolute left-2.5 top-2.5 rounded-full px-3 py-0.5 text-[11px] font-semibold bg-white/95 text-gray-800 hover:bg-white border-0 shadow-sm"
                 >
-                    {item.type}
+                    {type}
                 </Badge>
-                
-                {/* Heart Button */}
-                <button 
-                    onClick={() => toggleFavorite({ ...item, image: item.image })}
-                    className={`absolute right-2.5 top-2.5 flex h-7 w-7 items-center justify-center rounded-lg shadow-sm transition-colors ${
-                        fav ? "bg-[#F97316] text-white" : "bg-white/95 text-[#F97316] hover:bg-white"
-                    }`}
-                >
-                    <Heart className={`h-4 w-4 ${fav ? "fill-current" : ""}`} strokeWidth={2.5} />
-                </button>
+
+
+
+                {/* Heart Button - Only for Customers */}
+                {isCustomer && (
+                    <button
+                        onClick={() => toggleFavorite({ ...item, image: image })}
+                        className={`absolute right-2.5 top-2.5 flex h-7 w-7 items-center justify-center rounded-lg shadow-sm transition-colors ${fav ? "bg-[#F97316] text-white" : "bg-white/95 text-[#F97316] hover:bg-white"
+                            }`}
+                    >
+                        <Heart className={`h-4 w-4 ${fav ? "fill-current" : ""}`} strokeWidth={2.5} />
+                    </button>
+                )}
+
             </div>
 
             {/* Content */}
@@ -128,18 +95,17 @@ const FeaturedCard = ({ item }: { item: any }) => {
                             <span className="truncate">{item.location}</span>
                         </div>
                         <span className="text-[13.5px] font-bold text-[#F97316]">
-                            {item.price}
+                            {price}
                         </span>
                     </div>
 
                     <Link href={getDetailLink(item)} className="block w-full">
-                        <Button 
-                            variant={item.featured ? "default" : "outline"} 
-                            className={`w-full rounded-xl font-semibold text-[13px] h-10 transition-all ${
-                                item.featured 
-                                ? "bg-[#2A8E8E] hover:bg-[#1D7E87] text-white border-0" 
+                        <Button
+                            variant={item.is_featured ? "default" : "outline"}
+                            className={`w-full rounded-xl font-semibold text-[13px] h-10 transition-all ${item.is_featured
+                                ? "bg-[#2A8E8E] hover:bg-[#1D7E87] text-white border-0"
                                 : "bg-white border-gray-100 text-gray-600 hover:bg-[#1D7E87] hover:text-white hover:border-[#1D7E87]"
-                            }`}
+                                }`}
                         >
                             View Details
                         </Button>
@@ -151,6 +117,18 @@ const FeaturedCard = ({ item }: { item: any }) => {
 };
 
 const Featured = () => {
+    const { featuredProducts, isLoading, error } = useFeaturedProducts();
+
+    if (error) {
+        return (
+            <section className="w-full py-16 bg-[#FAFAFA]">
+                <div className="container mx-auto px-4 text-center">
+                    <p className="text-red-500 font-medium">{error}</p>
+                </div>
+            </section>
+        );
+    }
+
     return (
         <section className="w-full py-16 bg-[#FAFAFA]">
             <div className="container mx-auto px-4">
@@ -160,17 +138,27 @@ const Featured = () => {
                         Featured Listing
                     </h2>
                     <Link href="/all-items" className="group flex items-center gap-1.5 text-[15px] font-semibold text-gray-800 transition-colors hover:text-gray-600">
-                        View all 
+                        View all
                         <ArrowRight className="h-4.5 w-4.5 transition-transform group-hover:translate-x-1" />
                     </Link>
                 </div>
 
                 {/* Grid */}
-                <div className="grid grid-cols-1 gap-7 sm:grid-cols-2 lg:grid-cols-4">
-                    {featuredItems.map((item) => (
-                        <FeaturedCard key={item.id} item={item} />
-                    ))}
-                </div>
+                {isLoading ? (
+                    <div className="flex items-center justify-center py-20">
+                        <Loader2 className="h-10 w-10 animate-spin text-[#2A8E8E]" />
+                    </div>
+                ) : featuredProducts.length > 0 ? (
+                    <div className="grid grid-cols-1 gap-7 sm:grid-cols-2 lg:grid-cols-4">
+                        {featuredProducts.slice(0, 4).map((item) => (
+                            <FeaturedCard key={item.id} item={item} />
+                        ))}
+                    </div>
+                ) : (
+                    <div className="text-center py-20 text-gray-500">
+                        No featured products found.
+                    </div>
+                )}
             </div>
         </section>
     );
