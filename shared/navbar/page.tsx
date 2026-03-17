@@ -114,17 +114,17 @@ const Navbar: React.FC = () => {
         {/* --- RIGHT: ACTIONS --- */}
         <div className="hidden lg:flex items-center gap-6 flex-1 justify-end">
           {/* Search */}
-          <div className="relative w-full max-w-[220px]">
+          {/* <div className="relative w-full max-w-[220px]">
             <input
               type="text"
               placeholder="Search..."
               className="w-full pl-4 pr-10 py-2 border border-gray-200 rounded-full text-sm focus:ring-2 focus:ring-[#227c85]/20 focus:outline-none"
             />
             <Search className="w-4 h-4 absolute right-3 top-2.5 text-gray-400" />
-          </div>
+          </div> */}
 
           {/* Language Toggle */}
-          <div className="flex items-center bg-gray-100 p-1 rounded-full">
+          {/* <div className="flex items-center bg-gray-100 p-1 rounded-full">
             {(["En", "Fn"] as const).map((lang) => (
               <button
                 key={lang}
@@ -137,12 +137,12 @@ const Navbar: React.FC = () => {
                 {lang}
               </button>
             ))}
-          </div>
+          </div> */}
 
           {/* Favorites */}
           <Link href="/favorites" className="flex items-center gap-1.5 text-[#565E69] hover:text-[#227c85] relative">
             <Heart className="w-5 h-5" />
-            <span className="text-sm font-medium font-[Inter]">Favorites</span>
+            {/* <span className="text-sm font-medium font-[Inter]">Favorites</span> */}
             {favorites.length > 0 && (
               <span className="absolute -top-2 -right-2 flex h-4 w-4 items-center justify-center rounded-full bg-[#227c85] text-[10px] font-bold text-white">
                 {favorites.length}
@@ -268,7 +268,7 @@ const Navbar: React.FC = () => {
                   >
                     <div className="flex items-center gap-2">
                       <Heart className="w-6 h-6" />
-                      <span>Favorites</span>
+                      {/* <span>Favorites</span> */}
                     </div>
                     {favorites.length > 0 && (
                       <span className="bg-orange-500 text-white text-xs font-bold px-2.5 py-1 rounded-full">
@@ -281,7 +281,7 @@ const Navbar: React.FC = () => {
                 <hr />
 
                 {/* Mobile Language Switcher */}
-                <div className="flex items-center justify-between px-2">
+                {/* <div className="flex items-center justify-between px-2">
                   <span className="font-medium text-gray-600">Language</span>
                   <div className="flex bg-gray-100 p-1 rounded-lg">
                     {["En", "Fn"].map((l) => (
@@ -295,7 +295,7 @@ const Navbar: React.FC = () => {
                       </button>
                     ))}
                   </div>
-                </div>
+                </div> */}
 
                 {user ? (
                   <div className="flex flex-col gap-4">

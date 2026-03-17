@@ -160,6 +160,18 @@ export const getRecentProductsService = async (): Promise<ListingResponse> => {
     }
 };
 
+export const getAllProductsService = async (page: number = 1): Promise<ListingResponse> => {
+    try {
+        const response = await fetch(`${NEXT_PUBLIC_BASE_API}/all-product?page=${page}`, {
+            method: "GET",
+        });
+
+        return await response.json();
+    } catch (error: any) {
+        return { success: false, message: error.message || "Failed to fetch products" };
+    }
+};
+
 export const getRecentListingsService = async (page: number = 1): Promise<ListingResponse> => {
     try {
         const cookieStore = await cookies();
