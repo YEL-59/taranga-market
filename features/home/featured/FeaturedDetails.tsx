@@ -76,9 +76,9 @@ const FeaturedDetails = () => {
                         <span>Back</span>
                     </button>
                     <div className="flex items-center gap-3">
-                        <button className="p-2.5 rounded-xl hover:bg-gray-100 text-gray-600 transition-colors">
+                        {/* <button className="p-2.5 rounded-xl hover:bg-gray-100 text-gray-600 transition-colors">
                             <Share2 className="h-5 w-5" />
-                        </button>
+                        </button> */}
                         {isCustomer && (
                             <button
                                 onClick={() => toggleFavorite(item)}
@@ -219,12 +219,20 @@ const FeaturedDetails = () => {
                                     <h3 className="text-xl font-bold text-[#1B2232] mb-6">Seller Information</h3>
                                     <div className="flex items-center gap-4 mb-6">
                                         <div className="relative w-16 h-16 rounded-2xl overflow-hidden bg-gray-100">
-                                            <Image
-                                                src={item.user.profile_photo || 'https://ui-avatars.com/api/?name=' + item.user.first_name}
-                                                alt={item.user.first_name}
-                                                fill
-                                                className="object-cover"
-                                            />
+                                            {(() => {
+                                                const profilePhoto = item.user.profile_photo;
+                                                const isValidUrl = profilePhoto && (profilePhoto.startsWith('http://') || profilePhoto.startsWith('https://') || profilePhoto.startsWith('/'));
+                                                const fallbackUrl = `https://ui-avatars.com/api/?name=${encodeURIComponent(item.user.first_name + ' ' + (item.user.last_name || ''))}&background=random`;
+                                                
+                                                return (
+                                                    <Image
+                                                        src={isValidUrl ? profilePhoto : fallbackUrl}
+                                                        alt={item.user.first_name}
+                                                        fill
+                                                        className="object-cover"
+                                                    />
+                                                );
+                                            })()}
                                         </div>
                                         <div>
                                             <h4 className="font-bold text-lg text-[#1B2232]">{item.user.first_name} {item.user.last_name}</h4>
@@ -241,9 +249,9 @@ const FeaturedDetails = () => {
                                             <span className="font-bold text-[#1B2232]">{item.user.limit || 0}</span>
                                         </div>
                                     </div>
-                                    <Button variant="ghost" className="w-full mt-6 text-[#2A8E8E] font-bold hover:bg-[#2A8E8E]/5">
+                                    {/* <Button variant="ghost" className="w-full mt-6 text-[#2A8E8E] font-bold hover:bg-[#2A8E8E]/5">
                                         View Seller Profile
-                                    </Button>
+                                    </Button> */}
                                 </CardContent>
                             </Card>
                         )}

@@ -148,6 +148,18 @@ export const getDashboardSummaryService = async (): Promise<ListingResponse> => 
         return { success: false, message: error.message || "Something went wrong" };
     }
 };
+export const getRecentProductsService = async (): Promise<ListingResponse> => {
+    try {
+        const response = await fetch(`${NEXT_PUBLIC_BASE_API}/feature-product/recent`, {
+            method: "GET",
+        });
+
+        return await response.json();
+    } catch (error: any) {
+        return { success: false, message: error.message || "Failed to fetch recent products" };
+    }
+};
+
 export const getRecentListingsService = async (page: number = 1): Promise<ListingResponse> => {
     try {
         const cookieStore = await cookies();
