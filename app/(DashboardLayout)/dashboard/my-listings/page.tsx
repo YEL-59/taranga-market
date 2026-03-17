@@ -3,10 +3,10 @@
 import React, { useState, useEffect } from "react"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import { Edit2, Eye, Trash2, Plus, ChevronLeft, ChevronRight, Loader2 } from "lucide-react"
+import { Edit2, Eye, Trash2, Plus, ChevronLeft, ChevronRight, Loader2, Rocket } from "lucide-react"
 import Image from "next/image"
 import Link from "next/link"
-import { getMyListingsService, getListingDetailsService, deleteListingService } from "@/services/listing"
+import { getMyListingsService, getListingDetailsService, deleteListingService, getBoostPlansService, requestBoostService } from "@/services/listing"
 import { toast } from "sonner"
 import {
   Dialog,
@@ -17,13 +17,15 @@ import {
   DialogFooter,
 } from "@/components/ui/dialog"
 
-const tabs = ["All", "Active", "Pending"]  //"Sold"
+const tabs = ["All", "Active", "Pending"]
 
 export default function MyListingsPage() {
   const [activeTab, setActiveTab] = useState("All")
   const [listings, setListings] = useState<any[]>([])
+  const [boostPlans, setBoostPlans] = useState<any[]>([])
   const [pagination, setPagination] = useState<any>(null)
   const [isLoading, setIsLoading] = useState(true)
+  const [isBoostingItem, setIsBoostingItem] = useState<number | null>(null)
   const [currentPage, setCurrentPage] = useState(1)
 
   // Details Modal State
@@ -39,17 +41,44 @@ export default function MyListingsPage() {
   const fetchListings = async (page: number) => {
     setIsLoading(true)
     try {
-      const result = await getMyListingsService(page)
-      if (result.success && result.data) {
-        setListings(result.data.data)
-        setPagination(result.data)
+      const [listingsResult, boostPlansResult] = await Promise.all([
+        getMyListingsService(page),
+        getBoostPlansService()
+      ])
+
+      if (listingsResult.success && listingsResult.data) {
+        setListings(listingsResult.data.data)
+        setPagination(listingsResult.data)
+      }
+      
+      if (boostPlansResult.success && boostPlansResult.data) {
+        setBoostPlans(boostPlansResult.data)
       }
     } catch (error) {
-      console.error("Failed to fetch listings:", error)
+      console.error("Failed to fetch dashboard data:", error)
     } finally {
       setIsLoading(false)
     }
   }
+
+  const handleRequestBoost = async (listingId: number, planId: number) => {
+    setIsBoostingItem(listingId)
+    try {
+      const result = await requestBoostService(listingId, planId)
+      if (result.success) {
+        toast.success("Boost request submitted successfully!")
+        // Refresh listings to show updated status
+        fetchListings(currentPage)
+      } else {
+        toast.error(result.message || "Failed to submit boost request")
+      }
+    } catch (error) {
+      toast.error("An error occurred while requesting boost")
+    } finally {
+      setIsBoostingItem(null)
+    }
+  }
+
 
   useEffect(() => {
     fetchListings(currentPage)
@@ -175,6 +204,7 @@ export default function MyListingsPage() {
                     <th className="px-6 py-5">Price</th>
                     <th className="px-6 py-5">Status</th>
                     <th className="px-6 py-5">Engagement</th>
+                    <th className="px-6 py-5">Boosting</th>
                     <th className="px-6 py-5">Created At</th>
                     <th className="px-6 py-5 text-right">Actions</th>
                   </tr>
@@ -186,7 +216,7 @@ export default function MyListingsPage() {
                         <td className="px-6 py-5">
                           <div className="flex items-center gap-4">
                             <div className="w-14 h-14 rounded-xl overflow-hidden relative border border-slate-100 bg-slate-50 shrink-0">
-                              {item.featured_image && !item.featured_image.includes("No image") ? (
+                              {item.featured_image && typeof item.featured_image === 'string' && !item.featured_image.includes("No image") ? (
                                 <Image src={item.featured_image} alt={item.title} fill className="object-cover group-hover:scale-110 transition-transform duration-500" />
                               ) : (
                                 <div className="w-full h-full flex items-center justify-center bg-slate-100 text-[#1b7d81]/30">
@@ -216,6 +246,34 @@ export default function MyListingsPage() {
                               <Eye className="w-3.5 h-3.5" />
                               {item.views_count} Views
                             </div>
+                          </div>
+                        </td>
+                        <td className="px-6 py-5">
+                          <div className="flex items-center gap-1.5">
+                            {item.is_boosted === 1 ? (
+                              <Badge className="bg-[#1b7d81] text-white rounded-lg flex items-center gap-1.5 px-3 py-1.5 border-0 font-bold text-[10px] uppercase tracking-wider">
+                                <Rocket className="w-3 h-3" />
+                                {item.boost_status === 'active' ? 'Active Boost' : 'Boosted'}
+                              </Badge>
+                            ) : (
+                              <div className="flex flex-wrap gap-1.5">
+                                {boostPlans.map((plan) => (
+                                  <Button
+                                    key={plan.id}
+                                    onClick={() => handleRequestBoost(item.id, plan.id)}
+                                    disabled={isBoostingItem === item.id}
+                                    variant="outline"
+                                    className="h-8 px-3 rounded-lg text-[10px] font-bold border-[#1b7d81]/20 text-[#1b7d81] hover:bg-[#1b7d81] hover:text-white transition-all whitespace-nowrap"
+                                  >
+                                    {isBoostingItem === item.id ? (
+                                      <Loader2 className="w-3 h-3 animate-spin" />
+                                    ) : (
+                                      plan.name.split('-')[0] // Show "48H", "72H" etc if name is "48-Hour Boost"
+                                    )}
+                                  </Button>
+                                ))}
+                              </div>
+                            )}
                           </div>
                         </td>
                         <td className="px-6 py-5 text-sm text-slate-400 font-semibold whitespace-nowrap">
@@ -329,7 +387,7 @@ export default function MyListingsPage() {
             <div className="flex flex-col">
               {/* Header Image Part */}
               <div className="relative h-64 w-full bg-slate-100">
-                {selectedListing.featured_image && !selectedListing.featured_image.includes("No image") ? (
+                {selectedListing.featured_image && typeof selectedListing.featured_image === 'string' && !selectedListing.featured_image.includes("No image") ? (
                   <Image
                     src={selectedListing.featured_image}
                     alt={selectedListing.title}

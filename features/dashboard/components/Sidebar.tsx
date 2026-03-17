@@ -9,7 +9,9 @@ import {
   ListOrdered,
   PlusCircle,
   UserCircle,
-  LogOut
+  LogOut,
+  Zap,
+  Heart
 } from "lucide-react"
 import logo from "@/assets/images/logo-nav.png"
 import { cn } from "@/lib/utils"
@@ -29,6 +31,16 @@ const sidebarLinks = [
     name: "Add Listing",
     href: "/dashboard/add-listing",
     icon: PlusCircle,
+  },
+  {
+    name: "Boosting",
+    href: "/dashboard/boosting",
+    icon: Zap,
+  },
+  {
+    name: "Subscriptions",
+    href: "/dashboard/subscriptions",
+    icon: Heart,
   },
   {
     name: "Profile",

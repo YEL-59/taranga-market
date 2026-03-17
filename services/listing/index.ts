@@ -4,6 +4,72 @@ import { cookies } from "next/headers";
 
 const NEXT_PUBLIC_BASE_API = "https://raymondred.thesyndicates.team/api";
 
+export const getSubscriptionPlansService = async (): Promise<ListingResponse> => {
+    try {
+        const response = await fetch(`${NEXT_PUBLIC_BASE_API}/subscription-plans`, {
+            method: "GET",
+        });
+
+        if (!response.ok) {
+            return { success: false, message: `Failed to fetch subscription plans: ${response.status}` };
+        }
+
+        return await response.json();
+    } catch (error: any) {
+        return { success: false, message: error.message || "Failed to fetch subscription plans" };
+    }
+};
+
+export const requestBoostService = async (listingId: number, boostPlanId: number): Promise<ListingResponse> => {
+    try {
+        const cookieStore = await cookies();
+        const token = cookieStore.get("token")?.value;
+
+        if (!token) {
+            return { success: false, message: "No authentication token found. Please log in." };
+        }
+
+        const response = await fetch(`${NEXT_PUBLIC_BASE_API}/request-boost`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${token}`,
+            },
+            body: JSON.stringify({ listing_id: listingId, boost_plan_id: boostPlanId }),
+        });
+
+        if (!response.ok) {
+            const text = await response.text();
+            try {
+                const errorData = JSON.parse(text);
+                return { success: false, message: errorData.message || `Request failed with status ${response.status}` };
+            } catch {
+                return { success: false, message: `Server error: ${response.status}. Please try again later.` };
+            }
+        }
+
+        return await response.json();
+    } catch (error: any) {
+        return { success: false, message: error.message || "Failed to request boost" };
+    }
+};
+
+export const getBoostPlansService = async (): Promise<ListingResponse> => {
+    try {
+        const response = await fetch(`${NEXT_PUBLIC_BASE_API}/boost-plans`, {
+            method: "GET",
+        });
+
+        if (!response.ok) {
+            return { success: false, message: `Failed to fetch plans: ${response.status}` };
+        }
+
+        return await response.json();
+    } catch (error: any) {
+        return { success: false, message: error.message || "Failed to fetch boost plans" };
+    }
+};
+
 export type ListingResponse<T = any> = {
     success: boolean;
     message: string;
@@ -154,6 +220,10 @@ export const getRecentProductsService = async (): Promise<ListingResponse> => {
             method: "GET",
         });
 
+        if (!response.ok) {
+            return { success: false, message: `Failed to fetch recent products: ${response.status}` };
+        }
+
         return await response.json();
     } catch (error: any) {
         return { success: false, message: error.message || "Failed to fetch recent products" };
@@ -165,6 +235,10 @@ export const getAllProductsService = async (page: number = 1): Promise<ListingRe
         const response = await fetch(`${NEXT_PUBLIC_BASE_API}/all-product?page=${page}`, {
             method: "GET",
         });
+
+        if (!response.ok) {
+            return { success: false, message: `Failed to fetch products: ${response.status}` };
+        }
 
         return await response.json();
     } catch (error: any) {
