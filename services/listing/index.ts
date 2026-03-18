@@ -362,3 +362,35 @@ export const removeFavoriteService = async (listingId: number | string): Promise
         return { success: false, message: error.message || "Failed to remove from favorites" };
     }
 };
+
+export const getSellerProfileService = async (id: number | string): Promise<ListingResponse> => {
+    try {
+        const response = await fetch(`${NEXT_PUBLIC_BASE_API}/seller/${id}`, {
+            method: "GET",
+        });
+
+        return await response.json();
+    } catch (error: any) {
+        return { success: false, message: error.message || "Failed to fetch seller profile" };
+    }
+};
+
+export const contactListingSellerService = async (listingId: number | string, formData: FormData): Promise<ListingResponse> => {
+    try {
+        const response = await fetch(`${NEXT_PUBLIC_BASE_API}/listing/${listingId}/contact`, {
+            method: "POST",
+            body: formData,
+        });
+
+        // Some endpoints return standard success/message JSON. We handle that.
+        const responseData = await response.json().catch(() => ({}));
+        
+        if (!response.ok) {
+            return { success: false, message: responseData.message || `Failed to send message: ${response.status}` };
+        }
+
+        return { success: true, message: responseData.message || "Message sent successfully!", data: responseData.data };
+    } catch (error: any) {
+        return { success: false, message: error.message || "Failed to send message" };
+    }
+};

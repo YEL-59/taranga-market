@@ -17,7 +17,7 @@ import {
   DialogFooter,
 } from "@/components/ui/dialog"
 
-const tabs = ["All", "Active", "Pending"]
+const tabs = ["All", "Approved", "Pending"]
 
 export default function MyListingsPage() {
   const [activeTab, setActiveTab] = useState("All")
@@ -136,6 +136,7 @@ export default function MyListingsPage() {
 
   const getStatusColor = (status: string) => {
     switch (status.toLowerCase()) {
+      case 'approved':
       case 'active':
         return 'bg-emerald-50 text-emerald-600 border-emerald-100'
       case 'pending':
