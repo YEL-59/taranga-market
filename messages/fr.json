@@ -1,0 +1,56 @@
+{
+  "Navbar": {
+    "home": "Accueil",
+    "allItems": "Tous les articles",
+    "login": "Connexion / Inscription",
+    "profileInfo": "Mon profil",
+    "providerDashboard": "Tableau de bord fournisseur",
+    "logout": "Déconnexion",
+    "favorites": "Favoris"
+  },
+  "Banner": {
+    "heading": "Un marché simple pour trouver et contacter des vendeurs locaux",
+    "subheading": "Découvrez des milliers d'annonces de vendeurs locaux de confiance à travers le Bangladesh."
+  },
+  "Category": {
+    "title": "Explorer par catégorie",
+    "services": "Services",
+    "job": "Emploi",
+    "realEstate": "Immobilier",
+    "products": "Produits",
+    "vehicles": "Véhicules"
+  },
+  "ChoseUs": {
+    "title": "Pourquoi choisir Teranga Market ?",
+    "localTitle": "100 % Local",
+    "localDesc": "Une plateforme conçue pour le marché sénégalais, adaptée à notre réalité.",
+    "verifiedTitle": "Professionnels vérifiés",
+    "verifiedDesc": "Nous vérifions l'identité des prestataires de services pour votre sécurité.",
+    "contactTitle": "Contact direct",
+    "contactDesc": "Discutez directement sur WhatsApp avec les vendeurs sans intermédiaires."
+  },
+  "Footer": {
+    "tagline": "Votre marché de confiance pour acheter et vendre des véhicules, propriétés, électroniques, services et trouver des opportunités d'emploi au Bangladesh.",
+    "browseCategories": "Parcourir les catégories",
+    "quickLinks": "Liens rapides",
+    "getInTouch": "Nous contacter",
+    "vehicles": "Véhicules",
+    "properties": "Propriétés",
+    "productsElectronics": "Produits et électroniques",
+    "services": "Services",
+    "jobs": "Emplois",
+    "allItems": "Tous les articles",
+    "home": "Accueil",
+    "myFavorites": "Mes favoris",
+    "aboutUs": "À propos de nous",
+    "contactUs": "Nous contacter",
+    "faqs": "FAQ",
+    "helpCenter": "Centre d'aide",
+    "businessHoursLabel": "Heures d'ouverture :",
+    "businessHours": "Samedi – Jeudi · 9h00 – 18h00 (GMT+6)",
+    "copyright": "© 2025 Taranga Market. Tous droits réservés. Fait avec ❤️ pour le Bangladesh 🇧🇩",
+    "privacyPolicy": "Politique de confidentialité",
+    "termsOfService": "Conditions d'utilisation",
+    "cookiePolicy": "Politique de cookies"
+  }
+}
