@@ -100,6 +100,18 @@ export const createListingService = async (formData: FormData): Promise<ListingR
     }
 };
 
+export const searchListingsService = async (title: string): Promise<ListingResponse> => {
+    try {
+        const response = await fetch(`${NEXT_PUBLIC_BASE_API}/search?title=${encodeURIComponent(title)}`, {
+            method: "GET",
+        });
+
+        return await response.json();
+    } catch (error: any) {
+        return { success: false, message: error.message || "Failed to fetch search results" };
+    }
+};
+
 export const getCategoriesService = async (): Promise<ListingResponse> => {
     try {
         const response = await fetch(`${NEXT_PUBLIC_BASE_API}/category`, {

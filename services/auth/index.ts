@@ -271,16 +271,27 @@ export const changeProfilePhotoService = async (formData: FormData): Promise<Aut
             method: "POST",
             headers: {
                 "Authorization": `Bearer ${token}`,
+                "Accept": "application/json",
             },
             body: formData,
         });
 
-        const responseData = await response.json();
+        const textResponse = await response.text();
+        let responseData;
+        try {
+            responseData = JSON.parse(textResponse);
+        } catch (e) {
+            return { success: false, message: `Server Error: ${response.status}. Expected JSON but got HTML.` };
+        }
 
         if (responseData.success && responseData.data) {
             cookieStore.set("user", JSON.stringify(responseData.data), {
                 path: "/",
             });
+        }
+
+        if (!response.ok) {
+            return { success: false, message: responseData.message || "Failed to update photo." }
         }
 
         return responseData;
