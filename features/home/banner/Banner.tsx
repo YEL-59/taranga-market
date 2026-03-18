@@ -4,6 +4,7 @@ import Image from "next/image";
 import BannerBg from "@/assets/images/banner-bg.png";
 import SearchHero from "@/clientcomponent/page";
 import { motion } from "framer-motion";
+import { useTranslations } from "next-intl";
 
 // Import your feature icons
 import Img1 from "@/assets/images/img1.png";
@@ -12,6 +13,8 @@ import Img3 from "@/assets/images/img3.png";
 import Img4 from "@/assets/images/img4.png";
 
 const Banner = () => {
+  const t = useTranslations("Banner");
+
   const features = [
     {
       id: 1,
@@ -55,11 +58,10 @@ const Banner = () => {
         {/* Heading Section */}
         <div className="max-w-4xl text-center mb-8 md:mb-10">
           <h1 className="text-[28px] sm:text-[32px] md:text-[50px] lg:text-[60px] font-semibold leading-[1.3] md:leading-[1.2] lg:leading-[80px] text-[#1a2e35] font-[Inter]">
-            A Simple Marketplace to Find and Contact Local Sellers
+            {t("heading")}
           </h1>
           <p className="mt-4 md:mt-6 text-[14px] md:text-[20px] text-gray-600 font-normal leading-[1.6] max-w-2xl mx-auto font-[Inter]">
-            Lorem ipsum dolor sit amet consectetur. Dictum congue eros at
-            ullamcorper.
+            {t("subheading")}
           </p>
         </div>
 

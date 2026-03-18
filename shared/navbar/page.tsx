@@ -1,10 +1,10 @@
 "use client";
 
-import React, { useState } from "react";
+import React from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Menu, Search, Heart } from "lucide-react"; // Accessible icons
+import { Menu, Heart } from "lucide-react";
 
 // Shadcn UI Imports
 import {
@@ -18,7 +18,6 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
@@ -28,45 +27,45 @@ import { useAuth } from "@/hooks/useAuth";
 
 import Img from "@/assets/images/nav-logo.png";
 import CommonButton from "@/common/commonButton/CommonButton";
+import { useFavorites } from "@/context/FavoritesContext";
+import { motion } from "framer-motion";
+import { useTranslations } from "next-intl";
+import LanguageSwitcher from "@/components/LanguageSwitcher";
 
 interface NavLink {
   name: string;
   href: string;
 }
 
-import { useFavorites } from "@/context/FavoritesContext";
-
-import { motion } from "framer-motion";
-
-// ... existing imports
-
 const Navbar: React.FC = () => {
   const pathname = usePathname();
-  const [language, setLanguage] = useState<"En" | "Fn">("En");
   const { favorites } = useFavorites();
   const { user, logout } = useAuth();
+  const t = useTranslations("Navbar");
 
   const navLinks: NavLink[] = [
-    { name: "Home", href: "/" },
-    // { name: "Vehicles", href: "/vehicles" },
-    // { name: "Properties", href: "/properties" },
-    // { name: "Services", href: "/services" },
-    // { name: "Jobs", href: "/jobs" },
-    { name: "All Items", href: "/all-items" },
-    //{ name: "Dashboard", href: "/dashboard" },
+    { name: t("home"), href: "/" },
+    { name: t("allItems"), href: "/all-items" },
   ];
 
   // Helper for active styles
   const getLinkStyles = (href: string) =>
     pathname === href
-      ? "text-white bg-[#227c85]" // Active state with background
-      : "text-[#565E69] hover:text-[#227c85]"; // Inactive state
+      ? "text-white bg-[#227c85]"
+      : "text-[#565E69] hover:text-[#227c85]";
 
   // Compute display name safely
-  const displayName = user?.full_name || `${user?.first_name || ""} ${user?.last_name || ""}`.trim() || "User";
+  const displayName =
+    user?.full_name ||
+    `${user?.first_name || ""} ${user?.last_name || ""}`.trim() ||
+    "User";
 
   const baseUrl = "https://raymondred.thesyndicates.team/";
-  const photoUrl = user?.profile_photo ? (user.profile_photo.startsWith('http') ? user.profile_photo : `${baseUrl}${user.profile_photo}`) : "";
+  const photoUrl = user?.profile_photo
+    ? user.profile_photo.startsWith("http")
+      ? user.profile_photo
+      : `${baseUrl}${user.profile_photo}`
+    : "";
 
   return (
     <motion.div
@@ -90,20 +89,25 @@ const Navbar: React.FC = () => {
           <div className="flex items-center gap-4">
             {navLinks.map((link) => (
               <Link
-                key={link.name}
+                key={link.href}
                 href={link.href}
                 className="relative px-4 py-2 rounded-full text-[16px] truncate font-medium transition-colors"
-              // Styles moved to children/motion or handled via class logic below
               >
                 {pathname === link.href && (
                   <motion.span
                     layoutId="nav-pill"
                     className="absolute inset-0 bg-[#227c85] rounded-full"
-                    style={{ zIndex: -1 }} // Put behind text
+                    style={{ zIndex: -1 }}
                     transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
                   />
                 )}
-                <span className={`${pathname === link.href ? "text-white" : "text-[#565E69] hover:text-[#227c85]"}`}>
+                <span
+                  className={`${
+                    pathname === link.href
+                      ? "text-white"
+                      : "text-[#565E69] hover:text-[#227c85]"
+                  }`}
+                >
                   {link.name}
                 </span>
               </Link>
@@ -113,36 +117,16 @@ const Navbar: React.FC = () => {
 
         {/* --- RIGHT: ACTIONS --- */}
         <div className="hidden lg:flex items-center gap-6 flex-1 justify-end">
-          {/* Search */}
-          {/* <div className="relative w-full max-w-[220px]">
-            <input
-              type="text"
-              placeholder="Search..."
-              className="w-full pl-4 pr-10 py-2 border border-gray-200 rounded-full text-sm focus:ring-2 focus:ring-[#227c85]/20 focus:outline-none"
-            />
-            <Search className="w-4 h-4 absolute right-3 top-2.5 text-gray-400" />
-          </div> */}
-
-          {/* Language Toggle */}
-          {/* <div className="flex items-center bg-gray-100 p-1 rounded-full">
-            {(["En", "Fn"] as const).map((lang) => (
-              <button
-                key={lang}
-                onClick={() => setLanguage(lang)}
-                className={`px-3 py-1 text-xs font-bold rounded-full transition-all ${language === lang
-                  ? "bg-[#227c85] text-white shadow-sm"
-                  : "text-gray-500"
-                  }`}
-              >
-                {lang}
-              </button>
-            ))}
-          </div> */}
+          {/* Language Switcher */}
+          <LanguageSwitcher />
 
           {/* Favorites */}
-          <Link href="/favorites" className="flex items-center gap-1.5 text-[#565E69] hover:text-[#227c85] relative">
+          <Link
+            href="/favorites"
+            className="flex items-center gap-1.5 text-[#565E69] hover:text-[#227c85] relative"
+            aria-label={t("favorites")}
+          >
             <Heart className="w-5 h-5" />
-            {/* <span className="text-sm font-medium font-[Inter]">Favorites</span> */}
             {favorites.length > 0 && (
               <span className="absolute -top-2 -right-2 flex h-4 w-4 items-center justify-center rounded-full bg-[#227c85] text-[10px] font-bold text-white">
                 {favorites.length}
@@ -170,7 +154,10 @@ const Navbar: React.FC = () => {
                   </Avatar>
                 </div>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-64 mt-2 p-2 rounded-xl shadow-xl border-slate-100">
+              <DropdownMenuContent
+                align="end"
+                className="w-64 mt-2 p-2 rounded-xl shadow-xl border-slate-100"
+              >
                 <div className="flex items-center gap-3 p-3 bg-slate-50 rounded-lg mb-2">
                   <Avatar className="h-10 w-10 border-2 border-white shadow-sm">
                     <AvatarImage src={photoUrl} alt={displayName} />
@@ -190,24 +177,35 @@ const Navbar: React.FC = () => {
 
                 <DropdownMenuSeparator className="bg-slate-100" />
 
-                <DropdownMenuItem asChild className="rounded-lg py-2.5 my-0.5 focus:bg-emerald-50 focus:text-emerald-700 cursor-pointer">
+                <DropdownMenuItem
+                  asChild
+                  className="rounded-lg py-2.5 my-0.5 focus:bg-emerald-50 focus:text-emerald-700 cursor-pointer"
+                >
                   <Link href="/profile" className="flex items-center gap-3 w-full">
-                    <div className="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-slate-600 group-focus:bg-emerald-100 group-focus:text-emerald-600">
+                    <div className="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-slate-600">
                       <UserIcon className="w-4 h-4" />
                     </div>
-                    <span className="font-medium">Profile Info</span>
+                    <span className="font-medium">{t("profileInfo")}</span>
                   </Link>
                 </DropdownMenuItem>
 
                 {user?.role === "provider" && (
                   <>
                     <DropdownMenuSeparator className="bg-slate-100" />
-                    <DropdownMenuItem asChild className="rounded-lg py-2.5 my-0.5 focus:bg-emerald-50 focus:text-emerald-700 cursor-pointer">
-                      <Link href="/dashboard" className="flex items-center gap-3 w-full">
-                        <div className="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-slate-600 group-focus:bg-emerald-100 group-focus:text-emerald-600">
+                    <DropdownMenuItem
+                      asChild
+                      className="rounded-lg py-2.5 my-0.5 focus:bg-emerald-50 focus:text-emerald-700 cursor-pointer"
+                    >
+                      <Link
+                        href="/dashboard"
+                        className="flex items-center gap-3 w-full"
+                      >
+                        <div className="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-slate-600">
                           <UserIcon className="w-4 h-4" />
                         </div>
-                        <span className="font-medium">Provider Dashboard</span>
+                        <span className="font-medium">
+                          {t("providerDashboard")}
+                        </span>
                       </Link>
                     </DropdownMenuItem>
                   </>
@@ -222,13 +220,13 @@ const Navbar: React.FC = () => {
                   <div className="w-8 h-8 rounded-full bg-red-50 flex items-center justify-center">
                     <LogOut className="w-4 h-4" />
                   </div>
-                  <span className="font-medium">Logout</span>
+                  <span className="font-medium">{t("logout")}</span>
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
           ) : (
             <Link href="/login">
-              <CommonButton label="Login/Sign up" />
+              <CommonButton label={t("login")} />
             </Link>
           )}
         </div>
@@ -253,7 +251,7 @@ const Navbar: React.FC = () => {
                 <div className="flex flex-col gap-2">
                   {navLinks.map((link) => (
                     <Link
-                      key={link.name}
+                      key={link.href}
                       href={link.href}
                       className={`px-4 py-3 rounded-xl text-lg font-medium ${getLinkStyles(
                         link.href
@@ -265,10 +263,10 @@ const Navbar: React.FC = () => {
                   <Link
                     href="/favorites"
                     className="flex items-center justify-between px-4 py-3 rounded-xl text-lg font-medium text-[#565E69] hover:bg-gray-100"
+                    aria-label={t("favorites")}
                   >
                     <div className="flex items-center gap-2">
                       <Heart className="w-6 h-6" />
-                      {/* <span>Favorites</span> */}
                     </div>
                     {favorites.length > 0 && (
                       <span className="bg-orange-500 text-white text-xs font-bold px-2.5 py-1 rounded-full">
@@ -281,21 +279,14 @@ const Navbar: React.FC = () => {
                 <hr />
 
                 {/* Mobile Language Switcher */}
-                {/* <div className="flex items-center justify-between px-2">
-                  <span className="font-medium text-gray-600">Language</span>
-                  <div className="flex bg-gray-100 p-1 rounded-lg">
-                    {["En", "Fn"].map((l) => (
-                      <button
-                        key={l}
-                        onClick={() => setLanguage(l as any)}
-                        className={`px-4 py-1 text-sm rounded ${language === l ? "bg-white shadow" : "text-gray-500"
-                          }`}
-                      >
-                        {l}
-                      </button>
-                    ))}
-                  </div>
-                </div> */}
+                <div className="flex items-center justify-between px-2">
+                  <span className="font-medium text-gray-600 text-sm">
+                    Language
+                  </span>
+                  <LanguageSwitcher />
+                </div>
+
+                <hr />
 
                 {user ? (
                   <div className="flex flex-col gap-4">
@@ -324,7 +315,7 @@ const Navbar: React.FC = () => {
                         className="flex items-center gap-3 px-4 py-4 rounded-xl text-lg font-semibold text-slate-700 bg-white border border-slate-100 hover:bg-slate-50 hover:border-emerald-200 transition-all shadow-sm"
                       >
                         <UserIcon className="w-6 h-6 text-emerald-600" />
-                        <span>Profile Info</span>
+                        <span>{t("profileInfo")}</span>
                       </Link>
                       {user?.role === "provider" && (
                         <Link
@@ -332,7 +323,7 @@ const Navbar: React.FC = () => {
                           className="flex items-center gap-3 px-4 py-4 rounded-xl text-lg font-semibold text-slate-700 bg-white border border-slate-100 hover:bg-slate-50 hover:border-emerald-200 transition-all shadow-sm"
                         >
                           <UserIcon className="w-6 h-6 text-emerald-600" />
-                          <span>Provider Dashboard</span>
+                          <span>{t("providerDashboard")}</span>
                         </Link>
                       )}
                       <button
@@ -340,13 +331,13 @@ const Navbar: React.FC = () => {
                         className="flex items-center gap-3 px-4 py-4 rounded-xl text-lg font-semibold text-red-600 bg-white border border-slate-100 hover:bg-red-50 hover:border-red-100 transition-all shadow-sm w-full text-left"
                       >
                         <LogOut className="w-6 h-6" />
-                        <span>Logout</span>
+                        <span>{t("logout")}</span>
                       </button>
                     </div>
                   </div>
                 ) : (
                   <Link href="/login">
-                    <CommonButton label="Login/Sign up" className="w-full" />
+                    <CommonButton label={t("login")} className="w-full" />
                   </Link>
                 )}
               </div>
@@ -354,8 +345,7 @@ const Navbar: React.FC = () => {
           </Sheet>
         </div>
       </nav>
-    </motion.div >
-
+    </motion.div>
   );
 };
 

@@ -1,0 +1,56 @@
+{
+  "Navbar": {
+    "home": "Home",
+    "allItems": "All Items",
+    "login": "Login / Sign up",
+    "profileInfo": "Profile Info",
+    "providerDashboard": "Provider Dashboard",
+    "logout": "Logout",
+    "favorites": "Favorites"
+  },
+  "Banner": {
+    "heading": "A Simple Marketplace to Find and Contact Local Sellers",
+    "subheading": "Discover thousands of listings from trusted local sellers across Bangladesh."
+  },
+  "Category": {
+    "title": "Explore by Category",
+    "services": "Services",
+    "job": "Job",
+    "realEstate": "Real Estate",
+    "products": "Products",
+    "vehicles": "Vehicles"
+  },
+  "ChoseUs": {
+    "title": "Why Choose Teranga Market?",
+    "localTitle": "100% Local",
+    "localDesc": "A platform designed for the Senegalese market, adapted to our reality.",
+    "verifiedTitle": "Verified Professionals",
+    "verifiedDesc": "We verify the identity of service providers for your safety.",
+    "contactTitle": "Direct Contact",
+    "contactDesc": "Chat directly on WhatsApp with sellers without intermediaries."
+  },
+  "Footer": {
+    "tagline": "Your trusted marketplace for buying and selling vehicles, properties, electronics, services, and finding job opportunities across Bangladesh.",
+    "browseCategories": "Browse Categories",
+    "quickLinks": "Quick Links",
+    "getInTouch": "Get In Touch",
+    "vehicles": "Vehicles",
+    "properties": "Properties",
+    "productsElectronics": "Products & Electronics",
+    "services": "Services",
+    "jobs": "Jobs",
+    "allItems": "All Items",
+    "home": "Home",
+    "myFavorites": "My Favorites",
+    "aboutUs": "About Us",
+    "contactUs": "Contact Us",
+    "faqs": "FAQs",
+    "helpCenter": "Help Center",
+    "businessHoursLabel": "Business Hours:",
+    "businessHours": "Saturday – Thursday · 9:00 AM – 6:00 PM (GMT+6)",
+    "copyright": "© 2025 Taranga Market. All rights reserved. Built with ❤️ for Bangladesh 🇧🇩",
+    "privacyPolicy": "Privacy Policy",
+    "termsOfService": "Terms of Service",
+    "cookiePolicy": "Cookie Policy"
+  }
+}
