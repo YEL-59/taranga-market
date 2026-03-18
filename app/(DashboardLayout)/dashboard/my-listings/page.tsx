@@ -1,13 +1,28 @@
-"use client"
+"use client";
 
-import React, { useState, useEffect } from "react"
-import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
-import { Edit2, Eye, Trash2, Plus, ChevronLeft, ChevronRight, Loader2, Rocket } from "lucide-react"
-import Image from "next/image"
-import Link from "next/link"
-import { getMyListingsService, getListingDetailsService, deleteListingService, getBoostPlansService, requestBoostService } from "@/services/listing"
-import { toast } from "sonner"
+import React, { useState, useEffect } from "react";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import {
+  Edit2,
+  Eye,
+  Trash2,
+  Plus,
+  ChevronLeft,
+  ChevronRight,
+  Loader2,
+  Rocket,
+} from "lucide-react";
+import Image from "next/image";
+import Link from "next/link";
+import {
+  getMyListingsService,
+  getListingDetailsService,
+  deleteListingService,
+  getBoostPlansService,
+  requestBoostService,
+} from "@/services/listing";
+import { toast } from "sonner";
 import {
   Dialog,
   DialogContent,
@@ -15,149 +30,152 @@ import {
   DialogTitle,
   DialogDescription,
   DialogFooter,
-} from "@/components/ui/dialog"
+} from "@/components/ui/dialog";
 
-const tabs = ["All", "Active", "Pending"]
+const tabs = ["All", "Active", "Pending"];
 
 export default function MyListingsPage() {
-  const [activeTab, setActiveTab] = useState("All")
-  const [listings, setListings] = useState<any[]>([])
-  const [boostPlans, setBoostPlans] = useState<any[]>([])
-  const [pagination, setPagination] = useState<any>(null)
-  const [isLoading, setIsLoading] = useState(true)
-  const [isBoostingItem, setIsBoostingItem] = useState<number | null>(null)
-  const [currentPage, setCurrentPage] = useState(1)
+  const [activeTab, setActiveTab] = useState("All");
+  const [listings, setListings] = useState<any[]>([]);
+  const [boostPlans, setBoostPlans] = useState<any[]>([]);
+  const [pagination, setPagination] = useState<any>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isBoostingItem, setIsBoostingItem] = useState<number | null>(null);
+  const [currentPage, setCurrentPage] = useState(1);
 
   // Details Modal State
-  const [selectedListing, setSelectedListing] = useState<any>(null)
-  const [isDetailsOpen, setIsDetailsOpen] = useState(false)
-  const [isDetailLoading, setIsDetailLoading] = useState(false)
+  const [selectedListing, setSelectedListing] = useState<any>(null);
+  const [isDetailsOpen, setIsDetailsOpen] = useState(false);
+  const [isDetailLoading, setIsDetailLoading] = useState(false);
 
   // Delete Modal State
-  const [listingToDelete, setListingToDelete] = useState<any>(null)
-  const [isDeleteOpen, setIsDeleteOpen] = useState(false)
-  const [isDeleting, setIsDeleting] = useState(false)
+  const [listingToDelete, setListingToDelete] = useState<any>(null);
+  const [isDeleteOpen, setIsDeleteOpen] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   const fetchListings = async (page: number) => {
-    setIsLoading(true)
+    setIsLoading(true);
     try {
       const [listingsResult, boostPlansResult] = await Promise.all([
         getMyListingsService(page),
-        getBoostPlansService()
-      ])
+        getBoostPlansService(),
+      ]);
 
       if (listingsResult.success && listingsResult.data) {
-        setListings(listingsResult.data.data)
-        setPagination(listingsResult.data)
+        setListings(listingsResult.data.data);
+        setPagination(listingsResult.data);
       }
-      
+
       if (boostPlansResult.success && boostPlansResult.data) {
-        setBoostPlans(boostPlansResult.data)
+        setBoostPlans(boostPlansResult.data);
       }
     } catch (error) {
-      console.error("Failed to fetch dashboard data:", error)
+      console.error("Failed to fetch dashboard data:", error);
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
-  }
+  };
 
   const handleRequestBoost = async (listingId: number, planId: number) => {
-    setIsBoostingItem(listingId)
+    setIsBoostingItem(listingId);
     try {
-      const result = await requestBoostService(listingId, planId)
+      const result = await requestBoostService(listingId, planId);
       if (result.success) {
-        toast.success("Boost request submitted successfully!")
+        toast.success("Boost request submitted successfully!");
         // Refresh listings to show updated status
-        fetchListings(currentPage)
+        fetchListings(currentPage);
       } else {
-        toast.error(result.message || "Failed to submit boost request")
+        toast.error(result.message || "Failed to submit boost request");
       }
     } catch (error) {
-      toast.error("An error occurred while requesting boost")
+      toast.error("An error occurred while requesting boost");
     } finally {
-      setIsBoostingItem(null)
+      setIsBoostingItem(null);
     }
-  }
-
+  };
 
   useEffect(() => {
-    fetchListings(currentPage)
-  }, [currentPage])
+    fetchListings(currentPage);
+  }, [currentPage]);
 
   const handleViewDetails = async (id: number) => {
-    setIsDetailLoading(true)
-    setIsDetailsOpen(true)
+    setIsDetailLoading(true);
+    setIsDetailsOpen(true);
     try {
-      const result = await getListingDetailsService(id)
+      const result = await getListingDetailsService(id);
       if (result.success) {
-        setSelectedListing(result.data)
+        setSelectedListing(result.data);
       } else {
-        toast.error(result.message)
-        setIsDetailsOpen(false)
+        toast.error(result.message);
+        setIsDetailsOpen(false);
       }
     } catch (error) {
-      toast.error("Failed to fetch listing details")
+      toast.error("Failed to fetch listing details");
     } finally {
-      setIsDetailLoading(false)
+      setIsDetailLoading(false);
     }
-  }
+  };
 
   const handleDeleteListing = async () => {
-    if (!listingToDelete) return
-    setIsDeleting(true)
+    if (!listingToDelete) return;
+    setIsDeleting(true);
     try {
-      const result = await deleteListingService(listingToDelete.id)
+      const result = await deleteListingService(listingToDelete.id);
       if (result.success) {
-        toast.success(result.message)
-        setListings(prev => prev.filter(l => l.id !== listingToDelete.id))
-        setIsDeleteOpen(false)
+        toast.success(result.message);
+        setListings((prev) => prev.filter((l) => l.id !== listingToDelete.id));
+        setIsDeleteOpen(false);
       } else {
-        toast.error(result.message)
+        toast.error(result.message);
       }
     } catch (error) {
-      toast.error("Failed to delete listing")
+      toast.error("Failed to delete listing");
     } finally {
-      setIsDeleting(false)
+      setIsDeleting(false);
     }
-  }
+  };
 
   const formatDate = (dateString: string) => {
     try {
-      const date = new Date(dateString)
+      const date = new Date(dateString);
       return date.toLocaleDateString("en-US", {
         year: "numeric",
         month: "long",
         day: "numeric",
-      })
+      });
     } catch (e) {
-      return dateString
+      return dateString;
     }
-  }
+  };
 
   const getStatusColor = (status: string) => {
     switch (status.toLowerCase()) {
-      case 'active':
-        return 'bg-emerald-50 text-emerald-600 border-emerald-100'
-      case 'pending':
-        return 'bg-amber-50 text-amber-600 border-amber-100'
-      case 'sold':
-        return 'bg-blue-50 text-blue-600 border-blue-100'
+      case "active":
+        return "bg-emerald-50 text-emerald-600 border-emerald-100";
+      case "pending":
+        return "bg-amber-50 text-amber-600 border-amber-100";
+      case "sold":
+        return "bg-blue-50 text-blue-600 border-blue-100";
       default:
-        return 'bg-slate-50 text-slate-600 border-slate-100'
+        return "bg-slate-50 text-slate-600 border-slate-100";
     }
-  }
+  };
 
-  const filteredListings = listings.filter(item => {
-    if (activeTab === "All") return true
-    return item.status.toLowerCase() === activeTab.toLowerCase()
-  })
+  const filteredListings = listings.filter((item) => {
+    if (activeTab === "All") return true;
+    return item.status.toLowerCase() === activeTab.toLowerCase();
+  });
 
   return (
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h2 className="text-2xl font-bold text-slate-800 tracking-tight">My Listings</h2>
-          <p className="text-slate-500 mt-1 text-sm">Manage, edit and monitor your business listings</p>
+          <h2 className="text-2xl font-bold text-slate-800 tracking-tight">
+            My Listings
+          </h2>
+          <p className="text-slate-500 mt-1 text-sm">
+            Manage, edit and monitor your business listings
+          </p>
         </div>
         <Link href="/dashboard/add-listing">
           <Button className="bg-[#1b7d81] hover:bg-[#16666a] gap-2 rounded-xl h-11 px-6 shadow-sm shadow-[#1b7d81]/20 transition-all active:scale-95">
@@ -172,10 +190,11 @@ export default function MyListingsPage() {
           <button
             key={tab}
             onClick={() => setActiveTab(tab)}
-            className={`px-6 py-2 rounded-xl text-sm font-bold transition-all ${activeTab === tab
-              ? "bg-[#4f6eed] text-white shadow-md shadow-blue-100"
-              : "text-slate-500 hover:bg-slate-50 hover:text-slate-700"
-              }`}
+            className={`px-6 py-2 rounded-xl text-sm font-bold transition-all ${
+              activeTab === tab
+                ? "bg-[#4f6eed] text-white shadow-md shadow-blue-100"
+                : "text-slate-500 hover:bg-slate-50 hover:text-slate-700"
+            }`}
           >
             {tab}
           </button>
@@ -191,7 +210,9 @@ export default function MyListingsPage() {
             </div>
             <div className="text-center">
               <p className="text-slate-700 font-bold">Loading Listings</p>
-              <p className="text-slate-400 text-xs mt-1">Please wait a moment...</p>
+              <p className="text-slate-400 text-xs mt-1">
+                Please wait a moment...
+              </p>
             </div>
           </div>
         ) : (
@@ -212,12 +233,22 @@ export default function MyListingsPage() {
                 <tbody className="divide-y divide-slate-50">
                   {filteredListings.length > 0 ? (
                     filteredListings.map((item) => (
-                      <tr key={item.id} className="hover:bg-slate-50/50 transition-colors group">
+                      <tr
+                        key={item.id}
+                        className="hover:bg-slate-50/50 transition-colors group"
+                      >
                         <td className="px-6 py-5">
                           <div className="flex items-center gap-4">
                             <div className="w-14 h-14 rounded-xl overflow-hidden relative border border-slate-100 bg-slate-50 shrink-0">
-                              {item.featured_image && typeof item.featured_image === 'string' && !item.featured_image.includes("No image") ? (
-                                <Image src={item.featured_image} alt={item.title} fill className="object-cover group-hover:scale-110 transition-transform duration-500" />
+                              {item.featured_image &&
+                              typeof item.featured_image === "string" &&
+                              !item.featured_image.includes("No image") ? (
+                                <Image
+                                  src={item.featured_image}
+                                  alt={item.title}
+                                  fill
+                                  className="object-cover group-hover:scale-110 transition-transform duration-500"
+                                />
                               ) : (
                                 <div className="w-full h-full flex items-center justify-center bg-slate-100 text-[#1b7d81]/30">
                                   <Plus className="w-6 h-6" />
@@ -225,7 +256,9 @@ export default function MyListingsPage() {
                               )}
                             </div>
                             <div className="min-w-0">
-                              <p className="text-sm font-bold text-slate-700 truncate max-w-[280px] group-hover:text-[#4f6eed] transition-colors">{item.title}</p>
+                              <p className="text-sm font-bold text-slate-700 truncate max-w-[280px] group-hover:text-[#4f6eed] transition-colors">
+                                {item.title}
+                              </p>
                               <p className="text-xs text-slate-400 font-medium mt-0.5 flex items-center gap-1">
                                 {item.location}
                               </p>
@@ -233,10 +266,15 @@ export default function MyListingsPage() {
                           </div>
                         </td>
                         <td className="px-6 py-5">
-                          <span className="text-sm font-extrabold text-slate-600">{item.price} CFA</span>
+                          <span className="text-sm font-extrabold text-slate-600">
+                            {item.price} CFA
+                          </span>
                         </td>
                         <td className="px-6 py-5">
-                          <Badge variant="outline" className={`${getStatusColor(item.status)} font-extrabold px-3 py-1 text-[10px] uppercase tracking-wider`}>
+                          <Badge
+                            variant="outline"
+                            className={`${getStatusColor(item.status)} font-extrabold px-3 py-1 text-[10px] uppercase tracking-wider`}
+                          >
                             {item.status}
                           </Badge>
                         </td>
@@ -253,14 +291,18 @@ export default function MyListingsPage() {
                             {item.is_boosted === 1 ? (
                               <Badge className="bg-[#1b7d81] text-white rounded-lg flex items-center gap-1.5 px-3 py-1.5 border-0 font-bold text-[10px] uppercase tracking-wider">
                                 <Rocket className="w-3 h-3" />
-                                {item.boost_status === 'active' ? 'Active Boost' : 'Boosted'}
+                                {item.boost_status === "active"
+                                  ? "Active Boost"
+                                  : "Boosted"}
                               </Badge>
                             ) : (
                               <div className="flex flex-wrap gap-1.5">
                                 {boostPlans.map((plan) => (
                                   <Button
                                     key={plan.id}
-                                    onClick={() => handleRequestBoost(item.id, plan.id)}
+                                    onClick={() =>
+                                      handleRequestBoost(item.id, plan.id)
+                                    }
                                     disabled={isBoostingItem === item.id}
                                     variant="outline"
                                     className="h-8 px-3 rounded-lg text-[10px] font-bold border-[#1b7d81]/20 text-[#1b7d81] hover:bg-[#1b7d81] hover:text-white transition-all whitespace-nowrap"
@@ -268,7 +310,7 @@ export default function MyListingsPage() {
                                     {isBoostingItem === item.id ? (
                                       <Loader2 className="w-3 h-3 animate-spin" />
                                     ) : (
-                                      plan.name.split('-')[0] // Show "48H", "72H" etc if name is "48-Hour Boost"
+                                      plan.name.split("-")[0] // Show "48H", "72H" etc if name is "48-Hour Boost"
                                     )}
                                   </Button>
                                 ))}
@@ -293,8 +335,8 @@ export default function MyListingsPage() {
                             </button>
                             <button
                               onClick={() => {
-                                setListingToDelete(item)
-                                setIsDeleteOpen(true)
+                                setListingToDelete(item);
+                                setIsDeleteOpen(true);
                               }}
                               className="p-2 text-orange-500 hover:bg-orange-50 rounded-xl transition-all active:scale-90"
                               title="Delete"
@@ -313,8 +355,13 @@ export default function MyListingsPage() {
                             <Plus className="w-10 h-10 text-slate-200" />
                           </div>
                           <div className="space-y-1">
-                            <p className="text-slate-800 font-bold">No Records Found</p>
-                            <p className="text-slate-400 text-sm max-w-[250px] mx-auto">You haven't added any listings yet or none match this filter.</p>
+                            <p className="text-slate-800 font-bold">
+                              No Records Found
+                            </p>
+                            <p className="text-slate-400 text-sm max-w-[250px] mx-auto">
+                              You haven't added any listings yet or none match
+                              this filter.
+                            </p>
                           </div>
                           <Link href="/dashboard/add-listing">
                             <Button className="bg-[#1b7d81] hover:bg-[#16666a] text-xs font-bold rounded-xl h-10 px-6">
@@ -332,7 +379,11 @@ export default function MyListingsPage() {
             {pagination && pagination.last_page > 1 && (
               <div className="mt-auto px-6 py-6 border-t border-slate-50 flex flex-col sm:flex-row items-center justify-between gap-4 bg-slate-50/30">
                 <p className="text-xs text-slate-500 font-bold uppercase tracking-wider">
-                  Showing <span className="text-[#4f6eed]">{pagination.from}</span> to <span className="text-[#4f6eed]">{pagination.to}</span> of <span className="text-slate-900">{pagination.total}</span> Total
+                  Showing{" "}
+                  <span className="text-[#4f6eed]">{pagination.from}</span> to{" "}
+                  <span className="text-[#4f6eed]">{pagination.to}</span> of{" "}
+                  <span className="text-slate-900">{pagination.total}</span>{" "}
+                  Total
                 </p>
                 <div className="flex items-center gap-1.5">
                   <Button
@@ -340,19 +391,23 @@ export default function MyListingsPage() {
                     size="icon"
                     className="w-9 h-9 rounded-xl border-slate-200 bg-white hover:bg-slate-50 transition-all active:scale-90"
                     disabled={currentPage === 1}
-                    onClick={() => setCurrentPage(prev => prev - 1)}
+                    onClick={() => setCurrentPage((prev) => prev - 1)}
                   >
                     <ChevronLeft className="w-4 h-4" />
                   </Button>
 
-                  {Array.from({ length: pagination.last_page }, (_, i) => i + 1).map((page) => (
+                  {Array.from(
+                    { length: pagination.last_page },
+                    (_, i) => i + 1,
+                  ).map((page) => (
                     <Button
                       key={page}
                       variant={currentPage === page ? "default" : "outline"}
-                      className={`w-9 h-9 rounded-xl font-bold text-xs p-0 transition-all active:scale-90 ${currentPage === page
-                        ? "bg-[#4f6eed] hover:bg-[#435ec9] border-[#4f6eed] shadow-md shadow-blue-100 text-white"
-                        : "border-slate-200 bg-white text-slate-600 hover:bg-slate-50"
-                        }`}
+                      className={`w-9 h-9 rounded-xl font-bold text-xs p-0 transition-all active:scale-90 ${
+                        currentPage === page
+                          ? "bg-[#4f6eed] hover:bg-[#435ec9] border-[#4f6eed] shadow-md shadow-blue-100 text-white"
+                          : "border-slate-200 bg-white text-slate-600 hover:bg-slate-50"
+                      }`}
                       onClick={() => setCurrentPage(page)}
                     >
                       {page}
@@ -364,7 +419,7 @@ export default function MyListingsPage() {
                     size="icon"
                     className="w-9 h-9 rounded-xl border-slate-200 bg-white hover:bg-slate-50 transition-all active:scale-90"
                     disabled={currentPage === pagination.last_page}
-                    onClick={() => setCurrentPage(prev => prev + 1)}
+                    onClick={() => setCurrentPage((prev) => prev + 1)}
                   >
                     <ChevronRight className="w-4 h-4" />
                   </Button>
@@ -387,7 +442,9 @@ export default function MyListingsPage() {
             <div className="flex flex-col">
               {/* Header Image Part */}
               <div className="relative h-64 w-full bg-slate-100">
-                {selectedListing.featured_image && typeof selectedListing.featured_image === 'string' && !selectedListing.featured_image.includes("No image") ? (
+                {selectedListing.featured_image &&
+                typeof selectedListing.featured_image === "string" &&
+                !selectedListing.featured_image.includes("No image") ? (
                   <Image
                     src={selectedListing.featured_image}
                     alt={selectedListing.title}
@@ -397,11 +454,15 @@ export default function MyListingsPage() {
                 ) : (
                   <div className="w-full h-full flex flex-col items-center justify-center text-slate-300">
                     <Plus className="w-12 h-12 mb-2" />
-                    <span className="text-sm font-bold uppercase tracking-widest">No Featured Image</span>
+                    <span className="text-sm font-bold uppercase tracking-widest">
+                      No Featured Image
+                    </span>
                   </div>
                 )}
                 <div className="absolute top-4 left-4">
-                  <Badge className={`${getStatusColor(selectedListing.status)} px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider border-0 shadow-lg`}>
+                  <Badge
+                    className={`${getStatusColor(selectedListing.status)} px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider border-0 shadow-lg`}
+                  >
                     {selectedListing.status}
                   </Badge>
                 </div>
@@ -413,12 +474,14 @@ export default function MyListingsPage() {
                   <div className="flex items-center gap-2 text-xs font-bold text-[#1b7d81] uppercase tracking-[0.2em]">
                     <span>{selectedListing.category?.name}</span>
                     <span className="w-1 h-1 rounded-full bg-slate-300"></span>
-                    <span className="text-slate-400">{selectedListing.location}</span>
+                    <span className="text-slate-400">
+                      {selectedListing.location}
+                    </span>
                   </div>
                   <h2 className="text-3xl font-extrabold text-slate-900 leading-tight">
                     {selectedListing.title}
                   </h2>
-                  <div className="text-2xl font-black text-[#4f6eed] mt-2">
+                  <div className="text-2xl font-bold text-[#4f6eed] mt-2">
                     {selectedListing.price} CFA
                   </div>
                 </div>
@@ -426,27 +489,35 @@ export default function MyListingsPage() {
                 {/* Info Grid */}
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-6 p-6 bg-slate-50 rounded-3xl border border-slate-100">
                   <div className="flex flex-col gap-1">
-                    <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Views</span>
+                    <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">
+                      Views
+                    </span>
                     <span className="text-sm font-bold text-slate-700 flex items-center gap-1.5">
                       <Eye className="w-3.5 h-3.5 text-slate-400" />
                       {selectedListing.views_count}
                     </span>
                   </div>
                   <div className="flex flex-col gap-1">
-                    <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Created On</span>
-                    <span className="text-sm font-bold text-slate-700">{formatDate(selectedListing.created_at)}</span>
+                    <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">
+                      Created On
+                    </span>
+                    <span className="text-sm font-bold text-slate-700">
+                      {formatDate(selectedListing.created_at)}
+                    </span>
                   </div>
                   <div className="flex flex-col gap-1">
-                    <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Featured</span>
+                    <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">
+                      Featured
+                    </span>
                     <span className="text-sm font-bold text-slate-700">
-                      {selectedListing.is_featured ? 'Yes' : 'No'}
+                      {selectedListing.is_featured ? "Yes" : "No"}
                     </span>
                   </div>
                 </div>
 
                 {/* Description */}
                 <div className="space-y-4">
-                  <h3 className="text-sm font-black text-slate-800 uppercase tracking-widest flex items-center gap-3">
+                  <h3 className="text-sm font-bold text-slate-800 uppercase tracking-widest flex items-center gap-3">
                     Description
                     <div className="flex-1 h-px bg-slate-100"></div>
                   </h3>
@@ -456,39 +527,54 @@ export default function MyListingsPage() {
                 </div>
 
                 {/* Additional Attributes if any */}
-                {selectedListing.values && selectedListing.values.length > 0 && (
-                  <div className="space-y-4">
-                    <h3 className="text-sm font-black text-slate-800 uppercase tracking-widest flex items-center gap-3">
-                      Specifications
-                      <div className="flex-1 h-px bg-slate-100"></div>
-                    </h3>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                      {selectedListing.values.map((v: any, idx: number) => (
-                        <div key={idx} className="flex items-center gap-3 p-3 bg-white border border-slate-50 rounded-2xl shadow-sm text-sm">
-                          <div className="w-1.5 h-1.5 rounded-full bg-[#1b7d81]"></div>
-                          <span className="text-slate-600 font-medium">{v.value}</span>
-                        </div>
-                      ))}
+                {selectedListing.values &&
+                  selectedListing.values.length > 0 && (
+                    <div className="space-y-4">
+                      <h3 className="text-sm font-bold text-slate-800 uppercase tracking-widest flex items-center gap-3">
+                        Specifications
+                        <div className="flex-1 h-px bg-slate-100"></div>
+                      </h3>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        {selectedListing.values.map((v: any, idx: number) => (
+                          <div
+                            key={idx}
+                            className="flex items-center gap-3 p-3 bg-white border border-slate-50 rounded-2xl shadow-sm text-sm"
+                          >
+                            <div className="w-1.5 h-1.5 rounded-full bg-[#1b7d81]"></div>
+                            <span className="text-slate-600 font-medium">
+                              {v.value}
+                            </span>
+                          </div>
+                        ))}
+                      </div>
                     </div>
-                  </div>
-                )}
+                  )}
 
                 {/* Image Gallery */}
-                {selectedListing.images && selectedListing.images.length > 0 && (
-                  <div className="space-y-4">
-                    <h3 className="text-sm font-black text-slate-800 uppercase tracking-widest flex items-center gap-3">
-                      Gallery
-                      <div className="flex-1 h-px bg-slate-100"></div>
-                    </h3>
-                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-                      {selectedListing.images.map((img: any) => (
-                        <div key={img.id} className="relative aspect-square rounded-2xl overflow-hidden border border-slate-100 hover:ring-2 hover:ring-[#4f6eed] transition-all cursor-pointer">
-                          <Image src={img.image_path} alt="" fill className="object-cover" />
-                        </div>
-                      ))}
+                {selectedListing.images &&
+                  selectedListing.images.length > 0 && (
+                    <div className="space-y-4">
+                      <h3 className="text-sm font-bold text-slate-800 uppercase tracking-widest flex items-center gap-3">
+                        Gallery
+                        <div className="flex-1 h-px bg-slate-100"></div>
+                      </h3>
+                      <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                        {selectedListing.images.map((img: any) => (
+                          <div
+                            key={img.id}
+                            className="relative aspect-square rounded-2xl overflow-hidden border border-slate-100 hover:ring-2 hover:ring-[#4f6eed] transition-all cursor-pointer"
+                          >
+                            <Image
+                              src={img.image_path}
+                              alt=""
+                              fill
+                              className="object-cover"
+                            />
+                          </div>
+                        ))}
+                      </div>
                     </div>
-                  </div>
-                )}
+                  )}
               </div>
             </div>
           ) : null}
@@ -503,10 +589,15 @@ export default function MyListingsPage() {
               <Trash2 className="w-8 h-8" />
             </div>
             <div className="space-y-2">
-              <h3 className="text-xl font-black text-slate-900">Are you absolutely sure?</h3>
+              <h3 className="text-xl font-bold text-slate-900">
+                Are you absolutely sure?
+              </h3>
               <p className="text-slate-500 text-sm">
-                This action cannot be undone. This will permanently delete your listing: <br />
-                <span className="font-bold text-slate-700">"{listingToDelete?.title}"</span>
+                This action cannot be undone. This will permanently delete your
+                listing: <br />
+                <span className="font-bold text-slate-700">
+                  "{listingToDelete?.title}"
+                </span>
               </p>
             </div>
             <div className="flex flex-col sm:flex-row gap-3 pt-2">
@@ -522,12 +613,16 @@ export default function MyListingsPage() {
                 disabled={isDeleting}
                 className="flex-1 bg-red-600 hover:bg-red-700 text-white rounded-xl h-12 font-bold shadow-lg shadow-red-100 active:scale-95 transition-all"
               >
-                {isDeleting ? <Loader2 className="w-4 h-4 animate-spin" /> : "Yes, Delete It"}
+                {isDeleting ? (
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                ) : (
+                  "Yes, Delete It"
+                )}
               </Button>
             </div>
           </div>
         </DialogContent>
       </Dialog>
     </div>
-  )
+  );
 }
