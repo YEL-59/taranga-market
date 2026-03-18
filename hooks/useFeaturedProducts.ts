@@ -3,12 +3,14 @@
 import { useEffect, useState } from "react";
 import { getFeaturedProductsService } from "@/services/listing";
 
-export const useFeaturedProducts = () => {
-    const [isLoading, setIsLoading] = useState(true);
+export const useFeaturedProducts = (initialData: any[] = []) => {
+    const [isLoading, setIsLoading] = useState(initialData.length === 0);
     const [error, setError] = useState<string | null>(null);
-    const [featuredProducts, setFeaturedProducts] = useState<any[]>([]);
+    const [featuredProducts, setFeaturedProducts] = useState<any[]>(initialData);
 
     useEffect(() => {
+        if (featuredProducts.length > 0) return;
+
         const fetchFeaturedProducts = async () => {
             setIsLoading(true);
             try {
@@ -26,7 +28,7 @@ export const useFeaturedProducts = () => {
         };
 
         fetchFeaturedProducts();
-    }, []);
+    }, [featuredProducts.length]);
 
     return {
         featuredProducts,

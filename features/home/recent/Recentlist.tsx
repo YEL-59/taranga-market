@@ -25,7 +25,7 @@ const ListingCard = ({ item }: { item: any }) => {
     return (
         <Card className="overflow-hidden border border-gray-100 bg-white shadow-[0_2px_10px_rgba(0,0,0,0.04)] transition-all hover:shadow-[0_4px_20px_rgba(0,0,0,0.08)] group flex flex-col h-full rounded-[20px] p-2.5">
             {/* Image Container */}
-            <div className="relative aspect-[16/10] w-full overflow-hidden bg-gray-100 rounded-[15px]">
+            <div className="relative aspect-16/10 w-full overflow-hidden bg-gray-100 rounded-[15px]">
                 {image && (
                     <Image
                         src={image}
@@ -102,8 +102,8 @@ const ListingCard = ({ item }: { item: any }) => {
     );
 };
 
-const Recentlist = () => {
-    const { recentProducts, isLoading, error } = useRecentProducts();
+const Recentlist = ({ initialData = [] }: { initialData?: any[] }) => {
+    const { recentProducts, isLoading, error } = useRecentProducts(initialData);
 
     if (error) {
         return (

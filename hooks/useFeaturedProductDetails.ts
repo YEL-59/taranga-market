@@ -3,10 +3,10 @@
 import { useEffect, useState, useCallback } from "react";
 import { getFeaturedProductDetailsService } from "@/services/listing";
 
-export const useFeaturedProductDetails = (id?: string | number) => {
+export const useFeaturedProductDetails = (id?: string | number, initialData: any = null) => {
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
-    const [productDetails, setProductDetails] = useState<any>(null);
+    const [productDetails, setProductDetails] = useState<any>(initialData);
 
     const fetchDetails = useCallback(async (productId: string | number) => {
         setIsLoading(true);
@@ -26,10 +26,11 @@ export const useFeaturedProductDetails = (id?: string | number) => {
     }, []);
 
     useEffect(() => {
-        if (id) {
+        // Only fetch if we don't have details and we HAVE an id
+        if (id && !productDetails) {
             fetchDetails(id);
         }
-    }, [id, fetchDetails]);
+    }, [id, fetchDetails, productDetails]);
 
     return {
         productDetails,

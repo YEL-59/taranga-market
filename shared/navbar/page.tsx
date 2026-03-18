@@ -181,7 +181,10 @@ const Navbar: React.FC = () => {
                   asChild
                   className="rounded-lg py-2.5 my-0.5 focus:bg-emerald-50 focus:text-emerald-700 cursor-pointer"
                 >
-                  <Link href="/profile" className="flex items-center gap-3 w-full">
+                  <Link
+                    href="/profile"
+                    className="flex items-center gap-3 w-full"
+                  >
                     <div className="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-slate-600">
                       <UserIcon className="w-4 h-4" />
                     </div>
@@ -254,7 +257,7 @@ const Navbar: React.FC = () => {
                       key={link.href}
                       href={link.href}
                       className={`px-4 py-3 rounded-xl text-lg font-medium ${getLinkStyles(
-                        link.href
+                        link.href,
                       )}`}
                     >
                       {link.name}

@@ -11,11 +11,15 @@ import { Card, CardContent } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
 import { useFavorites } from '@/context/FavoritesContext';
 
-const FeaturedDetails = () => {
+interface FeaturedDetailsProps {
+    initialData?: any;
+}
+
+const FeaturedDetails = ({ initialData }: FeaturedDetailsProps) => {
     const searchParams = useSearchParams();
     const router = useRouter();
     const id = searchParams.get('id');
-    const { productDetails, isLoading, error } = useFeaturedProductDetails(id || undefined);
+    const { productDetails, isLoading, error } = useFeaturedProductDetails(id || undefined, initialData);
     const { toggleFavorite, isFavorite, isCustomer } = useFavorites();
     const [activeImage, setActiveImage] = useState<string>('');
 
@@ -27,7 +31,7 @@ const FeaturedDetails = () => {
         }
     }, [productDetails]);
 
-    if (isLoading) {
+    if (isLoading && !productDetails) {
         return (
             <div className="flex flex-col items-center justify-center min-h-[60vh]">
                 <Loader2 className="h-12 w-12 animate-spin text-[#2A8E8E] mb-4" />
@@ -99,7 +103,7 @@ const FeaturedDetails = () => {
                     {/* Left Column: Images & Main Info */}
                     <div className="lg:col-span-8 space-y-8">
                         {/* Main Image Display */}
-                        <div className="relative aspect-[16/9] w-full rounded-[32px] overflow-hidden bg-white shadow-sm border border-gray-100">
+                        <div className="relative aspect-video w-full rounded-[32px] overflow-hidden bg-white shadow-sm border border-gray-100">
                             {activeImage && (
                                 <Image
                                     src={activeImage}

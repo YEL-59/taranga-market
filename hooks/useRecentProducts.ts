@@ -3,12 +3,14 @@
 import { useEffect, useState } from "react";
 import { getRecentProductsService } from "@/services/listing";
 
-export const useRecentProducts = () => {
-    const [isLoading, setIsLoading] = useState(true);
+export const useRecentProducts = (initialData: any[] = []) => {
+    const [isLoading, setIsLoading] = useState(initialData.length === 0);
     const [error, setError] = useState<string | null>(null);
-    const [recentProducts, setRecentProducts] = useState<any[]>([]);
+    const [recentProducts, setRecentProducts] = useState<any[]>(initialData);
 
     useEffect(() => {
+        if (recentProducts.length > 0) return;
+
         const fetchRecentProducts = async () => {
             setIsLoading(true);
             try {
@@ -26,7 +28,7 @@ export const useRecentProducts = () => {
         };
 
         fetchRecentProducts();
-    }, []);
+    }, [recentProducts.length]);
 
     return {
         recentProducts,

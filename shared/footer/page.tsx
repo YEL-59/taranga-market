@@ -144,7 +144,7 @@ const Footer = () => {
             </h3>
             <div className="flex flex-col gap-5">
               <div className="flex items-start gap-3.5">
-                <MapPin className="w-5 h-5 text-[#1D7E87] mt-0.5 flex-shrink-0" />
+                <MapPin className="w-5 h-5 text-[#1D7E87] mt-0.5 shrink-0" />
                 <span className="text-gray-400 text-[14.5px] leading-snug">
                   House 123, Road 12, Dhanmondi
                   <br />
