@@ -100,6 +100,48 @@ export const createListingService = async (formData: FormData): Promise<ListingR
     }
 };
 
+export const getProductsByCategoryService = async (categoryId: number) => {
+    try {
+        const response = await fetch(`${NEXT_PUBLIC_BASE_API}/get-product-data/by-category/${categoryId}`, {
+            method: 'GET',
+            headers: {
+                "Accept": "application/json",
+            },
+            next: { revalidate: 60, tags: ['categories', `category-${categoryId}`] }
+        });
+
+        if (!response.ok) {
+            return { success: false, message: "Failed to fetch category data." };
+        }
+
+        const data = await response.json();
+        return data; // returning the standard response
+    } catch (error: any) {
+        return { success: false, message: error.message || "Something went wrong" };
+    }
+};
+
+export const getSlidersService = async () => {
+    try {
+        const response = await fetch(`${NEXT_PUBLIC_BASE_API}/get-slider`, {
+            method: 'GET',
+            headers: {
+                "Accept": "application/json",
+            },
+            next: { revalidate: 60, tags: ['sliders'] }
+        });
+
+        if (!response.ok) {
+            return { success: false, message: "Failed to fetch sliders data." };
+        }
+
+        const data = await response.json();
+        return data; 
+    } catch (error: any) {
+        return { success: false, message: error.message || "Something went wrong" };
+    }
+};
+
 export const searchListingsService = async (title: string): Promise<ListingResponse> => {
     try {
         const response = await fetch(`${NEXT_PUBLIC_BASE_API}/search?title=${encodeURIComponent(title)}`, {

@@ -6,7 +6,8 @@ import { useSearchParams, useRouter } from 'next/navigation';
 import FilterSidebar from './components/FilterSidebar';
 import VehicleCard from './components/VehicleCard';
 import VehicleDetailView from './components/VehicleDetailView';
-import { vehicleData } from './data/vehicles';
+import { getProductsByCategoryService } from '@/services/listing';
+import { Loader2 } from 'lucide-react';
 import {
     Sheet,
     SheetContent,
@@ -21,6 +22,10 @@ const Vehicle = () => {
     const [view, setView] = useState<'list' | 'detail'>('list');
     const [selectedItem, setSelectedItem] = useState<any>(null);
     const [isMobileFilterOpen, setIsMobileFilterOpen] = useState(false);
+    
+    // API State
+    const [vehicleDataState, setVehicleDataState] = useState<any[]>([]);
+    const [isLoading, setIsLoading] = useState(true);
     const [filters, setFilters] = useState({
         query: '',
         city: '',
@@ -37,39 +42,62 @@ const Vehicle = () => {
     // Check URL params on mount or change
     React.useEffect(() => {
         const id = searchParams.get('id');
-        if (id) {
-            const item = vehicleData.find(v => v.id === parseInt(id));
+        if (id && vehicleDataState.length > 0) {
+            const item = vehicleDataState.find(v => v.id === parseInt(id));
             if (item) {
                 setSelectedItem(item);
                 setView('detail');
             }
-        } else {
+        } else if (!id) {
             // If no ID, always revert to list view
             setView('list');
             setSelectedItem(null);
         }
-    }, [searchParams]);
+    }, [searchParams, vehicleDataState]);
+
+    React.useEffect(() => {
+        const fetchVehicles = async () => {
+            setIsLoading(true);
+            try {
+                const response = await getProductsByCategoryService(5); 
+                if (response.success && response.data?.listings) {
+                    setVehicleDataState(response.data.listings);
+                } else {
+                    setVehicleDataState([]);
+                }
+            } catch (error) {
+                console.error("Error fetching vehicles:", error);
+            } finally {
+                setIsLoading(false);
+            }
+        };
+        fetchVehicles();
+    }, []);
 
     // ... filteredData logic remains same ...
     const filteredData = useMemo(() => {
-        return vehicleData.filter(item => {
+        return vehicleDataState.filter(item => {
             const matchesQuery = !filters.query || item.title.toLowerCase().includes(filters.query.toLowerCase());
-            const matchesCity = !filters.city || item.location === filters.city;
-            const matchesMake = !filters.make || item.meta.make === filters.make;
-            const matchesModel = !filters.model || item.meta.model === filters.model;
-            const matchesYear = !filters.year || item.meta.year === filters.year;
-            const matchesTransmission = filters.transmission.length === 0 || filters.transmission.includes(item.meta.transmission);
-            const matchesFuelType = !filters.fuelType || item.meta.fuelType === filters.fuelType;
+            const itemCity = item.location || item.city || '';
+            const matchesCity = !filters.city || itemCity === filters.city;
             
-            const matchesMinPrice = !filters.minPrice || item.numericPrice >= parseInt(filters.minPrice);
-            const matchesMaxPrice = !filters.maxPrice || item.numericPrice <= parseInt(filters.maxPrice);
+            const metaObj = item.meta || {};
+            const matchesMake = !filters.make || metaObj.make === filters.make;
+            const matchesModel = !filters.model || metaObj.model === filters.model;
+            const matchesYear = !filters.year || metaObj.year === filters.year;
+            const matchesTransmission = filters.transmission.length === 0 || filters.transmission.includes(metaObj.transmission);
+            const matchesFuelType = !filters.fuelType || metaObj.fuelType === filters.fuelType;
+            
+            const numericPrice = typeof item.price === 'string' ? parseFloat(item.price.replace(/[^\d.-]/g, '')) || 0 : (item.price || 0);
+            const matchesMinPrice = !filters.minPrice || numericPrice >= parseInt(filters.minPrice);
+            const matchesMaxPrice = !filters.maxPrice || numericPrice <= parseInt(filters.maxPrice);
 
-            const matchesMileage = !filters.mileage || item.meta.mileage.includes(filters.mileage.split(' ')[0]);
+            const matchesMileage = !filters.mileage || (metaObj.mileage && metaObj.mileage.includes(filters.mileage.split(' ')[0]));
 
             return matchesQuery && matchesCity && matchesMake && matchesModel && matchesYear && 
                    matchesTransmission && matchesFuelType && matchesMinPrice && matchesMaxPrice;
         });
-    }, [filters]);
+    }, [filters, vehicleDataState]);
 
     const handleViewDetail = (item: any) => {
         setSelectedItem(item);
@@ -158,8 +186,12 @@ const Vehicle = () => {
                                 />
                             </div>
 
-                            <div className="flex-1 space-y-12">
-                                {filteredData.length > 0 ? (
+                        <div className="flex-1 space-y-12">
+                                {isLoading ? (
+                                    <div className="flex justify-center items-center py-32">
+                                        <Loader2 className="animate-spin w-10 h-10 text-[#1D7E87]" />
+                                    </div>
+                                ) : filteredData.length > 0 ? (
                                     <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6 lg:gap-8">
                                         {filteredData.map((item) => (
                                             <VehicleCard 

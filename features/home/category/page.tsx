@@ -40,7 +40,7 @@ const Category = () => {
     },
     {
       key: "job" as const,
-      //  href: "/jobs",
+      // href: "/jobs",
       href: "/",
       bgColor: "bg-[#DBEAFE]",
       icon: (
@@ -134,7 +134,7 @@ const Category = () => {
     },
     {
       key: "vehicles" as const,
-      // href: "/vehicles",
+      //  href: "/vehicles",
       href: "/",
       bgColor: "bg-[#FED7AA]",
       icon: (

@@ -12,7 +12,15 @@ interface ServiceDetailViewProps {
 }
 
 const ServiceDetailView: React.FC<ServiceDetailViewProps> = ({ item, onBack }) => {
-    const [mainImage, setMainImage] = useState(item.image);
+    const image = item.featured_image ? (item.featured_image.startsWith('http') ? item.featured_image : `https://raymondred.thesyndicates.team/${item.featured_image}`) : item.image || '';
+    const [mainImage, setMainImage] = useState(image);
+    
+    // safe fallbacks
+    const thumbs = item.thumbs || [image];
+    const seller = item.seller || { name: 'Verified Seller', since: 'Member since 2024', image: 'https://images.unsplash.com/photo-1599566150163-29194dcaad36?q=80&w=200&auto=format&fit=crop' };
+    const meta = item.meta || { experience: '2+ years', availability: 'Full Time', rating: '4.5' };
+    const location = item.location || item.city || '';
+    const priceStr = item.price ? (item.price.toString().includes('CFA') ? item.price : `${Number(item.price).toLocaleString()} CFA`) : 'Price on request';
 
     return (
         <div className="w-full py-8 animate-in fade-in duration-500">
@@ -26,21 +34,23 @@ const ServiceDetailView: React.FC<ServiceDetailViewProps> = ({ item, onBack }) =
                     {/* Gallery Section */}
                     <div className="space-y-4">
                         <div className="relative aspect-[16/9] w-full rounded-2xl overflow-hidden bg-gray-100 shadow-sm">
-                            <Image src={mainImage} alt={item.title} fill className="object-cover transition-all duration-300" />
+                            {mainImage && <Image src={mainImage} alt={item.title || "Image"} fill className="object-cover transition-all duration-300" />}
                         </div>
-                        <div className="grid grid-cols-4 gap-4">
-                            {item.thumbs.map((thumb: string, idx: number) => (
-                                <div 
-                                    key={idx} 
-                                    onClick={() => setMainImage(thumb)}
-                                    className={`relative aspect-[4/3] rounded-xl overflow-hidden bg-gray-100 cursor-pointer transition-all hover:opacity-80 ${
-                                        mainImage === thumb ? 'ring-2 ring-[#2A8E8E]' : 'border border-gray-100'
-                                    }`}
-                                >
-                                    <Image src={thumb} alt={`thumb-${idx}`} fill className="object-cover" />
-                                </div>
-                            ))}
-                        </div>
+                        {thumbs.length > 1 && (
+                            <div className="grid grid-cols-4 gap-4">
+                                {thumbs.map((thumb: string, idx: number) => (
+                                    <div 
+                                        key={idx} 
+                                        onClick={() => setMainImage(thumb)}
+                                        className={`relative aspect-[4/3] rounded-xl overflow-hidden bg-gray-100 cursor-pointer transition-all hover:opacity-80 ${
+                                            mainImage === thumb ? 'ring-2 ring-[#2A8E8E]' : 'border border-gray-100'
+                                        }`}
+                                    >
+                                        <Image src={thumb} alt={`thumb-${idx}`} fill className="object-cover" />
+                                    </div>
+                                ))}
+                            </div>
+                        )}
                     </div>
 
                     {/* Content Section */}
@@ -50,10 +60,10 @@ const ServiceDetailView: React.FC<ServiceDetailViewProps> = ({ item, onBack }) =
                                 <h1 className="text-2xl lg:text-3xl font-extrabold text-[#1B2232] mb-3 leading-tight">{item.title}</h1>
                                 <div className="flex items-center gap-2 text-gray-400 text-[14px]">
                                     <MapPin className="w-4 h-4" />
-                                    <span>{item.location}</span>
+                                    <span>{location}</span>
                                 </div>
                             </div>
-                            <span className="text-2xl lg:text-3xl font-bold text-[#F97316] whitespace-nowrap">{item.price}</span>
+                            <span className="text-2xl lg:text-3xl font-bold text-[#F97316] whitespace-nowrap">{priceStr}</span>
                         </div>
 
                         {/* Service Features */}
@@ -61,17 +71,17 @@ const ServiceDetailView: React.FC<ServiceDetailViewProps> = ({ item, onBack }) =
                             <div className="bg-gray-50 rounded-2xl p-4 flex flex-col items-center justify-center gap-2 border border-gray-100/50">
                                 <Briefcase className="w-6 h-6 text-[#1D7E87]" />
                                 <span className="text-[12px] text-gray-400 uppercase font-bold tracking-wider">Experience</span>
-                                <span className="text-[16px] font-bold text-gray-700">{item.meta.experience}</span>
+                                <span className="text-[16px] font-bold text-gray-700">{meta.experience}</span>
                             </div>
                             <div className="bg-gray-50 rounded-2xl p-4 flex flex-col items-center justify-center gap-2 border border-gray-100/50">
                                 <Clock className="w-6 h-6 text-[#1D7E87]" />
                                 <span className="text-[12px] text-gray-400 uppercase font-bold tracking-wider">Availability</span>
-                                <span className="text-[16px] font-bold text-gray-700">{item.meta.availability}</span>
+                                <span className="text-[16px] font-bold text-gray-700">{meta.availability}</span>
                             </div>
                             <div className="bg-gray-50 rounded-2xl p-4 flex flex-col items-center justify-center gap-2 border border-gray-100/50">
                                 <Star className="w-6 h-6 text-yellow-400 fill-yellow-400" />
                                 <span className="text-[12px] text-gray-400 uppercase font-bold tracking-wider">Rating</span>
-                                <span className="text-[16px] font-bold text-gray-700">{item.meta.rating}</span>
+                                <span className="text-[16px] font-bold text-gray-700">{meta.rating}</span>
                             </div>
                         </div>
 
@@ -110,11 +120,11 @@ const ServiceDetailView: React.FC<ServiceDetailViewProps> = ({ item, onBack }) =
                     <Card className="rounded-2xl border-gray-100 shadow-sm p-6 lg:p-8 sticky top-24">
                         <div className="flex items-center gap-5 mb-10">
                             <div className="relative w-16 h-16 rounded-full overflow-hidden bg-gray-100 border-2 border-white shadow-sm">
-                                <Image src={item.seller.image} alt={item.seller.name} fill className="object-cover" />
+                                {seller.image && <Image src={seller.image} alt={seller.name} fill className="object-cover" />}
                             </div>
                             <div>
-                                <h3 className="text-[18px] font-extrabold text-[#1B2232]">{item.seller.name}</h3>
-                                <p className="text-gray-400 text-[13px]">{item.seller.since}</p>
+                                <h3 className="text-[18px] font-extrabold text-[#1B2232]">{seller.name}</h3>
+                                <p className="text-gray-400 text-[13px]">{seller.since}</p>
                             </div>
                         </div>
 

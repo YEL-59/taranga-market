@@ -5,7 +5,7 @@ import { ChevronLeft, SlidersHorizontal, Settings } from 'lucide-react';
 import FilterSidebar from './components/FilterSidebar';
 import ServiceCard from './components/ServiceCard';
 import ServiceDetailView from './components/ServiceDetailView';
-import { serviceData } from './data/services';
+import { getProductsByCategoryService } from '@/services/listing';
 import {
     Sheet,
     SheetContent,
@@ -25,6 +25,10 @@ const Services = () => {
     const [selectedItem, setSelectedItem] = useState<any>(null);
     const [isMobileFilterOpen, setIsMobileFilterOpen] = useState(false);
     
+    // API State
+    const [serviceDataState, setServiceDataState] = useState<any[]>([]);
+    const [isLoading, setIsLoading] = useState(true);
+    
     // ... filters ...
     const [filters, setFilters] = useState({
         city: '',
@@ -36,28 +40,54 @@ const Services = () => {
     // Check URL params
     React.useEffect(() => {
         const id = searchParams.get('id');
-        if (id) {
-            const item = serviceData.find(v => v.id === parseInt(id));
+        if (id && serviceDataState.length > 0) {
+            const item = serviceDataState.find(v => v.id === parseInt(id));
             if (item) {
                 setSelectedItem(item);
                 setView('detail');
             }
-        } else {
+        } else if (!id) {
             setView('list');
             setSelectedItem(null);
         }
-    }, [searchParams]);
+    }, [searchParams, serviceDataState]);
+
+    React.useEffect(() => {
+        const fetchCategories = async () => {
+            setIsLoading(true);
+            try {
+                // Fetch Services (category_id = 1)
+                const response = await getProductsByCategoryService(1);
+                if (response.success && response.data?.listings) {
+                    setServiceDataState(response.data.listings);
+                } else {
+                    setServiceDataState([]);
+                }
+            } catch (error) {
+                console.error("Error fetching services:", error);
+            } finally {
+                setIsLoading(false);
+            }
+        };
+        fetchCategories();
+    }, []);
+
 
     const filteredData = useMemo(() => {
-        return serviceData.filter(item => {
-            const matchesCity = !filters.city || item.city === filters.city;
-            const matchesMinPrice = !filters.minPrice || item.numericPrice >= parseInt(filters.minPrice);
-            const matchesMaxPrice = !filters.maxPrice || item.numericPrice <= parseInt(filters.maxPrice);
-            const matchesCategory = !filters.category || item.meta.category === filters.category;
+        return serviceDataState.filter(item => {
+            const itemCity = item.location || item.city || '';
+            const matchesCity = !filters.city || itemCity === filters.city;
+            
+            const numericPrice = typeof item.price === 'string' ? parseFloat(item.price.replace(/[^\d.-]/g, '')) || 0 : (item.price || 0);
+            const matchesMinPrice = !filters.minPrice || numericPrice >= parseInt(filters.minPrice);
+            const matchesMaxPrice = !filters.maxPrice || numericPrice <= parseInt(filters.maxPrice);
+            
+            const categoryName = item.subcategory?.name || item.meta?.category || '';
+            const matchesCategory = !filters.category || categoryName === filters.category;
 
             return matchesCity && matchesMinPrice && matchesMaxPrice && matchesCategory;
         });
-    }, [filters]);
+    }, [filters, serviceDataState]);
 
     const handleViewDetail = (item: any) => {
         setSelectedItem(item);
@@ -141,7 +171,11 @@ const Services = () => {
                             </div>
 
                             <div className="flex-1 space-y-12">
-                                {filteredData.length > 0 ? (
+                                {isLoading ? (
+                                    <div className="flex justify-center items-center py-32">
+                                        <div className="animate-spin w-10 h-10 border-4 border-[#1D7E87] border-t-transparent rounded-full" />
+                                    </div>
+                                ) : filteredData.length > 0 ? (
                                     <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6 lg:gap-8">
                                         {filteredData.map((item) => (
                                             <ServiceCard 
