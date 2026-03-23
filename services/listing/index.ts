@@ -100,6 +100,23 @@ export const createListingService = async (formData: FormData): Promise<ListingR
     }
 };
 
+export const getHeroSectionService = async (): Promise<ListingResponse> => {
+    try {
+        const response = await fetch(`${NEXT_PUBLIC_BASE_API}/get-hero-section`, {
+            method: "GET",
+        });
+
+        if (!response.ok) {
+            return { success: false, message: `Failed to fetch hero section: ${response.status}` };
+        }
+
+        return await response.json();
+    } catch (error: any) {
+        return { success: false, message: error.message || "Failed to fetch hero section" };
+    }
+};
+
+
 export const getProductsByCategoryService = async (categoryId: number) => {
     try {
         const response = await fetch(`${NEXT_PUBLIC_BASE_API}/get-product-data/by-category/${categoryId}`, {
@@ -142,9 +159,14 @@ export const getSlidersService = async () => {
     }
 };
 
-export const searchListingsService = async (title: string): Promise<ListingResponse> => {
+export const searchListingsService = async (title: string, city: string = "", state: string = ""): Promise<ListingResponse> => {
     try {
-        const response = await fetch(`${NEXT_PUBLIC_BASE_API}/search?title=${encodeURIComponent(title)}`, {
+        const params = new URLSearchParams();
+        if (title) params.set("title", title);
+        if (city) params.set("city", city);
+        if (state) params.set("state", state);
+
+        const response = await fetch(`${NEXT_PUBLIC_BASE_API}/search?${params.toString()}`, {
             method: "GET",
         });
 
@@ -153,6 +175,7 @@ export const searchListingsService = async (title: string): Promise<ListingRespo
         return { success: false, message: error.message || "Failed to fetch search results" };
     }
 };
+
 
 export const getCategoriesService = async (): Promise<ListingResponse> => {
     try {
