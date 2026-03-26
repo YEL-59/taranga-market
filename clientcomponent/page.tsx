@@ -22,7 +22,7 @@ const SearchHero: React.FC = () => {
   const [isSearching, setIsSearching] = useState(false);
   const [showDropdown, setShowDropdown] = useState(false);
 
-  const searchContainerRef = useRef<HTMLDivElement>(null);
+  const searchContainerRef = useRef<HTMLFormElement>(null);
 
 
 
@@ -206,7 +206,7 @@ const SearchHero: React.FC = () => {
                             <span className="text-[10px] font-bold bg-[#ff6b3d]/10 text-[#ff6b3d] px-2 py-0.5 rounded uppercase">{item.category?.name || "Product"}</span>
                             <span className="text-[10px] font-bold text-gray-400">•</span>
                             <span className="text-xs font-bold text-gray-400 truncate flex items-center gap-1">
-                              <MapPin className="w-3 h-3" /> {item.city || item.location}
+                              <MapPin className="w-3 h-3" /> {item.city} , {item.state}
                             </span>
                           </div>
                         </div>

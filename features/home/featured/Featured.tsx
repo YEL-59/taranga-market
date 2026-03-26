@@ -92,7 +92,7 @@ const FeaturedCard = ({ item }: { item: any }) => {
                     <div className="flex items-center justify-between mb-4">
                         <div className="flex items-center gap-1.5 text-[12.5px] text-gray-500">
                             <MapPin className="h-4 w-4 text-gray-400" />
-                            <span className="truncate">{item.location}</span>
+                            <span className="truncate">{item.city} , {item.state}</span>
                         </div>
                         <span className="text-[13.5px] font-bold text-[#F97316]">
                             {price}

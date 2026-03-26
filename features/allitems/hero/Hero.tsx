@@ -21,7 +21,7 @@ const Hero = () => {
     const [isSearching, setIsSearching] = useState(false);
     const [showDropdown, setShowDropdown] = useState(false);
 
-    const searchContainerRef = useRef<HTMLDivElement>(null);
+    const searchContainerRef = useRef<HTMLFormElement>(null);
 
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {
@@ -211,7 +211,7 @@ const Hero = () => {
                                                 </div>
                                                 <div className="flex flex-col min-w-0 flex-1">
                                                     <h4 className="text-sm font-bold text-gray-800 truncate group-hover:text-[#227c85] transition-colors">{item.title}</h4>
-                                                    <span className="text-xs text-gray-500 truncate mt-1">{item.category?.name || "Product"} • {item.location}</span>
+                                                    <span className="text-xs text-gray-500 truncate mt-1">{item.category?.name || "Product"} • {item.city} , {item.state}</span>
                                                 </div>
                                                 <div className="text-right shrink-0">
                                                     <span className="text-sm font-extrabold text-[#ff6b3d]">{item.price ? `${item.price} CFA` : 'N/A'}</span>
