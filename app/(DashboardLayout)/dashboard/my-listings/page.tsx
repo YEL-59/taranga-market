@@ -3,10 +3,10 @@
 import React, { useState, useEffect } from "react"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import { Edit2, Eye, Trash2, Plus, ChevronLeft, ChevronRight, Loader2, Rocket } from "lucide-react"
+import { Edit2, Eye, Trash2, Plus, ChevronLeft, ChevronRight, Loader2, Rocket, BarChart3, Info, CreditCard } from "lucide-react"
 import Image from "next/image"
 import Link from "next/link"
-import { getMyListingsService, getListingDetailsService, deleteListingService, getBoostPlansService, requestBoostService } from "@/services/listing"
+import { getMyListingsService, getListingDetailsService, deleteListingService, getBoostPlansService, requestBoostService, getBoostStatsService } from "@/services/listing"
 import { toast } from "sonner"
 import {
   Dialog,
@@ -38,6 +38,30 @@ export default function MyListingsPage() {
   const [isDeleteOpen, setIsDeleteOpen] = useState(false)
   const [isDeleting, setIsDeleting] = useState(false)
 
+  // Boost Stats Modal State
+  const [isStatsOpen, setIsStatsOpen] = useState(false)
+  const [statsLoading, setStatsLoading] = useState(false)
+  const [currentStats, setCurrentStats] = useState<any>(null)
+
+  const handleViewBoostStats = async (listingId: number) => {
+    setStatsLoading(true)
+    setIsStatsOpen(true)
+    try {
+      const result = await getBoostStatsService(listingId)
+      if (result.success) {
+        setCurrentStats(result.data)
+      } else {
+        toast.error(result.message || "Failed to fetch boost stats")
+        setIsStatsOpen(false)
+      }
+    } catch (error) {
+      toast.error("An error occurred")
+      setIsStatsOpen(false)
+    } finally {
+      setStatsLoading(false)
+    }
+  }
+
   const fetchListings = async (page: number) => {
     setIsLoading(true)
     try {
@@ -50,7 +74,7 @@ export default function MyListingsPage() {
         setListings(listingsResult.data.data)
         setPagination(listingsResult.data)
       }
-      
+
       if (boostPlansResult.success && boostPlansResult.data) {
         setBoostPlans(boostPlansResult.data)
       }
@@ -61,13 +85,38 @@ export default function MyListingsPage() {
     }
   }
 
+  // Boost Modal State
+  const [isBoostModalOpen, setIsBoostModalOpen] = useState(false)
+  const [selectedPlanForBoost, setSelectedPlanForBoost] = useState<any>(null)
+  const [selectedListingForBoost, setSelectedListingForBoost] = useState<number | null>(null)
+  const [selectedPaymentMethod, setSelectedPaymentMethod] = useState<string>("orange_money")
+
   const handleRequestBoost = async (listingId: number, planId: number) => {
+    const plan = boostPlans.find(p => p.id === planId)
+    // If plan is not free, show payment selection modal first
+    if (plan && parseFloat(plan.price) > 0) {
+      setSelectedListingForBoost(listingId)
+      setSelectedPlanForBoost(plan)
+      setIsBoostModalOpen(true)
+      return
+    }
+
+    // Otherwise (free boost), proceed immediately
+    executeBoostRequest(listingId, planId)
+  }
+
+  const executeBoostRequest = async (listingId: number, planId: number, paymentMethod?: string) => {
     setIsBoostingItem(listingId)
     try {
-      const result = await requestBoostService(listingId, planId)
+      const result = await requestBoostService(listingId, planId, paymentMethod)
       if (result.success) {
-        toast.success("Boost request submitted successfully!")
-        // Refresh listings to show updated status
+        if (result.data?.payment_url) {
+          toast.success("Redirecting to payment...")
+          window.location.href = result.data.payment_url
+          return
+        }
+        toast.success(result.message || "Boost activated successfully!")
+        setIsBoostModalOpen(false)
         fetchListings(currentPage)
       } else {
         toast.error(result.message || "Failed to submit boost request")
@@ -251,30 +300,41 @@ export default function MyListingsPage() {
                         </td>
                         <td className="px-6 py-5">
                           <div className="flex items-center gap-1.5">
-                            {item.is_boosted === 1 ? (
-                              <Badge className="bg-[#1b7d81] text-white rounded-lg flex items-center gap-1.5 px-3 py-1.5 border-0 font-bold text-[10px] uppercase tracking-wider">
-                                <Rocket className="w-3 h-3" />
-                                {item.boost_status === 'active' ? 'Active Boost' : 'Boosted'}
-                              </Badge>
-                            ) : (
-                              <div className="flex flex-wrap gap-1.5">
-                                {boostPlans.map((plan) => (
-                                  <Button
-                                    key={plan.id}
-                                    onClick={() => handleRequestBoost(item.id, plan.id)}
-                                    disabled={isBoostingItem === item.id}
-                                    variant="outline"
-                                    className="h-8 px-3 rounded-lg text-[10px] font-bold border-[#1b7d81]/20 text-[#1b7d81] hover:bg-[#1b7d81] hover:text-white transition-all whitespace-nowrap"
+                            <div className="flex flex-col gap-2">
+                              {item.is_boosted === 1 ? (
+                                <div className="flex flex-col gap-2">
+                                  <Badge className="bg-[#1b7d81] text-white rounded-lg flex items-center gap-1.5 px-3 py-1.5 border-0 font-bold text-[10px] uppercase tracking-wider w-fit">
+                                    <Rocket className="w-3 h-3" />
+                                    {item.boost_status === 'active' ? 'Active Boost' : 'Boosted'}
+                                  </Badge>
+                                  <button
+                                    onClick={() => handleViewBoostStats(item.id)}
+                                    className="flex items-center gap-1.5 text-[10px] font-black text-[#1b7d81] uppercase tracking-widest hover:underline transition-all"
                                   >
-                                    {isBoostingItem === item.id ? (
-                                      <Loader2 className="w-3 h-3 animate-spin" />
-                                    ) : (
-                                      plan.name.split('-')[0] // Show "48H", "72H" etc if name is "48-Hour Boost"
-                                    )}
-                                  </Button>
-                                ))}
-                              </div>
-                            )}
+                                    <BarChart3 className="w-3 h-3" />
+                                    View Stats
+                                  </button>
+                                </div>
+                              ) : (
+                                <div className="flex flex-wrap gap-1.5">
+                                  {boostPlans.map((plan) => (
+                                    <Button
+                                      key={plan.id}
+                                      onClick={() => handleRequestBoost(item.id, plan.id)}
+                                      disabled={isBoostingItem === item.id}
+                                      variant="outline"
+                                      className="h-8 px-3 rounded-lg text-[10px] font-bold border-[#1b7d81]/20 text-[#1b7d81] hover:bg-[#1b7d81] hover:text-white transition-all whitespace-nowrap"
+                                    >
+                                      {isBoostingItem === item.id ? (
+                                        <Loader2 className="w-3 h-3 animate-spin" />
+                                      ) : (
+                                        plan.name.split('-')[0] // Show "48H", "72H" etc if name is "48-Hour Boost"
+                                      )}
+                                    </Button>
+                                  ))}
+                                </div>
+                              )}
+                            </div>
                           </div>
                         </td>
                         <td className="px-6 py-5 text-sm text-slate-400 font-semibold whitespace-nowrap">
@@ -529,6 +589,195 @@ export default function MyListingsPage() {
           </div>
         </DialogContent>
       </Dialog>
+      {/* Boost Activation Modal */}
+      <Dialog open={isBoostModalOpen} onOpenChange={setIsBoostModalOpen}>
+        <DialogContent className="max-w-md p-0 rounded-[32px] border-none shadow-2xl overflow-hidden">
+          <div className="relative h-32 bg-[#1b7d81] flex items-center justify-center">
+            <Rocket className="w-12 h-12 text-white/20 absolute right-6 top-6 rotate-[25deg]" />
+            <div className="text-center relative z-10">
+              <h3 className="text-xl font-black text-white uppercase tracking-widest">Activate Boost</h3>
+              <p className="text-white/60 text-[10px] font-bold uppercase tracking-wider mt-1">{selectedPlanForBoost?.name}</p>
+            </div>
+          </div>
+
+          <div className="p-8 space-y-6 bg-white">
+            <div className="bg-slate-50 p-6 rounded-2xl border border-slate-100 flex items-center justify-between">
+              <div>
+                <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Total Amount</p>
+                <p className="text-2xl font-black text-slate-800">{selectedPlanForBoost?.price} CFA</p>
+              </div>
+              <div className="p-3 bg-[#1b7d81]/10 text-[#1b7d81] rounded-xl font-black text-xs uppercase tracking-widest">
+                {selectedPlanForBoost?.duration_hours}h Boost
+              </div>
+            </div>
+
+            <div className="space-y-3">
+              <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest px-1">Choose Payment Provider</label>
+              <div className="grid grid-cols-1 gap-3">
+                {/* <button 
+                  onClick={() => setSelectedPaymentMethod("orange_money")}
+                  className={`p-4 rounded-2xl border-2 transition-all flex items-center gap-4 group ${selectedPaymentMethod === "orange_money" 
+                    ? "border-[#1b7d81] bg-[#1b7d81]/5 shadow-lg shadow-[#1b7d81]/10" 
+                    : "border-slate-100 hover:border-slate-200"
+                  }`}
+                >
+                  <div className={`w-10 h-10 rounded-xl flex items-center justify-center font-black text-[10px] shrink-0 transition-colors ${selectedPaymentMethod === "orange_money" ? "bg-[#1b7d81] text-white" : "bg-slate-100 text-slate-400"}`}>OM</div>
+                  <div className="text-left">
+                    <p className={`text-[10px] font-bold uppercase ${selectedPaymentMethod === "orange_money" ? "text-slate-800" : "text-slate-400"}`}>Orange Money</p>
+                    <p className="text-[9px] font-medium text-slate-400">Secure Mobile Payment</p>
+                  </div>
+                </button>
+
+                <button 
+                  onClick={() => setSelectedPaymentMethod("wave")}
+                  className={`p-4 rounded-2xl border-2 transition-all flex items-center gap-4 group ${selectedPaymentMethod === "wave" 
+                    ? "border-[#4f6eed] bg-[#4f6eed]/5 shadow-lg shadow-[#4f6eed]/10" 
+                    : "border-slate-100 hover:border-slate-200"
+                  }`}
+                >
+                  <div className={`w-10 h-10 rounded-xl text-white font-black text-[10px] items-center justify-center shrink-0 flex transition-colors ${selectedPaymentMethod === "wave" ? "bg-[#4f6eed]" : "bg-slate-100 text-slate-400"}`}>Wave</div>
+                  <div className="text-left">
+                    <p className={`text-[10px] font-bold uppercase ${selectedPaymentMethod === "wave" ? "text-slate-800" : "text-slate-400"}`}>Wave Senegal</p>
+                    <p className="text-[9px] font-medium text-slate-400">Instant Transfer</p>
+                  </div>
+                </button> */}
+
+                <button
+                  onClick={() => setSelectedPaymentMethod("stripe")}
+                  className={`p-4 rounded-2xl border-2 transition-all flex items-center gap-4 group ${selectedPaymentMethod === "stripe"
+                    ? "border-[#6366f1] bg-[#6366f1]/5 shadow-lg shadow-[#6366f1]/10"
+                    : "border-slate-100 hover:border-slate-200"
+                    }`}
+                >
+                  <div className={`w-10 h-10 rounded-xl text-white font-black text-[10px] items-center justify-center shrink-0 flex transition-colors ${selectedPaymentMethod === "stripe" ? "bg-[#6366f1]" : "bg-slate-100 text-slate-400"}`}>
+                    <CreditCard className="w-5 h-5" />
+                  </div>
+                  <div className="text-left">
+                    <p className={`text-[10px] font-bold uppercase ${selectedPaymentMethod === "stripe" ? "text-slate-800" : "text-slate-400"}`}>Credit / Debit Card</p>
+                    <p className="text-[9px] font-medium text-slate-400">Visa, Mastercard, etc.</p>
+                  </div>
+                </button>
+              </div>
+            </div>
+
+            <Button
+              onClick={() => selectedListingForBoost && selectedPlanForBoost && executeBoostRequest(selectedListingForBoost, selectedPlanForBoost.id, selectedPaymentMethod)}
+              disabled={isBoostingItem !== null}
+              className="w-full h-14 rounded-2xl bg-slate-900 hover:bg-black text-white font-black text-sm uppercase tracking-widest transition-all active:scale-[0.98] mt-2 group shadow-xl shadow-slate-100"
+            >
+              {isBoostingItem !== null ? (
+                <Loader2 className="w-5 h-5 animate-spin mr-2" />
+              ) : (
+                <>
+                  Pay & Activate
+                  <Rocket className="w-4 h-4 ml-2 group-hover:translate-x-1 group-hover:translate-y-[-4px] transition-transform" />
+                </>
+              )}
+            </Button>
+
+            <p className="text-center text-[10px] text-slate-400 font-medium">By proceeding, you agree to our premium service terms.</p>
+          </div>
+        </DialogContent>
+      </Dialog>
+      {/* Boost Stats Modal */}
+      <Dialog open={isStatsOpen} onOpenChange={setIsStatsOpen}>
+        <DialogContent className="max-w-md p-0 rounded-[32px] border-none shadow-2xl overflow-hidden">
+          <div className="p-8 space-y-8 bg-white">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-4">
+                <div className="w-14 h-14 rounded-2xl bg-orange-50 flex items-center justify-center text-orange-500 shadow-sm">
+                  <BarChart3 className="w-8 h-8" strokeWidth={2.5} />
+                </div>
+                <div>
+                  <h3 className="text-2xl font-black text-slate-900 uppercase tracking-tighter">Boost <span className="text-[#1b7d81]">Analytics</span></h3>
+                  <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mt-0.5">Real-time Performance Metrics</p>
+                </div>
+              </div>
+            </div>
+
+            {statsLoading ? (
+              <div className="py-24 flex flex-col items-center justify-center space-y-4">
+                <div className="relative">
+                  <Loader2 className="w-12 h-12 animate-spin text-[#1b7d81]" />
+                  <BarChart3 className="w-5 h-5 text-[#1b7d81]/40 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2" />
+                </div>
+                <p className="text-slate-400 text-[10px] font-black uppercase tracking-widest animate-pulse">Synchronizing Data...</p>
+              </div>
+            ) : currentStats?.analytics ? (
+              <div className="space-y-6">
+                {/* Main Stats Card */}
+                <div className="grid grid-cols-2 gap-5">
+                  <div className="p-6 rounded-[28px] bg-slate-50 border border-slate-100 shadow-sm transition-all hover:bg-white hover:shadow-lg group">
+                    <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 group-hover:text-[#1b7d81] transition-colors">Total Impressions</p>
+                    <div className="flex flex-col gap-1">
+                      <p className="text-4xl font-black text-slate-900 tracking-tight">{currentStats.analytics.total_impressions.toLocaleString()}</p>
+                      <span className="text-[11px] text-emerald-500 font-black flex items-center gap-0.5 uppercase">
+                        +{currentStats.analytics.impressions_change_percent}%
+                        <Rocket className="w-3 h-3 ml-0.5" />
+                      </span>
+                    </div>
+                  </div>
+                  <div className="p-6 rounded-[28px] bg-[#1b7d81]/5 border border-[#1b7d81]/10 shadow-sm transition-all hover:bg-white hover:shadow-lg group">
+                    <p className="text-[10px] font-black text-[#1b7d81]/60 uppercase tracking-widest mb-2">Boost Days</p>
+                    <div className="flex items-baseline gap-1">
+                      <p className="text-4xl font-black text-[#1b7d81] tracking-tight">
+                        {Number(currentStats.analytics.boost_days_remaining).toFixed(1)}
+                      </p>
+                      <span className="text-sm font-black text-[#1b7d81]/50 uppercase">d</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="bg-slate-900 rounded-[32px] p-8 text-white relative overflow-hidden shadow-2xl">
+                  <div className="absolute top-0 right-0 w-32 h-32 bg-[#1b7d81]/20 blur-3xl" />
+                  <div className="absolute -right-6 -bottom-6 opacity-10 rotate-[15deg]">
+                    <Rocket className="w-32 h-32" />
+                  </div>
+
+                  <div className="relative z-10 space-y-5">
+                    <div className="flex items-center gap-2.5">
+                      <div className="w-6 h-6 rounded-lg bg-[#1b7d81] flex items-center justify-center">
+                        <Info className="w-3.5 h-3.5 text-white" />
+                      </div>
+                      <span className="text-[11px] font-black uppercase tracking-[0.2em] text-[#1b7d81]">Strategic Insight</span>
+                    </div>
+                    <p className="text-base font-bold leading-relaxed italic border-l-2 border-[#1b7d81]/30 pl-4 py-1">
+                      "{currentStats.analytics.insight?.message}"
+                    </p>
+                  </div>
+                </div>
+
+                <div className="pt-6 border-t border-slate-50 flex items-center justify-between px-2">
+                  <div className="flex flex-col">
+                    <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Active Since</span>
+                    <span className="text-sm font-bold text-slate-800">{formatDate(currentStats.analytics.active_since)}</span>
+                  </div>
+                  <div className="flex flex-col text-right">
+                    <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Status</span>
+                    <span className="flex items-center gap-1.5 text-emerald-500 font-black uppercase text-[10px]">
+                      <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                      Live
+                    </span>
+                  </div>
+                </div>
+              </div>
+            ) : (
+              <div className="py-20 text-center">
+                <p className="text-slate-400 text-sm">No statistics available yet.</p>
+              </div>
+            )}
+
+            <Button
+              onClick={() => setIsStatsOpen(false)}
+              className="w-full h-14 rounded-2xl bg-[#1b7d81] hover:bg-[#16666a] text-white font-black text-sm uppercase tracking-widest"
+            >
+              Close Insights
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   )
 }
+
+

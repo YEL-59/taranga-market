@@ -13,7 +13,7 @@ export type AuthResponse<T = any> = {
 
 export const loginService = async (data: any): Promise<AuthResponse> => {
     try {
-        const response = await fetch(`${NEXT_PUBLIC_BASE_API}/login`, {
+        const response = await fetch(`https://raymondred.thesyndicates.team/api/login`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
@@ -56,7 +56,7 @@ export const loginService = async (data: any): Promise<AuthResponse> => {
 
 export const registerService = async (data: any): Promise<AuthResponse> => {
     try {
-        const response = await fetch(`${NEXT_PUBLIC_BASE_API}/register`, {
+        const response = await fetch(`https://raymondred.thesyndicates.team/api/register`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
@@ -66,29 +66,23 @@ export const registerService = async (data: any): Promise<AuthResponse> => {
 
         const responseData = await response.json();
 
-        if (responseData.success && responseData.data) {
-            const cookieStore = await cookies();
-            cookieStore.set("token", responseData.data.token, {
-                path: "/",
-                httpOnly: true,
-                secure: process.env.NODE_ENV === "production",
-                sameSite: "strict",
-            });
-            cookieStore.set("user", JSON.stringify(responseData.data.user), {
-                path: "/",
-            });
-            cookieStore.set("role", responseData.data.user.role, {
-                path: "/",
-            });
+        if (responseData.success) {
+            if (responseData.data) {
+                const cookieStore = await cookies();
+                cookieStore.set("token", responseData.data.token, {
+                    path: "/",
+                    httpOnly: true,
+                    secure: process.env.NODE_ENV === "production",
+                    sameSite: "strict",
+                });
+                cookieStore.set("user", JSON.stringify(responseData.data.user), {
+                    path: "/",
+                });
+                cookieStore.set("role", responseData.data.user.role, {
+                    path: "/",
+                });
+            }
             return responseData;
-        }
-
-        // Normalize quirk: success: true but data: null means a business failure
-        if (responseData.success && !responseData.data) {
-            return {
-                success: false,
-                message: responseData.message || "Registration failed"
-            };
         }
 
         return responseData;
@@ -99,7 +93,7 @@ export const registerService = async (data: any): Promise<AuthResponse> => {
 
 export const sendOtpService = async (email: string): Promise<AuthResponse> => {
     try {
-        const response = await fetch(`${NEXT_PUBLIC_BASE_API}/send-otp?email=${email}`, {
+        const response = await fetch(`https://raymondred.thesyndicates.team/api/send-otp?email=${email}`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
@@ -113,14 +107,14 @@ export const sendOtpService = async (email: string): Promise<AuthResponse> => {
     }
 };
 
-export const verifyOtpService = async (otp: string): Promise<AuthResponse> => {
+export const verifyOtpService = async (otp: string, email: string, purpose?: string): Promise<AuthResponse> => {
     try {
-        const response = await fetch(`${NEXT_PUBLIC_BASE_API}/verify-otp`, {
+        const response = await fetch(`https://raymondred.thesyndicates.team/api/verify-otp`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
             },
-            body: JSON.stringify({ otp }),
+            body: JSON.stringify({ otp, email, purpose }),
         });
 
         return await response.json();
@@ -130,20 +124,15 @@ export const verifyOtpService = async (otp: string): Promise<AuthResponse> => {
 };
 
 export const resetPasswordService = async (data: any): Promise<AuthResponse> => {
-    const { email, new_password, new_password_confirmation } = data;
     try {
         const response = await fetch(
-            `${NEXT_PUBLIC_BASE_API}/reset-password?email=${email}&new_password=${new_password}&new_password_confirmation=${new_password_confirmation}`,
+            `https://raymondred.thesyndicates.team/api/reset-password`,
             {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
                 },
-                body: JSON.stringify({
-                    email,
-                    new_password,
-                    new_password_confirmation,
-                }),
+                body: JSON.stringify(data),
             }
         );
 
@@ -162,7 +151,7 @@ export const getProfileInfoService = async (): Promise<AuthResponse> => {
             return { success: false, message: "No token found" };
         }
 
-        const response = await fetch(`${NEXT_PUBLIC_BASE_API}/profileinfo`, {
+        const response = await fetch(`https://raymondred.thesyndicates.team/api/profileinfo`, {
             method: "GET",
             headers: {
                 "Authorization": `Bearer ${token}`,
@@ -195,7 +184,7 @@ export const logoutService = async () => {
 
         if (token) {
             try {
-                await fetch(`${NEXT_PUBLIC_BASE_API}/logout`, {
+                await fetch(`https://raymondred.thesyndicates.team/api/logout`, {
                     method: "POST",
                     headers: {
                         "Authorization": `Bearer ${token}`,
@@ -229,7 +218,7 @@ export const updateProfileService = async (data: any): Promise<AuthResponse> => 
             return { success: false, message: "No token found" };
         }
 
-        const response = await fetch(`${NEXT_PUBLIC_BASE_API}/update-profileinfo`, {
+        const response = await fetch(`https://raymondred.thesyndicates.team/api/update-profileinfo`, {
             method: "POST",
             headers: {
                 "Authorization": `Bearer ${token}`,
@@ -267,7 +256,7 @@ export const changeProfilePhotoService = async (formData: FormData): Promise<Aut
             return { success: false, message: "No token found" };
         }
 
-        const response = await fetch(`${NEXT_PUBLIC_BASE_API}/change-profile-photo`, {
+        const response = await fetch(`https://raymondred.thesyndicates.team/api/change-profile-photo`, {
             method: "POST",
             headers: {
                 "Authorization": `Bearer ${token}`,
@@ -309,7 +298,7 @@ export const removeProfilePhotoService = async (): Promise<AuthResponse> => {
             return { success: false, message: "No token found" };
         }
 
-        const response = await fetch(`${NEXT_PUBLIC_BASE_API}/remove-profile-photo`, {
+        const response = await fetch(`https://raymondred.thesyndicates.team/api/remove-profile-photo`, {
             method: "POST",
             headers: {
                 "Authorization": `Bearer ${token}`,
@@ -340,7 +329,7 @@ export const changePasswordService = async (data: any): Promise<AuthResponse> =>
             return { success: false, message: "No token found" };
         }
 
-        const response = await fetch(`${NEXT_PUBLIC_BASE_API}/change-password`, {
+        const response = await fetch(`https://raymondred.thesyndicates.team/api/change-password`, {
             method: "POST",
             headers: {
                 "Authorization": `Bearer ${token}`,

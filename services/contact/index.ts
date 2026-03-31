@@ -27,7 +27,7 @@ export const contactUsService = async (data: ContactData): Promise<ContactRespon
         formData.append("subject_id", data.subject_id.toString());
         formData.append("message", data.message);
 
-        const response = await fetch(`${NEXT_PUBLIC_BASE_API}/contact-us`, {
+        const response = await fetch("https://raymondred.thesyndicates.team/api/contact-us", {
             method: "POST",
             headers: {
                 "Accept": "application/json",
