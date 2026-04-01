@@ -53,9 +53,14 @@ function VerifyOtpForm() {
   })
 
   async function onSubmit(values: z.infer<typeof otpSchema>) {
-    const result = await verifyOtp(values.otp)
+    const isRegister = searchParams.get("mode") === "register";
+    const result = await verifyOtp(values.otp, email, isRegister ? "register" : undefined)
     if (result.success) {
-      router.push(`/reset-password?email=${email}`)
+      if (isRegister) {
+        router.push("/login"); 
+      } else {
+        router.push(`/reset-password?email=${email}`)
+      }
     }
   }
 

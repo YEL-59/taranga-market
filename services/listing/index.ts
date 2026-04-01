@@ -6,8 +6,23 @@ const NEXT_PUBLIC_BASE_API = "https://raymondred.thesyndicates.team/api";
 
 export const getSubscriptionPlansService = async (): Promise<ListingResponse> => {
     try {
-        const response = await fetch(`${NEXT_PUBLIC_BASE_API}/subscription-plans`, {
+        const cookieStore = await cookies();
+        const rawToken = cookieStore.get("token")?.value;
+
+        if (!rawToken) {
+            return { success: false, message: "No authentication token found. Please log in." };
+        }
+
+        // Clean token in case it's wrapped in quotes
+        const token = rawToken.replace(/^"(.*)"$/, '$1');
+
+        const response = await fetch(`https://raymondred.thesyndicates.team/api/subscription-plans`, {
             method: "GET",
+            headers: {
+                "Authorization": `Bearer ${token}`,
+                "Content-Type": "application/json",
+                "Accept": "application/json",
+            },
         });
 
         if (!response.ok) {
@@ -20,22 +35,27 @@ export const getSubscriptionPlansService = async (): Promise<ListingResponse> =>
     }
 };
 
-export const requestBoostService = async (listingId: number, boostPlanId: number): Promise<ListingResponse> => {
+export const requestBoostService = async (listingId: number, boostPlanId: number, paymentMethod?: string): Promise<ListingResponse> => {
     try {
         const cookieStore = await cookies();
-        const token = cookieStore.get("token")?.value;
-
-        if (!token) {
+        const rawToken = cookieStore.get("token")?.value;
+        if (!rawToken) {
             return { success: false, message: "No authentication token found. Please log in." };
         }
+        const token = rawToken.replace(/^"(.*)"$/, '$1');
 
-        const response = await fetch(`${NEXT_PUBLIC_BASE_API}/request-boost`, {
+        const response = await fetch(`https://raymondred.thesyndicates.team/api/request-boost`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
                 "Authorization": `Bearer ${token}`,
+                "Accept": "application/json",
             },
-            body: JSON.stringify({ listing_id: listingId, boost_plan_id: boostPlanId }),
+            body: JSON.stringify({ 
+                listing_id: listingId, 
+                boost_plan_id: boostPlanId,
+                payment_method: paymentMethod
+            }),
         });
 
         if (!response.ok) {
@@ -56,8 +76,20 @@ export const requestBoostService = async (listingId: number, boostPlanId: number
 
 export const getBoostPlansService = async (): Promise<ListingResponse> => {
     try {
-        const response = await fetch(`${NEXT_PUBLIC_BASE_API}/boost-plans`, {
+        const cookieStore = await cookies();
+        const rawToken = cookieStore.get("token")?.value;
+        if (!rawToken) {
+            return { success: false, message: "No authentication token found. Please log in." };
+        }
+        const token = rawToken.replace(/^"(.*)"$/, '$1');
+
+        const response = await fetch(`https://raymondred.thesyndicates.team/api/boost-plans`, {
             method: "GET",
+            headers: {
+                "Authorization": `Bearer ${token}`,
+                "Content-Type": "application/json",
+                "Accept": "application/json",
+            },
         });
 
         if (!response.ok) {
@@ -70,10 +102,190 @@ export const getBoostPlansService = async (): Promise<ListingResponse> => {
     }
 };
 
+export const getBoostPlansByCategoryService = async (categoryId: number): Promise<ListingResponse> => {
+    try {
+        const cookieStore = await cookies();
+        const rawToken = cookieStore.get("token")?.value;
+        if (!rawToken) {
+            return { success: false, message: "No authentication token found. Please log in." };
+        }
+        const token = rawToken.replace(/^"(.*)"$/, '$1');
+
+        const response = await fetch(`https://raymondred.thesyndicates.team/api/boost-plans/category/${categoryId}`, {
+            method: "GET",
+            headers: {
+                "Authorization": `Bearer ${token}`,
+                "Content-Type": "application/json",
+                "Accept": "application/json",
+            },
+        });
+
+        if (!response.ok) {
+            return { success: false, message: `Failed to fetch category boost plans: ${response.status}` };
+        }
+
+        return await response.json();
+    } catch (error: any) {
+        return { success: false, message: error.message || "Failed to fetch boost plans" };
+    }
+};
+
+export const getMyBoostsService = async (): Promise<ListingResponse> => {
+    try {
+        const cookieStore = await cookies();
+        const rawToken = cookieStore.get("token")?.value;
+        if (!rawToken) {
+            return { success: false, message: "No authentication token found." };
+        }
+        const token = rawToken.replace(/^"(.*)"$/, '$1');
+
+        const response = await fetch(`https://raymondred.thesyndicates.team/api/my-boosts`, {
+            method: "GET",
+            headers: {
+                "Authorization": `Bearer ${token}`,
+                "Content-Type": "application/json",
+                "Accept": "application/json",
+            },
+            cache: "no-store"
+        });
+
+        if (!response.ok) {
+            return { success: false, message: `Failed to fetch your boosts: ${response.status}` };
+        }
+
+        return await response.json();
+    } catch (error: any) {
+        return { success: false, message: error.message || "Failed to fetch active boosts" };
+    }
+};
+
+export const getBoostStatsService = async (listingId: number): Promise<ListingResponse> => {
+    try {
+        const cookieStore = await cookies();
+        const rawToken = cookieStore.get("token")?.value;
+        if (!rawToken) {
+            return { success: false, message: "No authentication token found." };
+        }
+        const token = rawToken.replace(/^"(.*)"$/, '$1');
+
+        const response = await fetch(`https://raymondred.thesyndicates.team/api/boost-analytics/${listingId}`, {
+            method: "GET",
+            headers: {
+                "Authorization": `Bearer ${token}`,
+                "Content-Type": "application/json",
+                "Accept": "application/json",
+            },
+        });
+
+        if (!response.ok) {
+            return { success: false, message: `Failed to fetch boost stats: ${response.status}` };
+        }
+
+        return await response.json();
+    } catch (error: any) {
+        return { success: false, message: error.message || "Failed to fetch boost stats" };
+    }
+};
+
+export const requestSubscriptionService = async (planId: number, billingCycle: string = "monthly", paymentMethod?: string): Promise<ListingResponse> => {
+    try {
+        const cookieStore = await cookies();
+        const rawToken = cookieStore.get("token")?.value;
+
+        if (!rawToken) {
+            return { success: false, message: "No authentication token found." };
+        }
+
+        // Clean token
+        const token = rawToken.replace(/^"(.*)"$/, '$1');
+
+        const response = await fetch(`https://raymondred.thesyndicates.team/api/request-subscription`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${token}`,
+                "Accept": "application/json",
+            },
+            body: JSON.stringify({ 
+                subscription_plan_id: planId, 
+                billing_cycle: billingCycle,
+                payment_method: paymentMethod
+            }),
+        });
+
+        if (!response.ok) {
+            const errorData = await response.json().catch(() => ({}));
+            return { success: false, message: errorData.message || `Request failed: ${response.status}` };
+        }
+
+        return await response.json();
+    } catch (error: any) {
+        return { success: false, message: error.message || "Failed to request subscription" };
+    }
+};
+
+export const getMySubscriptionService = async (): Promise<ListingResponse> => {
+    try {
+        const cookieStore = await cookies();
+        const rawToken = cookieStore.get("token")?.value;
+        if (!rawToken) {
+            return { success: false, message: "No authentication token found." };
+        }
+        const token = rawToken.replace(/^"(.*)"$/, '$1');
+
+        const response = await fetch(`https://raymondred.thesyndicates.team/api/my-subscription`, {
+            method: "GET",
+            headers: {
+                "Authorization": `Bearer ${token}`,
+                "Content-Type": "application/json",
+                "Accept": "application/json",
+            },
+            cache: "no-store"
+        });
+
+        if (!response.ok) {
+            return { success: false, message: `Failed to fetch subscription: ${response.status}` };
+        }
+
+        return await response.json();
+    } catch (error: any) {
+        return { success: false, message: error.message || "Failed to fetch current subscription" };
+    }
+};
+
+export const getSubscriptionHistoryService = async (page: number = 1): Promise<ListingResponse> => {
+    try {
+        const cookieStore = await cookies();
+        const token = cookieStore.get("token")?.value;
+
+        if (!token) {
+            return { success: false, message: "No authentication token found." };
+        }
+
+        const response = await fetch(`https://raymondred.thesyndicates.team/api/subscription-history?page=${page}`, {
+            method: "GET",
+            headers: {
+                "Authorization": `Bearer ${token}`,
+                "Content-Type": "application/json",
+                "Accept": "application/json",
+            },
+        });
+
+        if (!response.ok) {
+            return { success: false, message: `Failed to fetch history: ${response.status}` };
+        }
+
+        return await response.json();
+    } catch (error: any) {
+        return { success: false, message: error.message || "Failed to fetch subscription history" };
+    }
+};
+
 export type ListingResponse<T = any> = {
     success: boolean;
     message: string;
     data?: T;
+    [key: string]: any;
 };
 
 export const createListingService = async (formData: FormData): Promise<ListingResponse> => {
@@ -85,10 +297,11 @@ export const createListingService = async (formData: FormData): Promise<ListingR
             return { success: false, message: "No token found" };
         }
 
-        const response = await fetch(`${NEXT_PUBLIC_BASE_API}/listing-create`, {
+        const response = await fetch(`https://raymondred.thesyndicates.team/api/listing-create`, {
             method: "POST",
             headers: {
                 "Authorization": `Bearer ${token}`,
+                "Accept": "application/json",
             },
             body: formData,
         });
@@ -100,9 +313,26 @@ export const createListingService = async (formData: FormData): Promise<ListingR
     }
 };
 
+export const getHeroSectionService = async (): Promise<ListingResponse> => {
+    try {
+        const response = await fetch(`https://raymondred.thesyndicates.team/api/get-hero-section`, {
+            method: "GET",
+        });
+
+        if (!response.ok) {
+            return { success: false, message: `Failed to fetch hero section: ${response.status}` };
+        }
+
+        return await response.json();
+    } catch (error: any) {
+        return { success: false, message: error.message || "Failed to fetch hero section" };
+    }
+};
+
+
 export const getProductsByCategoryService = async (categoryId: number) => {
     try {
-        const response = await fetch(`${NEXT_PUBLIC_BASE_API}/get-product-data/by-category/${categoryId}`, {
+        const response = await fetch(`https://raymondred.thesyndicates.team/api/get-product-data/by-category/${categoryId}`, {
             method: 'GET',
             headers: {
                 "Accept": "application/json",
@@ -123,7 +353,7 @@ export const getProductsByCategoryService = async (categoryId: number) => {
 
 export const getSlidersService = async () => {
     try {
-        const response = await fetch(`${NEXT_PUBLIC_BASE_API}/get-slider`, {
+        const response = await fetch(`https://raymondred.thesyndicates.team/api/get-slider`, {
             method: 'GET',
             headers: {
                 "Accept": "application/json",
@@ -142,9 +372,14 @@ export const getSlidersService = async () => {
     }
 };
 
-export const searchListingsService = async (title: string): Promise<ListingResponse> => {
+export const searchListingsService = async (title: string, city: string = "", state: string = ""): Promise<ListingResponse> => {
     try {
-        const response = await fetch(`${NEXT_PUBLIC_BASE_API}/search?title=${encodeURIComponent(title)}`, {
+        const params = new URLSearchParams();
+        if (title) params.set("title", title);
+        if (city) params.set("city", city);
+        if (state) params.set("state", state);
+
+        const response = await fetch(`https://raymondred.thesyndicates.team/api/search?${params.toString()}`, {
             method: "GET",
         });
 
@@ -154,9 +389,10 @@ export const searchListingsService = async (title: string): Promise<ListingRespo
     }
 };
 
+
 export const getCategoriesService = async (): Promise<ListingResponse> => {
     try {
-        const response = await fetch(`${NEXT_PUBLIC_BASE_API}/category`, {
+        const response = await fetch(`https://raymondred.thesyndicates.team/api/category`, {
             method: "GET",
         });
 
@@ -168,7 +404,7 @@ export const getCategoriesService = async (): Promise<ListingResponse> => {
 
 export const getSubCategoriesService = async (categoryId: string): Promise<ListingResponse> => {
     try {
-        const response = await fetch(`${NEXT_PUBLIC_BASE_API}/subcategory?id=${categoryId}`, {
+        const response = await fetch(`https://raymondred.thesyndicates.team/api/subcategory?id=${categoryId}`, {
             method: "GET",
         });
 
@@ -186,10 +422,12 @@ export const getMyListingsService = async (page: number = 1): Promise<ListingRes
             return { success: false, message: "No token found" };
         }
 
-        const response = await fetch(`${NEXT_PUBLIC_BASE_API}/listing?page=${page}`, {
+        const response = await fetch(`https://raymondred.thesyndicates.team/api/listing?page=${page}`, {
             method: "GET",
             headers: {
                 "Authorization": `Bearer ${token}`,
+                "Content-Type": "application/json",
+                "Accept": "application/json",
             },
         });
 
@@ -209,10 +447,12 @@ export const getListingDetailsService = async (id: number): Promise<ListingRespo
             return { success: false, message: "No token found" };
         }
 
-        const response = await fetch(`${NEXT_PUBLIC_BASE_API}/listing-show/${id}`, {
+        const response = await fetch(`https://raymondred.thesyndicates.team/api/listing-show/${id}`, {
             method: "GET",
             headers: {
                 "Authorization": `Bearer ${token}`,
+                "Content-Type": "application/json",
+                "Accept": "application/json",
             },
         });
 
@@ -232,7 +472,7 @@ export const deleteListingService = async (id: number): Promise<ListingResponse>
             return { success: false, message: "No token found" };
         }
 
-        const response = await fetch(`${NEXT_PUBLIC_BASE_API}/listing-destroy/${id}`, {
+        const response = await fetch(`https://raymondred.thesyndicates.team/api/listing-destroy/${id}`, {
             method: "DELETE",
             headers: {
                 "Authorization": `Bearer ${token}`,
@@ -255,10 +495,12 @@ export const getDashboardSummaryService = async (): Promise<ListingResponse> => 
             return { success: false, message: "No token found" };
         }
 
-        const response = await fetch(`${NEXT_PUBLIC_BASE_API}/dashboard-Summary`, {
+        const response = await fetch(`https://raymondred.thesyndicates.team/api/dashboard-Summary`, {
             method: "GET",
             headers: {
                 "Authorization": `Bearer ${token}`,
+                "Content-Type": "application/json",
+                "Accept": "application/json",
             },
         });
 
@@ -270,7 +512,7 @@ export const getDashboardSummaryService = async (): Promise<ListingResponse> => 
 };
 export const getRecentProductsService = async (): Promise<ListingResponse> => {
     try {
-        const response = await fetch(`${NEXT_PUBLIC_BASE_API}/feature-product/recent`, {
+        const response = await fetch(`https://raymondred.thesyndicates.team/api/feature-product/recent`, {
             method: "GET",
         });
 
@@ -286,7 +528,7 @@ export const getRecentProductsService = async (): Promise<ListingResponse> => {
 
 export const getAllProductsService = async (page: number = 1): Promise<ListingResponse> => {
     try {
-        const response = await fetch(`${NEXT_PUBLIC_BASE_API}/all-product?page=${page}`, {
+        const response = await fetch(`https://raymondred.thesyndicates.team/api/all-product?page=${page}`, {
             method: "GET",
         });
 
@@ -309,10 +551,12 @@ export const getRecentListingsService = async (page: number = 1): Promise<Listin
             return { success: false, message: "No token found" };
         }
 
-        const response = await fetch(`${NEXT_PUBLIC_BASE_API}/recent-listing?page=${page}`, {
+        const response = await fetch(`https://raymondred.thesyndicates.team/api/recent-listing?page=${page}`, {
             method: "GET",
             headers: {
                 "Authorization": `Bearer ${token}`,
+                "Content-Type": "application/json",
+                "Accept": "application/json",
             },
         });
 
@@ -325,7 +569,7 @@ export const getRecentListingsService = async (page: number = 1): Promise<Listin
 
 export const getFeaturedProductsService = async (): Promise<ListingResponse> => {
     try {
-        const response = await fetch(`${NEXT_PUBLIC_BASE_API}/feature-product`, {
+        const response = await fetch(`https://raymondred.thesyndicates.team/api/feature-product`, {
             method: "GET",
         });
 
@@ -337,7 +581,7 @@ export const getFeaturedProductsService = async (): Promise<ListingResponse> => 
 
 export const getFeaturedProductDetailsService = async (id: number | string): Promise<ListingResponse> => {
     try {
-        const response = await fetch(`${NEXT_PUBLIC_BASE_API}/feature-product/show/${id}`, {
+        const response = await fetch(`https://raymondred.thesyndicates.team/api/feature-product/show/${id}`, {
             method: "GET",
         });
 
@@ -356,11 +600,12 @@ export const addFavoriteService = async (listingId: number | string): Promise<Li
             return { success: false, message: "No token found" };
         }
 
-        const response = await fetch(`${NEXT_PUBLIC_BASE_API}/add-favourite`, {
+        const response = await fetch(`https://raymondred.thesyndicates.team/api/add-favourite`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
                 "Authorization": `Bearer ${token}`,
+                "Accept": "application/json",
             },
             body: JSON.stringify({ listing_id: listingId }),
         });
@@ -380,10 +625,12 @@ export const getFavoritesService = async (): Promise<ListingResponse> => {
             return { success: false, message: "No token found" };
         }
 
-        const response = await fetch(`${NEXT_PUBLIC_BASE_API}/get-favourite`, {
+        const response = await fetch(`https://raymondred.thesyndicates.team/api/get-favourite`, {
             method: "GET",
             headers: {
                 "Authorization": `Bearer ${token}`,
+                "Content-Type": "application/json",
+                "Accept": "application/json",
             },
         });
 
@@ -402,11 +649,12 @@ export const removeFavoriteService = async (listingId: number | string): Promise
             return { success: false, message: "No token found" };
         }
 
-        const response = await fetch(`${NEXT_PUBLIC_BASE_API}/destroy-favourite`, {
+        const response = await fetch(`https://raymondred.thesyndicates.team/api/destroy-favourite`, {
             method: "POST", // User said "body: listing_id" and usually destroy or delete with body is POST or DELETE. Response example shows body: listing_id.
             headers: {
                 "Content-Type": "application/json",
                 "Authorization": `Bearer ${token}`,
+                "Accept": "application/json",
             },
             body: JSON.stringify({ listing_id: listingId }),
         });
@@ -419,7 +667,7 @@ export const removeFavoriteService = async (listingId: number | string): Promise
 
 export const getSellerProfileService = async (id: number | string): Promise<ListingResponse> => {
     try {
-        const response = await fetch(`${NEXT_PUBLIC_BASE_API}/seller/${id}`, {
+        const response = await fetch(`https://raymondred.thesyndicates.team/api/seller/${id}`, {
             method: "GET",
         });
 
@@ -429,11 +677,15 @@ export const getSellerProfileService = async (id: number | string): Promise<List
     }
 };
 
-export const contactListingSellerService = async (listingId: number | string, formData: FormData): Promise<ListingResponse> => {
+export const contactListingSellerService = async (listingId: number | string, data: any): Promise<ListingResponse> => {
     try {
-        const response = await fetch(`${NEXT_PUBLIC_BASE_API}/listing/${listingId}/contact`, {
+        const response = await fetch(`https://raymondred.thesyndicates.team/api/listing/${listingId}/contact`, {
             method: "POST",
-            body: formData,
+            headers: {
+                "Content-Type": "application/json",
+                "Accept": "application/json",
+            },
+            body: JSON.stringify(data),
         });
 
         // Some endpoints return standard success/message JSON. We handle that.
