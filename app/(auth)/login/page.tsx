@@ -23,6 +23,12 @@ import { Separator } from "@/components/ui/separator"
 import { useAuth } from "@/hooks/useAuth"
 import Img from "@/assets/images/nav-logo.png";
 
+interface LoginValues {
+  email: string
+  password: string
+  rememberMe: boolean
+}
+
 const loginSchema = z.object({
   email: z.string().email({ message: "Invalid email address" }),
   password: z.string().min(6, { message: "Password must be at least 6 characters" }),
@@ -33,7 +39,7 @@ export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false)
   const { login, isLoading, error } = useAuth()
 
-  const form = useForm<z.infer<typeof loginSchema>>({
+  const form = useForm<LoginValues>({
     resolver: zodResolver(loginSchema),
     defaultValues: {
       email: "",
@@ -42,7 +48,7 @@ export default function LoginPage() {
     },
   })
 
-  async function onSubmit(values: z.infer<typeof loginSchema>) {
+  async function onSubmit(values: LoginValues) {
     await login(values)
   }
 
