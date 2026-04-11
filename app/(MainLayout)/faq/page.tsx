@@ -87,7 +87,7 @@ export default function FAQPage() {
                         </div>
                     ) : (
                         categories.map((category, catIndex) => (
-                            <div key={category.category_id} className="mb-10">
+                            <div key={`${category.category_id}-${catIndex}`} className="mb-10">
                                 <h2 className="text-2xl font-bold text-gray-900 mb-6 flex items-center gap-3">
                                     <span className="w-10 h-10 bg-[#1D7E87] rounded-xl flex items-center justify-center text-white text-lg font-bold shadow-md">
                                         {catIndex + 1}
@@ -101,7 +101,7 @@ export default function FAQPage() {
                                         
                                         return (
                                             <div
-                                                key={item.id}
+                                                key={`${item.id}-${qIndex}`}
                                                 className={`bg-white rounded-2xl shadow-sm border transition-all duration-300 ${
                                                     isOpen 
                                                         ? 'border-[#1D7E87] ring-1 ring-[#1D7E87]/20 shadow-md' 

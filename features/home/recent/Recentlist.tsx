@@ -9,6 +9,7 @@ import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import { useFavorites } from '@/context/FavoritesContext';
 import { useRecentProducts } from '@/hooks/useRecentProducts';
+import { useTranslations } from "next-intl";
 
 const getDetailLink = (item: any) => {
     return `/featured-details?id=${item.id}`;
@@ -16,6 +17,7 @@ const getDetailLink = (item: any) => {
 
 const ListingCard = ({ item }: { item: any }) => {
     const { toggleFavorite, isFavorite, isCustomer } = useFavorites();
+    const ct = useTranslations("Common");
     const fav = isFavorite(item.id);
 
 
@@ -50,7 +52,7 @@ const ListingCard = ({ item }: { item: any }) => {
                     <Badge
                         className="absolute right-2.5 top-2.5 rounded-full px-3 py-0.5 text-[11px] font-semibold border border-gray-200 bg-white/95 text-gray-800 hover:bg-white shadow-sm"
                     >
-                        Featured
+                        {ct("featured")}
                     </Badge>
                 )
                }
@@ -102,7 +104,7 @@ const ListingCard = ({ item }: { item: any }) => {
                             variant={item.is_featured ? "default" : "outline"}
                             className={`w-full rounded-xl font-semibold text-[13px] h-10 transition-all bg-white border-gray-100 text-gray-600 hover:bg-[#1D7E87] hover:text-white hover:border-[#1D7E87] cursor-pointer`}
                         >
-                            View Details
+                            {ct("viewDetails")}
                         </Button>
                     </Link>
                 </div>
@@ -112,6 +114,8 @@ const ListingCard = ({ item }: { item: any }) => {
 };
 
 const Recentlist = ({ initialData = [] }: { initialData?: any[] }) => {
+    const t = useTranslations("Recent");
+    const ct = useTranslations("Common");
     const { recentProducts, isLoading, error } = useRecentProducts(initialData);
 
     if (error) {
@@ -130,10 +134,10 @@ const Recentlist = ({ initialData = [] }: { initialData?: any[] }) => {
                 {/* Header */}
                 <div className="mb-10 flex items-center justify-between">
                     <h2 className="text-3xl font-extrabold text-gray-900 tracking-tight">
-                        Recent Listing
+                        {t("title")}
                     </h2>
                     <Link href="/all-items" className="group flex items-center gap-1.5 text-[15px] font-semibold text-gray-800 transition-colors hover:text-gray-600">
-                        View all
+                        {t("viewAll")}
                         <ArrowRight className="h-4.5 w-4.5 transition-transform group-hover:translate-x-1" />
                     </Link>
                 </div>
@@ -145,13 +149,13 @@ const Recentlist = ({ initialData = [] }: { initialData?: any[] }) => {
                     </div>
                 ) : recentProducts.length > 0 ? (
                     <div className="grid grid-cols-1 gap-7 sm:grid-cols-2 lg:grid-cols-4">
-                        {recentProducts.slice(0, 8).map((item) => (
-                            <ListingCard key={item.id} item={item} />
+                        {recentProducts.slice(0, 8).map((item, index) => (
+                            <ListingCard key={`${item.id}-${index}`} item={item} />
                         ))}
                     </div>
                 ) : (
                     <div className="text-center py-20 text-gray-500">
-                        No recent products found.
+                        {t("noProducts")}
                     </div>
                 )}
             </div>

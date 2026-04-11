@@ -9,6 +9,7 @@ import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import { useFavorites } from '@/context/FavoritesContext';
 import { useFeaturedProducts } from '@/hooks/useFeaturedProducts';
+import { useTranslations } from 'next-intl';
 
 const getDetailLink = (item: any) => {
     return `/featured-details?id=${item.id}`;
@@ -16,6 +17,7 @@ const getDetailLink = (item: any) => {
 
 const FeaturedCard = ({ item }: { item: any }) => {
     const { toggleFavorite, isFavorite, isCustomer } = useFavorites();
+    const ct = useTranslations("Common");
     const fav = isFavorite(item.id);
 
     const image = item.featured_image || item.image || '';
@@ -107,7 +109,7 @@ const FeaturedCard = ({ item }: { item: any }) => {
                                 : "bg-white border-gray-100 text-gray-600 hover:bg-[#1D7E87] hover:text-white hover:border-[#1D7E87]"
                                 }`}
                         >
-                            View Details
+                            {ct("viewDetails")}
                         </Button>
                     </Link>
                 </div>
@@ -117,6 +119,8 @@ const FeaturedCard = ({ item }: { item: any }) => {
 };
 
 const Featured = ({ initialData = [] }: { initialData?: any[] }) => {
+    const t = useTranslations("Featured");
+    const ct = useTranslations("Common");
     const { featuredProducts, isLoading, error } = useFeaturedProducts(initialData);
 
     if (error) {
@@ -135,10 +139,10 @@ const Featured = ({ initialData = [] }: { initialData?: any[] }) => {
                 {/* Header */}
                 <div className="mb-10 flex items-center justify-between">
                     <h2 className="text-3xl font-extrabold text-gray-900 tracking-tight">
-                        Featured Listing
+                        {t("title")}
                     </h2>
                     <Link href="/all-items" className="group flex items-center gap-1.5 text-[15px] font-semibold text-gray-800 transition-colors hover:text-gray-600">
-                        View all
+                        {t("viewAll")}
                         <ArrowRight className="h-4.5 w-4.5 transition-transform group-hover:translate-x-1" />
                     </Link>
                 </div>
@@ -150,13 +154,13 @@ const Featured = ({ initialData = [] }: { initialData?: any[] }) => {
                     </div>
                 ) : featuredProducts.length > 0 ? (
                     <div className="grid grid-cols-1 gap-7 sm:grid-cols-2 lg:grid-cols-4">
-                        {featuredProducts.slice(0, 4).map((item) => (
-                            <FeaturedCard key={item.id} item={item} />
+                        {featuredProducts.slice(0, 4).map((item, index) => (
+                            <FeaturedCard key={`${item.id}-${index}`} item={item} />
                         ))}
                     </div>
                 ) : (
                     <div className="text-center py-20 text-gray-500">
-                        No featured products found.
+                        {t("noProducts")}
                     </div>
                 )}
             </div>

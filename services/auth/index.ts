@@ -91,14 +91,20 @@ export const registerService = async (data: any): Promise<AuthResponse> => {
     }
 };
 
-export const sendOtpService = async (email: string): Promise<AuthResponse> => {
+export const sendOtpService = async (email: string, purpose?: string): Promise<AuthResponse> => {
     try {
-        const response = await fetch(`https://raymondred.thesyndicates.team/api/send-otp?email=${email}`, {
+        const url = new URL(`https://raymondred.thesyndicates.team/api/send-otp`);
+        url.searchParams.append("email", email);
+        if (purpose) {
+            url.searchParams.append("purpose", purpose);
+        }
+
+        const response = await fetch(url.toString(), {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
             },
-            body: JSON.stringify({ email }),
+            body: JSON.stringify({ email, purpose }),
         });
 
         return await response.json();

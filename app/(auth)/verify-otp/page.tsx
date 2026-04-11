@@ -7,7 +7,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { useSearchParams, useRouter } from "next/navigation";
 import { useAuth } from "@/hooks/useAuth";
-import { Suspense } from "react";
+import { Suspense, useState, useEffect } from "react";
 import logo from "@/assets/images/logo-nav.png";
 
 import { Button } from "@/components/ui/button";
@@ -42,8 +42,34 @@ export default function VerifyOtpPage() {
 function VerifyOtpForm() {
   const searchParams = useSearchParams();
   const email = searchParams.get("email") || "";
-  const { verifyOtp, isLoading, error } = useAuth();
+  const mode = searchParams.get("mode");
+  const isRegister = mode === "register";
+  const { verifyOtp, sendOtp, isLoading } = useAuth();
   const router = useRouter();
+
+  const [resendTimer, setResendTimer] = useState(0);
+  const [isResending, setIsResending] = useState(false);
+
+  useEffect(() => {
+    let interval: NodeJS.Timeout;
+    if (resendTimer > 0) {
+      interval = setInterval(() => {
+        setResendTimer((prev) => prev - 1);
+      }, 1000);
+    }
+    return () => clearInterval(interval);
+  }, [resendTimer]);
+
+  const handleResend = async () => {
+    if (resendTimer > 0 || isResending) return;
+    setIsResending(true);
+    try {
+      await sendOtp(email, isRegister ? "register" : undefined);
+      setResendTimer(60);
+    } finally {
+      setIsResending(false);
+    }
+  };
 
   const form = useForm<z.infer<typeof otpSchema>>({
     resolver: zodResolver(otpSchema),
@@ -53,7 +79,6 @@ function VerifyOtpForm() {
   });
 
   async function onSubmit(values: z.infer<typeof otpSchema>) {
-    const isRegister = searchParams.get("mode") === "register";
     const result = await verifyOtp(
       values.otp,
       email,
@@ -139,8 +164,16 @@ function VerifyOtpForm() {
 
       <div className="text-center text-sm">
         <span className="text-slate-600">Don't receive the code? </span>
-        <button className="font-semibold text-orange-500 hover:text-orange-600 clickable">
-          Click to resend code
+        <button
+          onClick={handleResend}
+          disabled={resendTimer > 0 || isResending}
+          className={`font-semibold transition-colors ${resendTimer > 0 || isResending ? "text-slate-400 cursor-not-allowed" : "text-orange-500 hover:text-orange-600"}`}
+        >
+          {isResending
+            ? "Resending..."
+            : resendTimer > 0
+              ? `Resend in ${resendTimer}s`
+              : "Click to resend code"}
         </button>
       </div>
     </div>

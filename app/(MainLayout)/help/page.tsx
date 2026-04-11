@@ -4,6 +4,7 @@ import { BookOpen, ShoppingCart, Tag, Shield, Users, Settings, MessageSquare, Tr
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
 import { getHelpService, HelpArticle } from '@/services/help';
+import { useTranslations } from 'next-intl';
 
 const getIcon = (iconName: string | null) => {
     switch (iconName) {
@@ -23,6 +24,8 @@ const getColor = (index: number) => {
 };
 
 export default function HelpPage() {
+    const t = useTranslations("Help");
+    const ct = useTranslations("Common");
     const [searchQuery, setSearchQuery] = useState("");
     const [expandedTopics, setExpandedTopics] = useState<Record<string, boolean>>({});
     const [helpData, setHelpData] = useState<{ articles: HelpArticle[], popular_articles: HelpArticle[] }>({ articles: [], popular_articles: [] });
@@ -83,7 +86,7 @@ export default function HelpPage() {
         return (
             <div className="min-h-[60vh] flex flex-col items-center justify-center text-[#1D7E87]">
                 <Loader2 className="w-12 h-12 animate-spin mb-4" />
-                <p className="font-bold animate-pulse">Loading help resources...</p>
+                <p className="font-bold animate-pulse">{t("loadingHelp")}</p>
             </div>
         );
     }
@@ -101,10 +104,10 @@ export default function HelpPage() {
                         <BookOpen className="w-8 h-8 text-white" />
                     </div>
                     <h1 className="text-4xl md:text-5xl font-extrabold text-gray-900 mb-4 tracking-tight">
-                        Help Center
+                        {t("title")}
                     </h1>
                     <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-                        Everything you need to know about using Taranga Market
+                        {t("subtitle")}
                     </p>
                 </motion.div>
 
@@ -118,7 +121,7 @@ export default function HelpPage() {
                             type="text"
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
-                            placeholder="Search help articles..."
+                            placeholder={t("searchPlaceholder")}
                             className="w-full pl-12 pr-12 py-4 bg-white rounded-2xl shadow-lg border border-gray-100 outline-none text-lg transition-all focus:ring-4 focus:ring-[#1D7E87]/10 focus:border-[#1D7E87]"
                         />
                         {searchQuery && (
@@ -131,7 +134,7 @@ export default function HelpPage() {
                         )}
                     </div>
                     <div className="flex flex-wrap justify-center gap-2 mt-4">
-                        <span className="text-gray-400 text-sm">Popular:</span>
+                        <span className="text-gray-400 text-sm">{t("popular")}:</span>
                         {["Listing", "Payment", "Safety"].map((tag) => (
                             <button 
                                 key={tag}
@@ -148,11 +151,11 @@ export default function HelpPage() {
                 <div className="max-w-6xl mx-auto mb-16">
                     <div className="flex items-center justify-between mb-8">
                         <h2 className="text-3xl font-bold text-gray-900">
-                            {searchQuery ? "Search Results" : "Browse by Topic"}
+                            {searchQuery ? t("searchResults") : t("browseByTopic")}
                         </h2>
                         {searchQuery && (
                             <span className="text-sm font-medium text-gray-500 bg-gray-100 px-3 py-1 rounded-full">
-                                {filteredTopics.length} topics found
+                                {filteredTopics.length} {t("topicsFound")}
                             </span>
                         )}
                     </div>
@@ -169,7 +172,7 @@ export default function HelpPage() {
                                 {filteredTopics.map((topic, index) => (
                                     <motion.div
                                         layout
-                                        key={topic.id}
+                                        key={`${topic.id}-${index}`}
                                         initial={{ opacity: 0, scale: 0.95 }}
                                         animate={{ opacity: 1, scale: 1 }}
                                         transition={{ delay: index * 0.05 }}
@@ -196,7 +199,7 @@ export default function HelpPage() {
                                                     onClick={() => toggleTopic(topic.title)}
                                                     className="text-[#1D7E87] hover:text-[#2A8E8E] text-sm font-bold flex items-center gap-1 group/btn"
                                                 >
-                                                    {expandedTopics[topic.title] ? "Show less" : `View all ${topic.articles.length} articles`} 
+                                                    {expandedTopics[topic.title] ? ct("showLess") : t("viewAllArticles", { count: topic.articles.length })} 
                                                     <ArrowRight className={`w-3.5 h-3.5 transition-transform duration-300 ${expandedTopics[topic.title] ? "-rotate-90" : "group-hover/btn:translate-x-0.5"}`} />
                                                 </button>
                                             </div>
@@ -214,13 +217,13 @@ export default function HelpPage() {
                                 <div className="w-20 h-20 bg-gray-50 rounded-full flex items-center justify-center mx-auto mb-4">
                                     <Search className="w-8 h-8 text-gray-300" />
                                 </div>
-                                <h3 className="text-xl font-bold text-gray-900 mb-2">No instructions found for "{searchQuery}"</h3>
-                                <p className="text-gray-500">Try using different keywords or browse our popular categories below.</p>
+                                <h3 className="text-xl font-bold text-gray-900 mb-2">{t("noResultsTitle", { query: searchQuery })}</h3>
+                                <p className="text-gray-500">{t("noResultsDesc")}</p>
                                 <button 
                                     onClick={() => setSearchQuery("")}
                                     className="mt-6 text-[#1D7E87] font-bold hover:underline"
                                 >
-                                    Clear search
+                                    {ct("clearSearch")}
                                 </button>
                             </motion.div>
                         )}
@@ -238,12 +241,12 @@ export default function HelpPage() {
                             <div className="bg-white rounded-2xl shadow-lg p-8 border border-gray-100">
                                 <div className="flex items-center gap-3 mb-6">
                                     <TrendingUp className="w-6 h-6 text-[#1D7E87]" />
-                                    <h2 className="text-2xl font-bold text-gray-900">Popular Articles</h2>
+                                    <h2 className="text-2xl font-bold text-gray-900">{t("popularArticles")}</h2>
                                 </div>
                                 <div className="grid md:grid-cols-2 gap-4">
-                                    {helpData.popular_articles.map((item) => (
+                                    {helpData.popular_articles.map((item, index) => (
                                         <Link 
-                                            key={item.id}
+                                            key={`${item.id}-${index}`}
                                             href={`#`}
                                             className="p-4 border border-gray-200 rounded-lg hover:border-[#1D7E87] hover:bg-gray-50 transition-all block group"
                                         >
@@ -260,22 +263,22 @@ export default function HelpPage() {
                 {/* Contact Support */}
                 <div className="max-w-4xl mx-auto">
                     <div className="bg-gradient-to-r from-[#1D7E87] to-[#2A8E8E] rounded-2xl shadow-xl p-8 md:p-12 text-center text-white">
-                        <h2 className="text-3xl font-bold mb-4">Can't Find What You're Looking For?</h2>
+                        <h2 className="text-3xl font-bold mb-4">{t("cantFindTitle")}</h2>
                         <p className="text-white/90 text-lg mb-8">
-                            Our support team is ready to help you with any questions or issues.
+                            {t("cantFindDesc")}
                         </p>
                         <div className="flex flex-col sm:flex-row gap-4 justify-center">
                             <Link
                                 href="/contact"
                                 className="bg-white text-[#1D7E87] px-8 py-3 rounded-xl font-bold hover:bg-gray-100 transition-colors inline-block"
                             >
-                                Contact Support
+                                {t("contactSupport")}
                             </Link>
                             <Link
                                 href="/faq"
                                 className="bg-transparent border-2 border-white text-white px-8 py-3 rounded-xl font-bold hover:bg-white/10 transition-colors inline-block"
                             >
-                                View FAQ
+                                {t("viewFaq")}
                             </Link>
                         </div>
                         <div className="mt-8 pt-8 border-t border-white/20">

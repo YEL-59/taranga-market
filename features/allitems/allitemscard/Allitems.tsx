@@ -10,6 +10,7 @@ import { useFavorites } from "@/context/FavoritesContext";
 import { useAllProducts } from "@/hooks/useAllProducts";
 import Link from "next/link";
 import { motion } from "framer-motion";
+import { useTranslations } from "next-intl";
 
 const getDetailLink = (item: any) => {
   return `/featured-details?id=${item.id}`;
@@ -17,6 +18,7 @@ const getDetailLink = (item: any) => {
 
 const ListingCard = ({ item }: { item: any }) => {
   const { toggleFavorite, isFavorite, isCustomer } = useFavorites();
+  const ct = useTranslations("Common");
   const fav = isFavorite(item.id);
 
   const image = item.featured_image || "";
@@ -48,7 +50,7 @@ const ListingCard = ({ item }: { item: any }) => {
         </Badge>
         {item.is_featured && (
           <Badge className="absolute right-2.5 top-2.5 rounded-full px-3 py-0.5 text-[11px] font-semibold border border-gray-200 bg-white/95 text-gray-800 hover:bg-white shadow-sm">
-            Featured
+            {ct("featured")}
           </Badge>
         )}
         {isCustomer && (
@@ -104,7 +106,7 @@ const ListingCard = ({ item }: { item: any }) => {
               variant={item.is_featured ? "default" : "outline"}
               className={`w-full rounded-xl font-semibold text-[13px] h-10 transition-all bg-white border-gray-100 text-gray-600 hover:bg-[#1D7E87] hover:text-white hover:border-[#1D7E87] cursor-pointer`}
             >
-              View Details
+              {ct("viewDetails")}
             </Button>
           </Link>
         </div>
@@ -114,6 +116,8 @@ const ListingCard = ({ item }: { item: any }) => {
 };
 
 const Allitems = () => {
+  const t = useTranslations("AllItems");
+  const ct = useTranslations("Common");
   const { products, isLoading, isLoadingMore, error, loadMore, hasMore } =
     useAllProducts();
 
@@ -132,7 +136,7 @@ const Allitems = () => {
       <div className="container mx-auto px-4">
         <div className="mb-10">
           <h2 className="text-3xl font-extrabold text-gray-900 tracking-tight">
-            All Listings
+            {t("title")}
           </h2>
         </div>
 
@@ -156,7 +160,7 @@ const Allitems = () => {
           </div>
         ) : (
           <div className="text-center py-20 text-gray-500">
-            No products found.
+            {t("noProducts")}
           </div>
         )}
 
@@ -170,10 +174,10 @@ const Allitems = () => {
               {isLoadingMore ? (
                 <div className="flex items-center gap-2">
                   <Loader2 className="w-4 h-4 animate-spin" />
-                  <span>Loading...</span>
+                  <span>{ct("loading")}</span>
                 </div>
               ) : (
-                "Load More"
+                t("loadMore")
               )}
             </Button>
           </div>

@@ -121,7 +121,7 @@ const Navbar: React.FC = () => {
           <LanguageSwitcher />
 
           {/* Favorites */}
-          <Link
+          {/* <Link
             href="/favorites"
             className="flex items-center gap-1.5 text-[#565E69] hover:text-[#227c85] relative"
             aria-label={t("favorites")}
@@ -132,7 +132,7 @@ const Navbar: React.FC = () => {
                 {favorites.length}
               </span>
             )}
-          </Link>
+          </Link> */}
 
           {user ? (
             <DropdownMenu>
@@ -160,7 +160,7 @@ const Navbar: React.FC = () => {
               >
                 <div className="flex items-center gap-3 p-3 bg-slate-50 rounded-lg mb-2">
                   <Avatar className="h-10 w-10 border-2 border-white shadow-sm">
-                    <AvatarImage src={photoUrl} alt={displayName} />
+                    <AvatarImage src={photoUrl} alt={displayName} /> 
                     <AvatarFallback className="bg-emerald-100 text-emerald-700 font-bold uppercase">
                       {displayName?.[0]}
                     </AvatarFallback>

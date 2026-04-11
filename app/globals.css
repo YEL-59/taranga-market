@@ -122,6 +122,11 @@
   body {
     @apply bg-background text-foreground;
   }
+  button, 
+  a,
+  [role="button"] {
+    @apply cursor-pointer;
+  }
 }
 
 .marque-swiper .swiper-wrapper {

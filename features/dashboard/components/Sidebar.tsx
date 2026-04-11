@@ -1,9 +1,9 @@
-"use client"
+"use client";
 
-import Link from "next/link"
-import React from "react"
-import Image from "next/image"
-import { usePathname } from "next/navigation"
+import Link from "next/link";
+import React from "react";
+import Image from "next/image";
+import { usePathname } from "next/navigation";
 import {
   LayoutDashboard,
   ListOrdered,
@@ -11,10 +11,10 @@ import {
   UserCircle,
   LogOut,
   Zap,
-  Heart
-} from "lucide-react"
-import logo from "@/assets/images/logo-nav.png"
-import { cn } from "@/lib/utils"
+  Heart,
+} from "lucide-react";
+import logo from "@/assets/images/logo-nav.png";
+import { cn } from "@/lib/utils";
 
 const sidebarLinks = [
   {
@@ -51,21 +51,21 @@ const sidebarLinks = [
       { name: "Password", href: "/dashboard/profile/password" },
     ],
   },
-]
+];
 
-import { ChevronDown } from "lucide-react"
+import { ChevronDown } from "lucide-react";
 
 export default function Sidebar() {
-  const pathname = usePathname()
-  const [openDropdowns, setOpenDropdowns] = React.useState<string[]>(["Profile"])
+  const pathname = usePathname();
+  const [openDropdowns, setOpenDropdowns] = React.useState<string[]>([
+    "Profile",
+  ]);
 
   const toggleDropdown = (name: string) => {
-    setOpenDropdowns(prev =>
-      prev.includes(name)
-        ? prev.filter(d => d !== name)
-        : [...prev, name]
-    )
-  }
+    setOpenDropdowns((prev) =>
+      prev.includes(name) ? prev.filter((d) => d !== name) : [...prev, name],
+    );
+  };
 
   return (
     <div className="w-[280px] bg-[#1a1f2e] h-screen fixed left-0 top-0 flex flex-col text-white z-50">
@@ -83,9 +83,11 @@ export default function Sidebar() {
 
       <nav className="flex-1 px-4 space-y-1">
         {sidebarLinks.map((link) => {
-          const hasSubLinks = link.subLinks && link.subLinks.length > 0
-          const isActive = pathname === link.href || (link.href !== "/dashboard" && pathname.startsWith(link.href))
-          const isOpen = openDropdowns.includes(link.name)
+          const hasSubLinks = link.subLinks && link.subLinks.length > 0;
+          const isActive =
+            pathname === link.href ||
+            (link.href !== "/dashboard" && pathname.startsWith(link.href));
+          const isOpen = openDropdowns.includes(link.name);
 
           if (hasSubLinks) {
             return (
@@ -96,28 +98,34 @@ export default function Sidebar() {
                     "flex items-center justify-between w-full gap-3 px-4 py-3 rounded-xl transition-all duration-300 group",
                     isActive && !isOpen
                       ? "bg-[#1b7d81] text-white"
-                      : "text-slate-400 hover:text-white hover:bg-white/5"
+                      : "text-slate-400 hover:text-white hover:bg-white/5",
                   )}
                 >
                   <div className="flex items-center gap-3">
-                    <link.icon className={cn(
-                      "w-5 h-5",
-                      isActive ? "text-white" : "group-hover:text-white"
-                    )} />
+                    <link.icon
+                      className={cn(
+                        "w-5 h-5",
+                        isActive ? "text-white" : "group-hover:text-white",
+                      )}
+                    />
                     <span className="font-medium">{link.name}</span>
                   </div>
-                  <ChevronDown className={cn(
-                    "w-4 h-4 transition-transform duration-300",
-                    isOpen && "rotate-180"
-                  )} />
+                  <ChevronDown
+                    className={cn(
+                      "w-4 h-4 transition-transform duration-300",
+                      isOpen && "rotate-180",
+                    )}
+                  />
                 </button>
 
-                <div className={cn(
-                  "overflow-hidden transition-all duration-300 space-y-1 ml-4",
-                  isOpen ? "max-h-40 opacity-100 py-1" : "max-h-0 opacity-0"
-                )}>
+                <div
+                  className={cn(
+                    "overflow-hidden transition-all duration-300 space-y-1 ml-4",
+                    isOpen ? "max-h-40 opacity-100 py-1" : "max-h-0 opacity-0",
+                  )}
+                >
                   {link.subLinks?.map((sub) => {
-                    const isSubActive = pathname === sub.href
+                    const isSubActive = pathname === sub.href;
                     return (
                       <Link
                         key={sub.name}
@@ -126,16 +134,16 @@ export default function Sidebar() {
                           "block px-8 py-2.5 rounded-xl text-sm font-medium transition-all",
                           isSubActive
                             ? "text-white bg-[#1b7d81]/40"
-                            : "text-slate-500 hover:text-white hover:bg-white/5"
+                            : "text-slate-500 hover:text-white hover:bg-white/5",
                         )}
                       >
                         {sub.name}
                       </Link>
-                    )
+                    );
                   })}
                 </div>
               </div>
-            )
+            );
           }
 
           return (
@@ -146,16 +154,18 @@ export default function Sidebar() {
                 "flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-300 group",
                 isActive
                   ? "bg-[#1b7d81] text-white"
-                  : "text-slate-400 hover:text-white hover:bg-white/5"
+                  : "text-slate-400 hover:text-white hover:bg-white/5",
               )}
             >
-              <link.icon className={cn(
-                "w-5 h-5",
-                isActive ? "text-white" : "group-hover:text-white"
-              )} />
+              <link.icon
+                className={cn(
+                  "w-5 h-5",
+                  isActive ? "text-white" : "group-hover:text-white",
+                )}
+              />
               <span className="font-medium">{link.name}</span>
             </Link>
-          )
+          );
         })}
       </nav>
 
@@ -166,5 +176,5 @@ export default function Sidebar() {
         </button>
       </div> */}
     </div>
-  )
+  );
 }

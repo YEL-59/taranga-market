@@ -303,9 +303,9 @@ export default function DashboardPage() {
                 ))
             ) : recentListings.length > 0 ? (
               <div className="grid gap-4">
-                {recentListings.map((listing) => (
+                {recentListings.map((listing, index) => (
                   <div
-                    key={listing.id}
+                    key={`${listing.id}-${index}`}
                     className="flex flex-col sm:flex-row sm:items-center gap-4 p-4 rounded-2xl border border-slate-100 hover:border-[#1b7d81]/30 hover:bg-[#1b7d81]/5 transition-all duration-300 group"
                   >
                     <div className="w-20 h-20 rounded-xl overflow-hidden flex-shrink-0 relative border border-slate-100 bg-white">

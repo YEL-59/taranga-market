@@ -24,7 +24,7 @@ export default function ProfileDetailsPage() {
   useEffect(() => {
     if (user) {
       setFormData({
-        full_name: user?.full_name || "",
+        full_name: user?.full_name || `${user?.first_name || ""} ${user?.last_name || ""}`.trim(),
         whatsapp_link: user?.whatsapp_link || "",
         phone_number: user?.phone_number || "",
         email: user?.email || ""
@@ -66,7 +66,8 @@ export default function ProfileDetailsPage() {
   };
 
   const displayName = user?.full_name || `${user?.first_name || ""} ${user?.last_name || ""}`.trim() || "User";
-  const photoUrl = user?.profile_photo || "";
+  const baseUrl = "https://raymondred.thesyndicates.team/";
+  const photoUrl = user?.profile_photo ? `${baseUrl}${user?.profile_photo}` : "";
 
   return (
     <div className="bg-white rounded-2xl border border-slate-100 shadow-[0_4px_24px_rgba(0,0,0,0.02)] p-2 md:p-8 space-y-8">

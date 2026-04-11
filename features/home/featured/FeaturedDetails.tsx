@@ -16,6 +16,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { toast } from 'sonner';
 import { contactListingSellerService } from '@/services/listing';
+import { useTranslations } from 'next-intl';
 
 interface FeaturedDetailsProps {
     initialData?: any;
@@ -27,6 +28,7 @@ const FeaturedDetails = ({ initialData }: FeaturedDetailsProps) => {
     const id = searchParams.get('id');
     const { productDetails, isLoading, error } = useFeaturedProductDetails(id || undefined, initialData);
     const { toggleFavorite, isFavorite, isCustomer } = useFavorites();
+    const t = useTranslations("Common");
     const [activeImage, setActiveImage] = useState<string>('');
     const [isContactModalOpen, setIsContactModalOpen] = useState(false);
     const [isSubmitting, setIsSubmitting] = useState(false);
@@ -41,12 +43,11 @@ const FeaturedDetails = ({ initialData }: FeaturedDetailsProps) => {
         if (!id) return;
 
         setIsSubmitting(true);
-        const formData = new FormData();
-        formData.append('sender_name', contactData.sender_name);
-        formData.append('sender_email', contactData.sender_email);
-        formData.append('message', contactData.message);
-
-        const res = await contactListingSellerService(id, formData);
+        const res = await contactListingSellerService(id, {
+            sender_name: contactData.sender_name,
+            sender_email: contactData.sender_email,
+            message: contactData.message
+        });
 
         if (res.success) {
             toast.success(res.message);
@@ -70,7 +71,7 @@ const FeaturedDetails = ({ initialData }: FeaturedDetailsProps) => {
         return (
             <div className="flex flex-col items-center justify-center min-h-[60vh]">
                 <Loader2 className="h-12 w-12 animate-spin text-[#2A8E8E] mb-4" />
-                <p className="text-gray-500 font-medium">Loading details...</p>
+                <p className="text-gray-500 font-medium">{t("loading")}</p>
             </div>
         );
     }
@@ -79,10 +80,10 @@ const FeaturedDetails = ({ initialData }: FeaturedDetailsProps) => {
         return (
             <div className="flex flex-col items-center justify-center min-h-[60vh] container mx-auto px-4">
                 <div className="bg-red-50 text-red-600 p-6 rounded-2xl text-center max-w-md">
-                    <h2 className="text-xl font-bold mb-2">Error Loading Product</h2>
+                    <h2 className="text-xl font-bold mb-2">{t("error")} Loading Product</h2>
                     <p className="mb-6">{error}</p>
                     <Button onClick={() => router.back()} className="bg-red-600 hover:bg-red-700 text-white border-0">
-                        Go Back
+                        {t("goBack")}
                     </Button>
                 </div>
             </div>
@@ -113,7 +114,7 @@ const FeaturedDetails = ({ initialData }: FeaturedDetailsProps) => {
                         className="flex items-center gap-2 text-gray-600 hover:text-gray-900 font-semibold transition-colors"
                     >
                         <ChevronLeft className="h-5 w-5" />
-                        <span>Back</span>
+                        <span>{t("back")}</span>
                     </button>
                     <div className="flex items-center gap-3">
                         {/* <button className="p-2.5 rounded-xl hover:bg-gray-100 text-gray-600 transition-colors">
@@ -151,7 +152,7 @@ const FeaturedDetails = ({ initialData }: FeaturedDetailsProps) => {
                             )}
                             {item.is_featured && (
                                 <Badge className="absolute top-6 left-6 bg-[#2A8E8E] text-white px-4 py-1.5 rounded-full text-sm font-bold border-0 shadow-lg">
-                                    Featured
+                                    {t("featured")}
                                 </Badge>
                             )}
                         </div>
@@ -187,7 +188,7 @@ const FeaturedDetails = ({ initialData }: FeaturedDetailsProps) => {
                                 </Badge>
                                 <div className="flex items-center gap-1.5 text-sm text-gray-400">
                                     <Calendar className="h-4 w-4" />
-                                    <span>Added {new Date(item.created_at).toLocaleDateString()}</span>
+                                    <span>{t("added")} {new Date(item.created_at).toLocaleDateString()}</span>
                                 </div>
                             </div>
 
@@ -215,7 +216,7 @@ const FeaturedDetails = ({ initialData }: FeaturedDetailsProps) => {
                         {/* Attributes/Specs if they are like the response example */}
                         {item.values && item.values.length > 0 && (
                             <div className="bg-white p-8 rounded-[32px] shadow-[0_2px_10px_rgba(0,0,0,0.02)] border border-gray-100">
-                                <h3 className="text-xl font-bold text-[#1B2232] mb-6">Specifications</h3>
+                                <h3 className="text-xl font-bold text-[#1B2232] mb-6">{t("specifications")}</h3>
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                     {item.values.map((v: any, idx: number) => (
                                         <div key={idx} className="flex items-center justify-between p-4 rounded-2xl bg-gray-50/50 border border-gray-100">
@@ -234,7 +235,7 @@ const FeaturedDetails = ({ initialData }: FeaturedDetailsProps) => {
                         <Card className="rounded-[32px] border border-gray-100 bg-white shadow-[0_4px_20px_rgba(0,0,0,0.04)] overflow-hidden">
                             <CardContent className="p-8">
                                 <div className="mb-6">
-                                    <span className="text-sm text-gray-400 font-medium block mb-1">Price</span>
+                                    <span className="text-sm text-gray-400 font-medium block mb-1">{t("price")}</span>
                                     <div className="text-4xl font-extrabold text-[#F97316]">
                                         {price}
                                     </div>
@@ -245,7 +246,7 @@ const FeaturedDetails = ({ initialData }: FeaturedDetailsProps) => {
                                         className="w-full h-14 rounded-2xl bg-[#2A8E8E] hover:bg-[#1D7E87] text-white font-bold text-lg shadow-lg shadow-[#2A8E8E]/20"
                                     >
                                         <MessageCircle className="mr-2 h-5 w-5" />
-                                        Message Seller
+                                        {t("messageSeller")}
                                     </Button>
                                     <Button
                                         onClick={() => item.user?.phone_number ? window.open(`tel:${item.user.phone_number}`, '_self') : null}
@@ -253,7 +254,7 @@ const FeaturedDetails = ({ initialData }: FeaturedDetailsProps) => {
                                         className="w-full h-14 rounded-2xl border-gray-200 text-gray-700 font-bold text-lg hover:bg-gray-50"
                                     >
                                         <Phone className="mr-2 h-5 w-5 text-[#2A8E8E]" />
-                                        Call Seller
+                                        {t("callSeller")}
                                     </Button>
                                 </div>
                             </CardContent>
@@ -264,7 +265,7 @@ const FeaturedDetails = ({ initialData }: FeaturedDetailsProps) => {
 
                             <Card className="rounded-[32px] border border-gray-100 bg-white shadow-[0_4px_20px_rgba(0,0,0,0.04)] overflow-hidden">
                                 <CardContent className="p-8">
-                                    <h3 className="text-xl font-bold text-[#1B2232] mb-6">Seller Information</h3>
+                                    <h3 className="text-xl font-bold text-[#1B2232] mb-6">{t("sellerInfo")}</h3>
                                     <div className="flex items-center gap-4 mb-6">
                                         <div className="relative w-16 h-16 rounded-2xl overflow-hidden bg-gray-100">
                                             {(() => {
@@ -290,7 +291,7 @@ const FeaturedDetails = ({ initialData }: FeaturedDetailsProps) => {
 
                                     <div className="space-y-4">
                                         <div className="flex items-center justify-between text-sm">
-                                            <span className="text-gray-400">Joined</span>
+                                            <span className="text-gray-400">{t("joined")}</span>
                                             <span className="font-bold text-[#1B2232]">{new Date(item.user.created_at).toLocaleDateString()}</span>
                                         </div>
                                         {/* <div className="flex items-center justify-between text-sm">
@@ -298,7 +299,7 @@ const FeaturedDetails = ({ initialData }: FeaturedDetailsProps) => {
                                             <span className="font-bold text-[#1B2232]">{item.user.limit || 0}</span>
                                         </div> */}
                                         <div className="flex items-center justify-between text-sm">
-                                            <span className="text-gray-400">Email</span>
+                                            <span className="text-gray-400">{t("email")}</span>
                                             <span className="font-bold text-[#1B2232]">{item.user.email || 0}</span>
                                         </div>
                                     </div>
@@ -307,7 +308,7 @@ const FeaturedDetails = ({ initialData }: FeaturedDetailsProps) => {
                                         variant="ghost"
                                         className="w-full mt-6 text-[#2A8E8E] font-bold hover:bg-[#2A8E8E]/5"
                                     >
-                                        View Seller Profile
+                                        {t("viewSeller")}
                                     </Button>
                                 </CardContent>
                             </Card>
@@ -320,22 +321,22 @@ const FeaturedDetails = ({ initialData }: FeaturedDetailsProps) => {
             <Dialog open={isContactModalOpen} onOpenChange={setIsContactModalOpen}>
                 <DialogContent className="sm:max-w-md rounded-3xl p-6 bg-white border-0 shadow-2xl">
                     <DialogHeader className="mb-4">
-                        <DialogTitle className="text-2xl font-bold text-[#1B2232]">Contact Seller</DialogTitle>
+                        <DialogTitle className="text-2xl font-bold text-[#1B2232]">{t("contactSeller")}</DialogTitle>
                     </DialogHeader>
                     <form onSubmit={handleContactSubmit} className="space-y-4">
                         <div className="space-y-2">
-                            <Label htmlFor="sender_name" className="text-gray-700 font-medium">Your Name</Label>
+                            <Label htmlFor="sender_name" className="text-gray-700 font-medium">{t("yourName")}</Label>
                             <Input
                                 id="sender_name"
                                 value={contactData.sender_name}
                                 onChange={(e) => setContactData({ ...contactData, sender_name: e.target.value })}
                                 required
                                 className="h-12 rounded-xl bg-gray-50 border-gray-200 focus:border-[#2A8E8E] focus:ring-[#2A8E8E]"
-                                placeholder="Enter your full name"
+                                placeholder={t("namePlaceholder")}
                             />
                         </div>
                         <div className="space-y-2">
-                            <Label htmlFor="sender_email" className="text-gray-700 font-medium">Your Email</Label>
+                            <Label htmlFor="sender_email" className="text-gray-700 font-medium">{t("yourEmail")}</Label>
                             <Input
                                 id="sender_email"
                                 type="email"
@@ -343,11 +344,11 @@ const FeaturedDetails = ({ initialData }: FeaturedDetailsProps) => {
                                 onChange={(e) => setContactData({ ...contactData, sender_email: e.target.value })}
                                 required
                                 className="h-12 rounded-xl bg-gray-50 border-gray-200 focus:border-[#2A8E8E] focus:ring-[#2A8E8E]"
-                                placeholder="Enter your email address"
+                                placeholder={t("emailPlaceholder")}
                             />
                         </div>
                         <div className="space-y-2">
-                            <Label htmlFor="message" className="text-gray-700 font-medium">Message</Label>
+                            <Label htmlFor="message" className="text-gray-700 font-medium">{t("message")}</Label>
                             <Textarea
                                 id="message"
                                 value={contactData.message}
@@ -355,7 +356,7 @@ const FeaturedDetails = ({ initialData }: FeaturedDetailsProps) => {
                                 required
                                 rows={4}
                                 className="resize-none rounded-xl bg-gray-50 border-gray-200 focus:border-[#2A8E8E] focus:ring-[#2A8E8E]"
-                                placeholder="I am interested in this listing..."
+                                placeholder={t("messagePlaceholder")}
                             />
                         </div>
                         <Button
@@ -368,7 +369,7 @@ const FeaturedDetails = ({ initialData }: FeaturedDetailsProps) => {
                             ) : (
                                 <MessageCircle className="mr-2 h-5 w-5" />
                             )}
-                            {isSubmitting ? 'Sending...' : 'Send Message'}
+                            {isSubmitting ? t("sending") : t("sendMessage")}
                         </Button>
                     </form>
                 </DialogContent>
