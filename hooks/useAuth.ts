@@ -70,8 +70,7 @@ export const useAuth = () => {
                     setUser(result.data.user);
                 }
                 toast.success(result.message || "Registration successful. Please verify your email.");
-                router.push(`/verify-otp?email=${data.email}&mode=register`);
-                router.refresh();
+                router.push(`/verify-otp?email=${encodeURIComponent(data.email)}&mode=register`);
             } else {
                 setError(result.message || "Registration failed or missing data");
                 toast.error(result.message || "Registration failed or missing data");
@@ -87,11 +86,11 @@ export const useAuth = () => {
         }
     };
 
-    const sendOtp = async (email: string) => {
+    const sendOtp = async (email: string, purpose?: string) => {
         setIsLoading(true);
         setError(null);
         try {
-            const result = await sendOtpService(email);
+            const result = await sendOtpService(email, purpose);
             if (result.success) {
                 toast.success(result.message || "OTP sent successfully");
                 // Handle success (e.g., redirect to verify-otp page)

@@ -7,10 +7,13 @@ import { getCategoriesService, searchListingsService } from "@/services/listing"
 import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { ReactLenis } from "lenis/react";
+import { useTranslations } from "next-intl";
 
 
 
 const SearchHero: React.FC = () => {
+  const t = useTranslations("SearchHero");
+  const ct = useTranslations("Common");
   const router = useRouter();
   const [query, setQuery] = useState("");
   const [city, setCity] = useState("");
@@ -93,7 +96,7 @@ const SearchHero: React.FC = () => {
               <Search className="w-5 md:w-6 text-[#ff6b3d]" />
             </div>
             <div className="flex flex-col w-full min-w-0">
-              <span className="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-0.5">What?</span>
+              <span className="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-0.5">{t("what")}</span>
               <input
                 type="text"
                 value={query}
@@ -102,7 +105,7 @@ const SearchHero: React.FC = () => {
                   setShowDropdown(true);
                 }}
                 onFocus={() => setShowDropdown(true)}
-                placeholder="Item, service, keyword..."
+                placeholder={t("whatPlaceholder")}
                 className="w-full outline-none text-gray-800 placeholder:text-gray-400 font-bold text-sm md:text-base bg-transparent truncate"
               />
             </div>
@@ -114,7 +117,7 @@ const SearchHero: React.FC = () => {
               <MapPin className="w-5 md:w-6 text-[#227c85]" />
             </div>
             <div className="flex flex-col w-full min-w-0">
-              <span className="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-0.5">City</span>
+              <span className="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-0.5">{t("city")}</span>
               <input
                 type="text"
                 value={city}
@@ -123,7 +126,7 @@ const SearchHero: React.FC = () => {
                   setShowDropdown(true);
                 }}
                 onFocus={() => setShowDropdown(true)}
-                placeholder="Dhaka, Lagos..."
+                placeholder={t("cityPlaceholder")}
                 className="w-full outline-none text-gray-800 placeholder:text-gray-400 font-bold text-sm md:text-base bg-transparent truncate"
               />
             </div>
@@ -135,7 +138,7 @@ const SearchHero: React.FC = () => {
               <Globe className="w-5 md:w-6 text-indigo-500" />
             </div>
             <div className="flex flex-col w-full min-w-0">
-              <span className="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-0.5">State</span>
+              <span className="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-0.5">{t("state")}</span>
               <input
                 type="text"
                 value={state}
@@ -144,7 +147,7 @@ const SearchHero: React.FC = () => {
                   setShowDropdown(true);
                 }}
                 onFocus={() => setShowDropdown(true)}
-                placeholder="Bangladesh, Nigeria..."
+                placeholder={t("statePlaceholder")}
                 className="w-full outline-none text-gray-800 placeholder:text-gray-400 font-bold text-sm md:text-base bg-transparent truncate"
               />
             </div>
@@ -155,7 +158,7 @@ const SearchHero: React.FC = () => {
             type="submit"
             className="md:ml-2 mt-2 md:mt-0 bg-gradient-to-br from-[#227c85] to-[#1a636a] hover:from-[#1b636a] hover:to-[#124b51] text-white flex items-center justify-center gap-2 px-8 py-4 md:py-5 rounded-2xl transition-all duration-300 shadow-xl shadow-[#227c85]/20 hover:shadow-[#227c85]/40 active:scale-[0.98] shrink-0"
           >
-            <span className="font-extrabold text-base whitespace-nowrap">Search Now</span>
+            <span className="font-extrabold text-base whitespace-nowrap">{t("searchNow")}</span>
             <Search className="w-5 h-5" />
           </button>
         </div>
@@ -175,21 +178,21 @@ const SearchHero: React.FC = () => {
                     <div className="w-12 h-12 border-4 border-[#227c85]/20 border-t-[#227c85] rounded-full animate-spin" />
                     <Search className="w-5 h-5 text-[#227c85] absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2" />
                   </div>
-                  <span className="text-sm font-bold text-gray-400 animate-pulse">Searching the marketplace...</span>
+                  <span className="text-sm font-bold text-gray-400 animate-pulse">{t("searching")}</span>
                 </div>
               ) : searchResults.length > 0 ? (
                 <ReactLenis options={{ lerp: 0.1, duration: 1.2, smoothWheel: true }} className="max-h-[450px] overflow-y-auto w-full p-2">
                   <div className="px-6 py-4 border-b border-gray-50 flex items-center justify-between sticky top-0 bg-white z-10">
                     <div className="flex flex-col">
-                      <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Matching Items</span>
-                      <span className="text-xs font-bold text-gray-600">Showing top results</span>
+                      <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">{t("matchingItems")}</span>
+                      <span className="text-xs font-bold text-gray-600">{t("showingTopResults")}</span>
                     </div>
-                    <span className="text-xs font-bold text-[#227c85] bg-[#227c85]/10 px-3 py-1.5 rounded-full">{searchResults.length} Results</span>
+                    <span className="text-xs font-bold text-[#227c85] bg-[#227c85]/10 px-3 py-1.5 rounded-full">{searchResults.length} {t("results")}</span>
                   </div>
                   <div className="p-2 space-y-1">
-                    {searchResults.map((item) => (
+                    {searchResults.map((item, index) => (
                       <div
-                        key={item.id}
+                        key={`${item.id || ""}-${index}`}
                         onClick={() => router.push(`/featured-details?id=${item.id}`)}
                         className="flex items-center gap-4 px-4 py-3 hover:bg-[#227c85]/5 cursor-pointer transition-all duration-200 rounded-2xl group border border-transparent hover:border-[#227c85]/10"
                       >
@@ -220,7 +223,7 @@ const SearchHero: React.FC = () => {
                     onClick={handleSearch}
                     className="w-full text-center py-4 mt-2 text-sm font-black text-[#227c85] hover:bg-[#227c85] hover:text-white transition-all duration-300 rounded-2xl group flex items-center justify-center gap-2"
                   >
-                    Explore All Results
+                    {t("exploreAll")}
                     <LinkIcon className="w-4 h-4 transition-transform group-hover:translate-x-1" />
                   </button>
                 </ReactLenis>
@@ -231,9 +234,9 @@ const SearchHero: React.FC = () => {
                     <div className="absolute -bottom-1 -right-1 w-6 h-6 bg-red-50 rounded-full flex items-center justify-center text-red-500 font-bold text-xs ring-4 ring-white">!</div>
                   </div>
                   <div className="max-w-[250px]">
-                    <h3 className="text-lg font-bold text-gray-800">No matches found</h3>
+                    <h3 className="text-lg font-bold text-gray-800">{t("noMatchTitle")}</h3>
                     <p className="text-xs text-gray-500 mt-2 leading-relaxed">
-                      We couldn't find anyone listing "{query}" in {city || "everywhere"}. Try different keywords or locations!
+                      {t("noMatchDesc", { query: query, location: city || state || "everywhere" })}
                     </p>
                   </div>
                 </div>

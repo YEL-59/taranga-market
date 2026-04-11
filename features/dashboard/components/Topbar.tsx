@@ -21,7 +21,10 @@ interface TopbarProps {
 export default function Topbar({ title }: TopbarProps) {
   const { user, logout } = useAuth()
   const displayName = user?.full_name || `${user?.first_name || ""} ${user?.last_name || ""}`.trim() || user?.name || "User"
-  const photoUrl = user?.profile_photo || ""
+  const baseUrl = "https://raymondred.thesyndicates.team/"
+  const photoUrl = user?.profile_photo 
+    ? (user.profile_photo.startsWith("http") ? user.profile_photo : `${baseUrl}${user.profile_photo}`) 
+    : ""
 
   return (
     <header className="h-[72px] bg-white border-b border-slate-100 flex items-center justify-between px-8 sticky top-0 z-40">

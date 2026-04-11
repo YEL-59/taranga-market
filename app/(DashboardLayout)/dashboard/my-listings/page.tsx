@@ -1,9 +1,9 @@
-"use client"
+"use client";
 
 import React, { useState, useEffect } from "react"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import { Edit2, Eye, Trash2, Plus, ChevronLeft, ChevronRight, Loader2, Rocket, BarChart3, Info, CreditCard } from "lucide-react"
+import { Edit2, Eye, Trash2, Plus, ChevronLeft, ChevronRight, Loader2, Rocket, BarChart3, Info, CreditCard, Clock } from "lucide-react"
 import Image from "next/image"
 import Link from "next/link"
 import { getMyListingsService, getListingDetailsService, deleteListingService, getBoostPlansService, requestBoostService, getBoostStatsService } from "@/services/listing"
@@ -15,28 +15,28 @@ import {
   DialogTitle,
   DialogDescription,
   DialogFooter,
-} from "@/components/ui/dialog"
+} from "@/components/ui/dialog";
 
 const tabs = ["All", "Approved", "Pending"]
 
 export default function MyListingsPage() {
-  const [activeTab, setActiveTab] = useState("All")
-  const [listings, setListings] = useState<any[]>([])
-  const [boostPlans, setBoostPlans] = useState<any[]>([])
-  const [pagination, setPagination] = useState<any>(null)
-  const [isLoading, setIsLoading] = useState(true)
-  const [isBoostingItem, setIsBoostingItem] = useState<number | null>(null)
-  const [currentPage, setCurrentPage] = useState(1)
+  const [activeTab, setActiveTab] = useState("All");
+  const [listings, setListings] = useState<any[]>([]);
+  const [boostPlans, setBoostPlans] = useState<any[]>([]);
+  const [pagination, setPagination] = useState<any>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isBoostingItem, setIsBoostingItem] = useState<number | null>(null);
+  const [currentPage, setCurrentPage] = useState(1);
 
   // Details Modal State
-  const [selectedListing, setSelectedListing] = useState<any>(null)
-  const [isDetailsOpen, setIsDetailsOpen] = useState(false)
-  const [isDetailLoading, setIsDetailLoading] = useState(false)
+  const [selectedListing, setSelectedListing] = useState<any>(null);
+  const [isDetailsOpen, setIsDetailsOpen] = useState(false);
+  const [isDetailLoading, setIsDetailLoading] = useState(false);
 
   // Delete Modal State
-  const [listingToDelete, setListingToDelete] = useState<any>(null)
-  const [isDeleteOpen, setIsDeleteOpen] = useState(false)
-  const [isDeleting, setIsDeleting] = useState(false)
+  const [listingToDelete, setListingToDelete] = useState<any>(null);
+  const [isDeleteOpen, setIsDeleteOpen] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   // Boost Stats Modal State
   const [isStatsOpen, setIsStatsOpen] = useState(false)
@@ -63,27 +63,27 @@ export default function MyListingsPage() {
   }
 
   const fetchListings = async (page: number) => {
-    setIsLoading(true)
+    setIsLoading(true);
     try {
       const [listingsResult, boostPlansResult] = await Promise.all([
         getMyListingsService(page),
-        getBoostPlansService()
-      ])
+        getBoostPlansService(),
+      ]);
 
       if (listingsResult.success && listingsResult.data) {
-        setListings(listingsResult.data.data)
-        setPagination(listingsResult.data)
+        setListings(listingsResult.data.data);
+        setPagination(listingsResult.data);
       }
 
       if (boostPlansResult.success && boostPlansResult.data) {
-        setBoostPlans(boostPlansResult.data)
+        setBoostPlans(boostPlansResult.data);
       }
     } catch (error) {
-      console.error("Failed to fetch dashboard data:", error)
+      console.error("Failed to fetch dashboard data:", error);
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
-  }
+  };
 
   // Boost Modal State
   const [isBoostModalOpen, setIsBoostModalOpen] = useState(false)
@@ -110,78 +110,78 @@ export default function MyListingsPage() {
     try {
       const result = await requestBoostService(listingId, planId, paymentMethod)
       if (result.success) {
-        if (result.data?.payment_url) {
+        const paymentUrl = result.data?.payment_url || result.data?.data?.payment_url;
+        if (paymentUrl) {
           toast.success("Redirecting to payment...")
-          window.location.href = result.data.payment_url
+          window.location.href = paymentUrl
           return
         }
         toast.success(result.message || "Boost activated successfully!")
         setIsBoostModalOpen(false)
         fetchListings(currentPage)
       } else {
-        toast.error(result.message || "Failed to submit boost request")
+        toast.error(result.message || "Failed to submit boost request");
       }
     } catch (error) {
-      toast.error("An error occurred while requesting boost")
+      toast.error("An error occurred while requesting boost");
     } finally {
-      setIsBoostingItem(null)
+      setIsBoostingItem(null);
     }
-  }
-
+  };
 
   useEffect(() => {
-    fetchListings(currentPage)
-  }, [currentPage])
+    fetchListings(currentPage);
+  }, [currentPage]);
 
   const handleViewDetails = async (id: number) => {
-    setIsDetailLoading(true)
-    setIsDetailsOpen(true)
+    setIsDetailLoading(true);
+    setIsDetailsOpen(true);
     try {
-      const result = await getListingDetailsService(id)
+      const result = await getListingDetailsService(id);
       if (result.success) {
-        setSelectedListing(result.data)
+        setSelectedListing(result.data);
       } else {
-        toast.error(result.message)
-        setIsDetailsOpen(false)
+        toast.error(result.message);
+        setIsDetailsOpen(false);
       }
     } catch (error) {
-      toast.error("Failed to fetch listing details")
+      toast.error("Failed to fetch listing details");
     } finally {
-      setIsDetailLoading(false)
+      setIsDetailLoading(false);
     }
-  }
+  };
 
   const handleDeleteListing = async () => {
-    if (!listingToDelete) return
-    setIsDeleting(true)
+    if (!listingToDelete) return;
+    setIsDeleting(true);
     try {
-      const result = await deleteListingService(listingToDelete.id)
+      const result = await deleteListingService(listingToDelete.id);
       if (result.success) {
-        toast.success(result.message)
-        setListings(prev => prev.filter(l => l.id !== listingToDelete.id))
-        setIsDeleteOpen(false)
+        toast.success(result.message);
+        setListings((prev) => prev.filter((l) => l.id !== listingToDelete.id));
+        setIsDeleteOpen(false);
       } else {
-        toast.error(result.message)
+        toast.error(result.message);
       }
     } catch (error) {
-      toast.error("Failed to delete listing")
+      toast.error("Failed to delete listing");
     } finally {
-      setIsDeleting(false)
+      setIsDeleting(false);
     }
-  }
+  };
 
   const formatDate = (dateString: string) => {
     try {
-      const date = new Date(dateString)
+      const date = new Date(dateString);
       return date.toLocaleDateString("en-US", {
         year: "numeric",
         month: "long",
         day: "numeric",
-      })
+      });
     } catch (e) {
-      return dateString
+      return dateString;
     }
-  }
+  };
 
   const getStatusColor = (status: string) => {
     switch (status.toLowerCase()) {
@@ -193,21 +193,25 @@ export default function MyListingsPage() {
       case 'sold':
         return 'bg-blue-50 text-blue-600 border-blue-100'
       default:
-        return 'bg-slate-50 text-slate-600 border-slate-100'
+        return "bg-slate-50 text-slate-600 border-slate-100";
     }
-  }
+  };
 
-  const filteredListings = listings.filter(item => {
-    if (activeTab === "All") return true
-    return item.status.toLowerCase() === activeTab.toLowerCase()
-  })
+  const filteredListings = listings.filter((item) => {
+    if (activeTab === "All") return true;
+    return item.status.toLowerCase() === activeTab.toLowerCase();
+  });
 
   return (
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h2 className="text-2xl font-bold text-slate-800 tracking-tight">My Listings</h2>
-          <p className="text-slate-500 mt-1 text-sm">Manage, edit and monitor your business listings</p>
+          <h2 className="text-2xl font-bold text-slate-800 tracking-tight">
+            My Listings
+          </h2>
+          <p className="text-slate-500 mt-1 text-sm">
+            Manage, edit and monitor your business listings
+          </p>
         </div>
         <Link href="/dashboard/add-listing">
           <Button className="bg-[#1b7d81] hover:bg-[#16666a] gap-2 rounded-xl h-11 px-6 shadow-sm shadow-[#1b7d81]/20 transition-all active:scale-95">
@@ -222,10 +226,11 @@ export default function MyListingsPage() {
           <button
             key={tab}
             onClick={() => setActiveTab(tab)}
-            className={`px-6 py-2 rounded-xl text-sm font-bold transition-all ${activeTab === tab
-              ? "bg-[#4f6eed] text-white shadow-md shadow-blue-100"
-              : "text-slate-500 hover:bg-slate-50 hover:text-slate-700"
-              }`}
+            className={`px-6 py-2 rounded-xl text-sm font-bold transition-all ${
+              activeTab === tab
+                ? "bg-[#4f6eed] text-white shadow-md shadow-blue-100"
+                : "text-slate-500 hover:bg-slate-50 hover:text-slate-700"
+            }`}
           >
             {tab}
           </button>
@@ -241,7 +246,9 @@ export default function MyListingsPage() {
             </div>
             <div className="text-center">
               <p className="text-slate-700 font-bold">Loading Listings</p>
-              <p className="text-slate-400 text-xs mt-1">Please wait a moment...</p>
+              <p className="text-slate-400 text-xs mt-1">
+                Please wait a moment...
+              </p>
             </div>
           </div>
         ) : (
@@ -262,12 +269,22 @@ export default function MyListingsPage() {
                 <tbody className="divide-y divide-slate-50">
                   {filteredListings.length > 0 ? (
                     filteredListings.map((item) => (
-                      <tr key={item.id} className="hover:bg-slate-50/50 transition-colors group">
+                      <tr
+                        key={item.id}
+                        className="hover:bg-slate-50/50 transition-colors group"
+                      >
                         <td className="px-6 py-5">
                           <div className="flex items-center gap-4">
                             <div className="w-14 h-14 rounded-xl overflow-hidden relative border border-slate-100 bg-slate-50 shrink-0">
-                              {item.featured_image && typeof item.featured_image === 'string' && !item.featured_image.includes("No image") ? (
-                                <Image src={item.featured_image} alt={item.title} fill className="object-cover group-hover:scale-110 transition-transform duration-500" />
+                              {item.featured_image &&
+                              typeof item.featured_image === "string" &&
+                              !item.featured_image.includes("No image") ? (
+                                <Image
+                                  src={item.featured_image}
+                                  alt={item.title}
+                                  fill
+                                  className="object-cover group-hover:scale-110 transition-transform duration-500"
+                                />
                               ) : (
                                 <div className="w-full h-full flex items-center justify-center bg-slate-100 text-[#1b7d81]/30">
                                   <Plus className="w-6 h-6" />
@@ -275,7 +292,9 @@ export default function MyListingsPage() {
                               )}
                             </div>
                             <div className="min-w-0">
-                              <p className="text-sm font-bold text-slate-700 truncate max-w-[280px] group-hover:text-[#4f6eed] transition-colors">{item.title}</p>
+                              <p className="text-sm font-bold text-slate-700 truncate max-w-[280px] group-hover:text-[#4f6eed] transition-colors">
+                                {item.title}
+                              </p>
                               <p className="text-xs text-slate-400 font-medium mt-0.5 flex items-center gap-1">
                                 {item.location}
                               </p>
@@ -283,10 +302,15 @@ export default function MyListingsPage() {
                           </div>
                         </td>
                         <td className="px-6 py-5">
-                          <span className="text-sm font-extrabold text-slate-600">{item.price} CFA</span>
+                          <span className="text-sm font-extrabold text-slate-600">
+                            {item.price} CFA
+                          </span>
                         </td>
                         <td className="px-6 py-5">
-                          <Badge variant="outline" className={`${getStatusColor(item.status)} font-extrabold px-3 py-1 text-[10px] uppercase tracking-wider`}>
+                          <Badge
+                            variant="outline"
+                            className={`${getStatusColor(item.status)} font-extrabold px-3 py-1 text-[10px] uppercase tracking-wider`}
+                          >
                             {item.status}
                           </Badge>
                         </td>
@@ -342,9 +366,6 @@ export default function MyListingsPage() {
                         </td>
                         <td className="px-6 py-5">
                           <div className="flex items-center justify-end gap-1.5">
-                            {/* <button className="p-2 text-blue-500 hover:bg-blue-50 rounded-xl transition-all active:scale-90" title="Edit">
-                              <Edit2 className="w-4 h-4" />
-                            </button> */}
                             <button
                               onClick={() => handleViewDetails(item.id)}
                               className="p-2 text-slate-400 hover:bg-slate-100 rounded-xl transition-all active:scale-90"
@@ -354,8 +375,8 @@ export default function MyListingsPage() {
                             </button>
                             <button
                               onClick={() => {
-                                setListingToDelete(item)
-                                setIsDeleteOpen(true)
+                                setListingToDelete(item);
+                                setIsDeleteOpen(true);
                               }}
                               className="p-2 text-orange-500 hover:bg-orange-50 rounded-xl transition-all active:scale-90"
                               title="Delete"
@@ -374,8 +395,13 @@ export default function MyListingsPage() {
                             <Plus className="w-10 h-10 text-slate-200" />
                           </div>
                           <div className="space-y-1">
-                            <p className="text-slate-800 font-bold">No Records Found</p>
-                            <p className="text-slate-400 text-sm max-w-[250px] mx-auto">You haven't added any listings yet or none match this filter.</p>
+                            <p className="text-slate-800 font-bold">
+                              No Records Found
+                            </p>
+                            <p className="text-slate-400 text-sm max-w-[250px] mx-auto">
+                              You haven't added any listings yet or none match
+                              this filter.
+                            </p>
                           </div>
                           <Link href="/dashboard/add-listing">
                             <Button className="bg-[#1b7d81] hover:bg-[#16666a] text-xs font-bold rounded-xl h-10 px-6">
@@ -393,7 +419,11 @@ export default function MyListingsPage() {
             {pagination && pagination.last_page > 1 && (
               <div className="mt-auto px-6 py-6 border-t border-slate-50 flex flex-col sm:flex-row items-center justify-between gap-4 bg-slate-50/30">
                 <p className="text-xs text-slate-500 font-bold uppercase tracking-wider">
-                  Showing <span className="text-[#4f6eed]">{pagination.from}</span> to <span className="text-[#4f6eed]">{pagination.to}</span> of <span className="text-slate-900">{pagination.total}</span> Total
+                  Showing{" "}
+                  <span className="text-[#4f6eed]">{pagination.from}</span> to{" "}
+                  <span className="text-[#4f6eed]">{pagination.to}</span> of{" "}
+                  <span className="text-slate-900">{pagination.total}</span>{" "}
+                  Total
                 </p>
                 <div className="flex items-center gap-1.5">
                   <Button
@@ -401,19 +431,23 @@ export default function MyListingsPage() {
                     size="icon"
                     className="w-9 h-9 rounded-xl border-slate-200 bg-white hover:bg-slate-50 transition-all active:scale-90"
                     disabled={currentPage === 1}
-                    onClick={() => setCurrentPage(prev => prev - 1)}
+                    onClick={() => setCurrentPage((prev) => prev - 1)}
                   >
                     <ChevronLeft className="w-4 h-4" />
                   </Button>
 
-                  {Array.from({ length: pagination.last_page }, (_, i) => i + 1).map((page) => (
+                  {Array.from(
+                    { length: pagination.last_page },
+                    (_, i) => i + 1,
+                  ).map((page) => (
                     <Button
                       key={page}
                       variant={currentPage === page ? "default" : "outline"}
-                      className={`w-9 h-9 rounded-xl font-bold text-xs p-0 transition-all active:scale-90 ${currentPage === page
-                        ? "bg-[#4f6eed] hover:bg-[#435ec9] border-[#4f6eed] shadow-md shadow-blue-100 text-white"
-                        : "border-slate-200 bg-white text-slate-600 hover:bg-slate-50"
-                        }`}
+                      className={`w-9 h-9 rounded-xl font-bold text-xs p-0 transition-all active:scale-90 ${
+                        currentPage === page
+                          ? "bg-[#4f6eed] hover:bg-[#435ec9] border-[#4f6eed] shadow-md shadow-blue-100 text-white"
+                          : "border-slate-200 bg-white text-slate-600 hover:bg-slate-50"
+                      }`}
                       onClick={() => setCurrentPage(page)}
                     >
                       {page}
@@ -425,7 +459,7 @@ export default function MyListingsPage() {
                     size="icon"
                     className="w-9 h-9 rounded-xl border-slate-200 bg-white hover:bg-slate-50 transition-all active:scale-90"
                     disabled={currentPage === pagination.last_page}
-                    onClick={() => setCurrentPage(prev => prev + 1)}
+                    onClick={() => setCurrentPage((prev) => prev + 1)}
                   >
                     <ChevronRight className="w-4 h-4" />
                   </Button>
@@ -448,7 +482,9 @@ export default function MyListingsPage() {
             <div className="flex flex-col">
               {/* Header Image Part */}
               <div className="relative h-64 w-full bg-slate-100">
-                {selectedListing.featured_image && typeof selectedListing.featured_image === 'string' && !selectedListing.featured_image.includes("No image") ? (
+                {selectedListing.featured_image &&
+                typeof selectedListing.featured_image === "string" &&
+                !selectedListing.featured_image.includes("No image") ? (
                   <Image
                     src={selectedListing.featured_image}
                     alt={selectedListing.title}
@@ -458,11 +494,15 @@ export default function MyListingsPage() {
                 ) : (
                   <div className="w-full h-full flex flex-col items-center justify-center text-slate-300">
                     <Plus className="w-12 h-12 mb-2" />
-                    <span className="text-sm font-bold uppercase tracking-widest">No Featured Image</span>
+                    <span className="text-sm font-bold uppercase tracking-widest">
+                      No Featured Image
+                    </span>
                   </div>
                 )}
                 <div className="absolute top-4 left-4">
-                  <Badge className={`${getStatusColor(selectedListing.status)} px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider border-0 shadow-lg`}>
+                  <Badge
+                    className={`${getStatusColor(selectedListing.status)} px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider border-0 shadow-lg`}
+                  >
                     {selectedListing.status}
                   </Badge>
                 </div>
@@ -474,12 +514,14 @@ export default function MyListingsPage() {
                   <div className="flex items-center gap-2 text-xs font-bold text-[#1b7d81] uppercase tracking-[0.2em]">
                     <span>{selectedListing.category?.name}</span>
                     <span className="w-1 h-1 rounded-full bg-slate-300"></span>
-                    <span className="text-slate-400">{selectedListing.location}</span>
+                    <span className="text-slate-400">
+                      {selectedListing.location}
+                    </span>
                   </div>
                   <h2 className="text-3xl font-extrabold text-slate-900 leading-tight">
                     {selectedListing.title}
                   </h2>
-                  <div className="text-2xl font-black text-[#4f6eed] mt-2">
+                  <div className="text-2xl font-bold text-[#4f6eed] mt-2">
                     {selectedListing.price} CFA
                   </div>
                 </div>
@@ -487,27 +529,35 @@ export default function MyListingsPage() {
                 {/* Info Grid */}
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-6 p-6 bg-slate-50 rounded-3xl border border-slate-100">
                   <div className="flex flex-col gap-1">
-                    <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Views</span>
+                    <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">
+                      Views
+                    </span>
                     <span className="text-sm font-bold text-slate-700 flex items-center gap-1.5">
                       <Eye className="w-3.5 h-3.5 text-slate-400" />
                       {selectedListing.views_count}
                     </span>
                   </div>
                   <div className="flex flex-col gap-1">
-                    <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Created On</span>
-                    <span className="text-sm font-bold text-slate-700">{formatDate(selectedListing.created_at)}</span>
+                    <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">
+                      Created On
+                    </span>
+                    <span className="text-sm font-bold text-slate-700">
+                      {formatDate(selectedListing.created_at)}
+                    </span>
                   </div>
                   <div className="flex flex-col gap-1">
-                    <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Featured</span>
+                    <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">
+                      Featured
+                    </span>
                     <span className="text-sm font-bold text-slate-700">
-                      {selectedListing.is_featured ? 'Yes' : 'No'}
+                      {selectedListing.is_featured ? "Yes" : "No"}
                     </span>
                   </div>
                 </div>
 
                 {/* Description */}
                 <div className="space-y-4">
-                  <h3 className="text-sm font-black text-slate-800 uppercase tracking-widest flex items-center gap-3">
+                  <h3 className="text-sm font-bold text-slate-800 uppercase tracking-widest flex items-center gap-3">
                     Description
                     <div className="flex-1 h-px bg-slate-100"></div>
                   </h3>
@@ -517,39 +567,54 @@ export default function MyListingsPage() {
                 </div>
 
                 {/* Additional Attributes if any */}
-                {selectedListing.values && selectedListing.values.length > 0 && (
-                  <div className="space-y-4">
-                    <h3 className="text-sm font-black text-slate-800 uppercase tracking-widest flex items-center gap-3">
-                      Specifications
-                      <div className="flex-1 h-px bg-slate-100"></div>
-                    </h3>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                      {selectedListing.values.map((v: any, idx: number) => (
-                        <div key={idx} className="flex items-center gap-3 p-3 bg-white border border-slate-50 rounded-2xl shadow-sm text-sm">
-                          <div className="w-1.5 h-1.5 rounded-full bg-[#1b7d81]"></div>
-                          <span className="text-slate-600 font-medium">{v.value}</span>
-                        </div>
-                      ))}
+                {selectedListing.values &&
+                  selectedListing.values.length > 0 && (
+                    <div className="space-y-4">
+                      <h3 className="text-sm font-bold text-slate-800 uppercase tracking-widest flex items-center gap-3">
+                        Specifications
+                        <div className="flex-1 h-px bg-slate-100"></div>
+                      </h3>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        {selectedListing.values.map((v: any, idx: number) => (
+                          <div
+                            key={idx}
+                            className="flex items-center gap-3 p-3 bg-white border border-slate-50 rounded-2xl shadow-sm text-sm"
+                          >
+                            <div className="w-1.5 h-1.5 rounded-full bg-[#1b7d81]"></div>
+                            <span className="text-slate-600 font-medium">
+                              {v.value}
+                            </span>
+                          </div>
+                        ))}
+                      </div>
                     </div>
-                  </div>
-                )}
+                  )}
 
                 {/* Image Gallery */}
-                {selectedListing.images && selectedListing.images.length > 0 && (
-                  <div className="space-y-4">
-                    <h3 className="text-sm font-black text-slate-800 uppercase tracking-widest flex items-center gap-3">
-                      Gallery
-                      <div className="flex-1 h-px bg-slate-100"></div>
-                    </h3>
-                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-                      {selectedListing.images.map((img: any) => (
-                        <div key={img.id} className="relative aspect-square rounded-2xl overflow-hidden border border-slate-100 hover:ring-2 hover:ring-[#4f6eed] transition-all cursor-pointer">
-                          <Image src={img.image_path} alt="" fill className="object-cover" />
-                        </div>
-                      ))}
+                {selectedListing.images &&
+                  selectedListing.images.length > 0 && (
+                    <div className="space-y-4">
+                      <h3 className="text-sm font-bold text-slate-800 uppercase tracking-widest flex items-center gap-3">
+                        Gallery
+                        <div className="flex-1 h-px bg-slate-100"></div>
+                      </h3>
+                      <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                        {selectedListing.images.map((img: any) => (
+                          <div
+                            key={img.id}
+                            className="relative aspect-square rounded-2xl overflow-hidden border border-slate-100 hover:ring-2 hover:ring-[#4f6eed] transition-all cursor-pointer"
+                          >
+                            <Image
+                              src={img.image_path}
+                              alt=""
+                              fill
+                              className="object-cover"
+                            />
+                          </div>
+                        ))}
+                      </div>
                     </div>
-                  </div>
-                )}
+                  )}
               </div>
             </div>
           ) : null}
@@ -564,10 +629,15 @@ export default function MyListingsPage() {
               <Trash2 className="w-8 h-8" />
             </div>
             <div className="space-y-2">
-              <h3 className="text-xl font-black text-slate-900">Are you absolutely sure?</h3>
+              <h3 className="text-xl font-bold text-slate-900">
+                Are you absolutely sure?
+              </h3>
               <p className="text-slate-500 text-sm">
-                This action cannot be undone. This will permanently delete your listing: <br />
-                <span className="font-bold text-slate-700">"{listingToDelete?.title}"</span>
+                This action cannot be undone. This will permanently delete your
+                listing: <br />
+                <span className="font-bold text-slate-700">
+                  "{listingToDelete?.title}"
+                </span>
               </p>
             </div>
             <div className="flex flex-col sm:flex-row gap-3 pt-2">
@@ -583,7 +653,11 @@ export default function MyListingsPage() {
                 disabled={isDeleting}
                 className="flex-1 bg-red-600 hover:bg-red-700 text-white rounded-xl h-12 font-bold shadow-lg shadow-red-100 active:scale-95 transition-all"
               >
-                {isDeleting ? <Loader2 className="w-4 h-4 animate-spin" /> : "Yes, Delete It"}
+                {isDeleting ? (
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                ) : (
+                  "Yes, Delete It"
+                )}
               </Button>
             </div>
           </div>
@@ -614,170 +688,110 @@ export default function MyListingsPage() {
             <div className="space-y-3">
               <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest px-1">Choose Payment Provider</label>
               <div className="grid grid-cols-1 gap-3">
-                {/* <button 
-                  onClick={() => setSelectedPaymentMethod("orange_money")}
-                  className={`p-4 rounded-2xl border-2 transition-all flex items-center gap-4 group ${selectedPaymentMethod === "orange_money" 
-                    ? "border-[#1b7d81] bg-[#1b7d81]/5 shadow-lg shadow-[#1b7d81]/10" 
-                    : "border-slate-100 hover:border-slate-200"
-                  }`}
-                >
-                  <div className={`w-10 h-10 rounded-xl flex items-center justify-center font-black text-[10px] shrink-0 transition-colors ${selectedPaymentMethod === "orange_money" ? "bg-[#1b7d81] text-white" : "bg-slate-100 text-slate-400"}`}>OM</div>
-                  <div className="text-left">
-                    <p className={`text-[10px] font-bold uppercase ${selectedPaymentMethod === "orange_money" ? "text-slate-800" : "text-slate-400"}`}>Orange Money</p>
-                    <p className="text-[9px] font-medium text-slate-400">Secure Mobile Payment</p>
-                  </div>
-                </button>
-
-                <button 
-                  onClick={() => setSelectedPaymentMethod("wave")}
-                  className={`p-4 rounded-2xl border-2 transition-all flex items-center gap-4 group ${selectedPaymentMethod === "wave" 
-                    ? "border-[#4f6eed] bg-[#4f6eed]/5 shadow-lg shadow-[#4f6eed]/10" 
-                    : "border-slate-100 hover:border-slate-200"
-                  }`}
-                >
-                  <div className={`w-10 h-10 rounded-xl text-white font-black text-[10px] items-center justify-center shrink-0 flex transition-colors ${selectedPaymentMethod === "wave" ? "bg-[#4f6eed]" : "bg-slate-100 text-slate-400"}`}>Wave</div>
-                  <div className="text-left">
-                    <p className={`text-[10px] font-bold uppercase ${selectedPaymentMethod === "wave" ? "text-slate-800" : "text-slate-400"}`}>Wave Senegal</p>
-                    <p className="text-[9px] font-medium text-slate-400">Instant Transfer</p>
-                  </div>
-                </button> */}
-
                 <button
-                  onClick={() => setSelectedPaymentMethod("stripe")}
-                  className={`p-4 rounded-2xl border-2 transition-all flex items-center gap-4 group ${selectedPaymentMethod === "stripe"
-                    ? "border-[#6366f1] bg-[#6366f1]/5 shadow-lg shadow-[#6366f1]/10"
-                    : "border-slate-100 hover:border-slate-200"
-                    }`}
+                    onClick={() => setSelectedPaymentMethod("stripe")}
+                    className={`p-4 rounded-2xl border-2 transition-all flex items-center gap-4 ${selectedPaymentMethod === "stripe"
+                        ? "border-[#6366f1] bg-[#6366f1]/5 shadow-xl shadow-[#6366f1]/10"
+                        : "border-slate-100 hover:border-slate-200"
+                        }`}
                 >
-                  <div className={`w-10 h-10 rounded-xl text-white font-black text-[10px] items-center justify-center shrink-0 flex transition-colors ${selectedPaymentMethod === "stripe" ? "bg-[#6366f1]" : "bg-slate-100 text-slate-400"}`}>
-                    <CreditCard className="w-5 h-5" />
-                  </div>
-                  <div className="text-left">
-                    <p className={`text-[10px] font-bold uppercase ${selectedPaymentMethod === "stripe" ? "text-slate-800" : "text-slate-400"}`}>Credit / Debit Card</p>
-                    <p className="text-[9px] font-medium text-slate-400">Visa, Mastercard, etc.</p>
-                  </div>
+                    <div className={`w-10 h-10 rounded-xl text-white font-black text-xs flex items-center justify-center shrink-0 transition-colors ${selectedPaymentMethod === "stripe" ? "bg-[#6366f1]" : "bg-slate-100 text-slate-400"}`}>
+                        <CreditCard className="w-5 h-5" />
+                    </div>
+                    <div className="text-left">
+                        <p className={`text-[10px] font-black uppercase ${selectedPaymentMethod === "stripe" ? "text-slate-900" : "text-slate-400"}`}>Credit / Debit Card</p>
+                        <p className="text-[9px] font-medium text-slate-400">Visa, Mastercard via Stripe</p>
+                    </div>
                 </button>
               </div>
             </div>
 
             <Button
-              onClick={() => selectedListingForBoost && selectedPlanForBoost && executeBoostRequest(selectedListingForBoost, selectedPlanForBoost.id, selectedPaymentMethod)}
-              disabled={isBoostingItem !== null}
-              className="w-full h-14 rounded-2xl bg-slate-900 hover:bg-black text-white font-black text-sm uppercase tracking-widest transition-all active:scale-[0.98] mt-2 group shadow-xl shadow-slate-100"
+                onClick={() => selectedListingForBoost && selectedPlanForBoost && executeBoostRequest(selectedListingForBoost, selectedPlanForBoost.id, selectedPaymentMethod)}
+                disabled={isBoostingItem !== null}
+                className="w-full h-16 rounded-[24px] bg-slate-900 hover:bg-black text-white font-black text-sm uppercase tracking-widest transition-all active:scale-[0.98] shadow-2xl shadow-slate-200"
             >
-              {isBoostingItem !== null ? (
-                <Loader2 className="w-5 h-5 animate-spin mr-2" />
-              ) : (
-                <>
-                  Pay & Activate
-                  <Rocket className="w-4 h-4 ml-2 group-hover:translate-x-1 group-hover:translate-y-[-4px] transition-transform" />
-                </>
-              )}
+                {isBoostingItem !== null ? (
+                    <Loader2 className="w-5 h-5 animate-spin" />
+                ) : (
+                    <>
+                        Confirm Activation
+                        <Rocket className="w-4 h-4 ml-2 fill-current text-white/80" />
+                    </>
+                )}
             </Button>
-
-            <p className="text-center text-[10px] text-slate-400 font-medium">By proceeding, you agree to our premium service terms.</p>
           </div>
         </DialogContent>
       </Dialog>
       {/* Boost Stats Modal */}
       <Dialog open={isStatsOpen} onOpenChange={setIsStatsOpen}>
-        <DialogContent className="max-w-md p-0 rounded-[32px] border-none shadow-2xl overflow-hidden">
-          <div className="p-8 space-y-8 bg-white">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-4">
-                <div className="w-14 h-14 rounded-2xl bg-orange-50 flex items-center justify-center text-orange-500 shadow-sm">
-                  <BarChart3 className="w-8 h-8" strokeWidth={2.5} />
-                </div>
-                <div>
-                  <h3 className="text-2xl font-black text-slate-900 uppercase tracking-tighter">Boost <span className="text-[#1b7d81]">Analytics</span></h3>
-                  <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mt-0.5">Real-time Performance Metrics</p>
-                </div>
-              </div>
-            </div>
-
-            {statsLoading ? (
-              <div className="py-24 flex flex-col items-center justify-center space-y-4">
-                <div className="relative">
-                  <Loader2 className="w-12 h-12 animate-spin text-[#1b7d81]" />
-                  <BarChart3 className="w-5 h-5 text-[#1b7d81]/40 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2" />
-                </div>
-                <p className="text-slate-400 text-[10px] font-black uppercase tracking-widest animate-pulse">Synchronizing Data...</p>
-              </div>
-            ) : currentStats?.analytics ? (
-              <div className="space-y-6">
-                {/* Main Stats Card */}
-                <div className="grid grid-cols-2 gap-5">
-                  <div className="p-6 rounded-[28px] bg-slate-50 border border-slate-100 shadow-sm transition-all hover:bg-white hover:shadow-lg group">
-                    <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 group-hover:text-[#1b7d81] transition-colors">Total Impressions</p>
-                    <div className="flex flex-col gap-1">
-                      <p className="text-4xl font-black text-slate-900 tracking-tight">{currentStats.analytics.total_impressions.toLocaleString()}</p>
-                      <span className="text-[11px] text-emerald-500 font-black flex items-center gap-0.5 uppercase">
-                        +{currentStats.analytics.impressions_change_percent}%
-                        <Rocket className="w-3 h-3 ml-0.5" />
-                      </span>
+                <DialogContent className="max-w-md p-0 rounded-[32px] border-none shadow-2xl overflow-hidden">
+                    <div className="h-32 bg-slate-900 flex items-center justify-center relative overflow-hidden">
+                        <BarChart3 className="w-24 h-24 text-white/5 absolute -right-4 -bottom-4 rotate-12" />
+                        <div className="text-center relative z-10">
+                            <h3 className="text-xl font-black text-white uppercase tracking-widest">Boost Performance</h3>
+                            <p className="text-white/40 text-[10px] font-bold uppercase tracking-widest mt-1">Real-time engagement stats</p>
+                        </div>
                     </div>
-                  </div>
-                  <div className="p-6 rounded-[28px] bg-[#1b7d81]/5 border border-[#1b7d81]/10 shadow-sm transition-all hover:bg-white hover:shadow-lg group">
-                    <p className="text-[10px] font-black text-[#1b7d81]/60 uppercase tracking-widest mb-2">Boost Days</p>
-                    <div className="flex items-baseline gap-1">
-                      <p className="text-4xl font-black text-[#1b7d81] tracking-tight">
-                        {Number(currentStats.analytics.boost_days_remaining).toFixed(1)}
-                      </p>
-                      <span className="text-sm font-black text-[#1b7d81]/50 uppercase">d</span>
+
+                    <div className="p-8 space-y-8 bg-white">
+                        {statsLoading ? (
+                            <div className="py-12 flex flex-col items-center justify-center space-y-4">
+                                <Loader2 className="w-8 h-8 animate-spin text-[#1b7d81]" />
+                                <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Calculating Data...</p>
+                            </div>
+                        ) : currentStats ? (
+                            <>
+                                <div className="grid grid-cols-2 gap-4">
+                                    <div className="p-6 rounded-3xl bg-slate-50 border border-slate-100">
+                                        <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Total Views</p>
+                                        <p className="text-3xl font-black text-slate-900">{currentStats.total_views || 0}</p>
+                                    </div>
+                                    <div className="p-6 rounded-3xl bg-[#1b7d81]/5 border border-[#1b7d81]/10">
+                                        <p className="text-[10px] font-black text-[#1b7d81] uppercase tracking-widest mb-1">Boost Lift</p>
+                                        <p className="text-3xl font-black text-[#1b7d81]">+{currentStats.boost_lift || 0}%</p>
+                                    </div>
+                                </div>
+
+                                <div className="space-y-4">
+                                    <h4 className="text-[10px] font-black text-slate-400 uppercase tracking-widest px-1">Engagement Details</h4>
+                                    <div className="space-y-3">
+                                        <div className="flex items-center justify-between p-4 rounded-2xl bg-white border border-slate-100">
+                                            <div className="flex items-center gap-3">
+                                                <div className="w-8 h-8 rounded-lg bg-blue-50 flex items-center justify-center text-blue-500">
+                                                    <Info className="w-4 h-4" />
+                                                </div>
+                                                <span className="text-xs font-bold text-slate-600">Daily Average Views</span>
+                                            </div>
+                                            <span className="font-black text-slate-900 text-sm">{currentStats.daily_avg || 0}</span>
+                                        </div>
+                                        <div className="flex items-center justify-between p-4 rounded-2xl bg-white border border-slate-100">
+                                            <div className="flex items-center gap-3">
+                                                <div className="w-8 h-8 rounded-lg bg-amber-50 flex items-center justify-center text-amber-500">
+                                                    <Clock className="w-4 h-4" />
+                                                </div>
+                                                <span className="text-xs font-bold text-slate-600">Remaining Time</span>
+                                            </div>
+                                            <span className="font-black text-slate-900 text-sm">{currentStats.time_left || 'Ended'}</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <Button 
+                                    onClick={() => setIsStatsOpen(false)}
+                                    className="w-full h-14 rounded-2xl bg-slate-900 hover:bg-black text-white font-black text-[10px] uppercase tracking-widest"
+                                >
+                                    Close report
+                                </Button>
+                            </>
+                        ) : (
+                            <div className="py-10 text-center">
+                                <p className="text-slate-500 text-sm">No statistics available for this boost yet.</p>
+                            </div>
+                        )}
                     </div>
-                  </div>
-                </div>
-
-                <div className="bg-slate-900 rounded-[32px] p-8 text-white relative overflow-hidden shadow-2xl">
-                  <div className="absolute top-0 right-0 w-32 h-32 bg-[#1b7d81]/20 blur-3xl" />
-                  <div className="absolute -right-6 -bottom-6 opacity-10 rotate-[15deg]">
-                    <Rocket className="w-32 h-32" />
-                  </div>
-
-                  <div className="relative z-10 space-y-5">
-                    <div className="flex items-center gap-2.5">
-                      <div className="w-6 h-6 rounded-lg bg-[#1b7d81] flex items-center justify-center">
-                        <Info className="w-3.5 h-3.5 text-white" />
-                      </div>
-                      <span className="text-[11px] font-black uppercase tracking-[0.2em] text-[#1b7d81]">Strategic Insight</span>
-                    </div>
-                    <p className="text-base font-bold leading-relaxed italic border-l-2 border-[#1b7d81]/30 pl-4 py-1">
-                      "{currentStats.analytics.insight?.message}"
-                    </p>
-                  </div>
-                </div>
-
-                <div className="pt-6 border-t border-slate-50 flex items-center justify-between px-2">
-                  <div className="flex flex-col">
-                    <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Active Since</span>
-                    <span className="text-sm font-bold text-slate-800">{formatDate(currentStats.analytics.active_since)}</span>
-                  </div>
-                  <div className="flex flex-col text-right">
-                    <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Status</span>
-                    <span className="flex items-center gap-1.5 text-emerald-500 font-black uppercase text-[10px]">
-                      <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                      Live
-                    </span>
-                  </div>
-                </div>
-              </div>
-            ) : (
-              <div className="py-20 text-center">
-                <p className="text-slate-400 text-sm">No statistics available yet.</p>
-              </div>
-            )}
-
-            <Button
-              onClick={() => setIsStatsOpen(false)}
-              className="w-full h-14 rounded-2xl bg-[#1b7d81] hover:bg-[#16666a] text-white font-black text-sm uppercase tracking-widest"
-            >
-              Close Insights
-            </Button>
-          </div>
-        </DialogContent>
-      </Dialog>
+                </DialogContent>
+            </Dialog>
     </div>
-  )
+  );
 }
-
-

@@ -56,7 +56,7 @@ export default function SubscriptionsPage() {
             const result = await requestSubscriptionService(planId, cycle, paymentMethod);
             console.log("Subscription Request Result:", result);
             if (result.success) {
-                const paymentUrl = result.data?.payment_url || result.payment_url;
+                const paymentUrl = result.data?.payment_url || result.data?.data?.payment_url;
                 if (paymentUrl) {
                     toast.success("Redirecting to payment...");
                     window.location.href = paymentUrl;
@@ -314,34 +314,6 @@ export default function SubscriptionsPage() {
                         <div className="space-y-4">
                             <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest px-1">Choose Payment Method</label>
                             <div className="grid grid-cols-1 gap-3">
-                                {/* <button 
-                                    onClick={() => setSelectedPaymentMethod("orange_money")}
-                                    className={`p-4 rounded-2xl border-2 transition-all flex items-center gap-4 ${selectedPaymentMethod === "orange_money" 
-                                        ? "border-[#1b7d81] bg-[#1b7d81]/5 shadow-xl shadow-[#1b7d81]/10" 
-                                        : "border-slate-100 hover:border-slate-200"
-                                    }`}
-                                >
-                                    <div className={`w-10 h-10 rounded-xl flex items-center justify-center font-black text-xs shrink-0 transition-colors ${selectedPaymentMethod === "orange_money" ? "bg-[#1b7d81] text-white" : "bg-slate-100 text-slate-400"}`}>OM</div>
-                                    <div className="text-left">
-                                        <p className={`text-[10px] font-black uppercase ${selectedPaymentMethod === "orange_money" ? "text-slate-900" : "text-slate-400"}`}>Orange Money</p>
-                                        <p className="text-[9px] font-medium text-slate-400">Mobile Payment</p>
-                                    </div>
-                                </button>
-
-                                <button 
-                                    onClick={() => setSelectedPaymentMethod("wave")}
-                                    className={`p-4 rounded-2xl border-2 transition-all flex items-center gap-4 ${selectedPaymentMethod === "wave" 
-                                        ? "border-[#4f6eed] bg-[#4f6eed]/5 shadow-xl shadow-[#4f6eed]/10" 
-                                        : "border-slate-100 hover:border-slate-200"
-                                    }`}
-                                >
-                                    <div className={`w-10 h-10 rounded-xl text-white font-black text-xs flex items-center justify-center shrink-0 transition-colors ${selectedPaymentMethod === "wave" ? "bg-[#4f6eed]" : "bg-slate-100 text-slate-400"}`}>Wave</div>
-                                    <div className="text-left">
-                                        <p className={`text-[10px] font-black uppercase ${selectedPaymentMethod === "wave" ? "text-slate-900" : "text-slate-400"}`}>Wave Senegal</p>
-                                        <p className="text-[9px] font-medium text-slate-400">Instant Mobile Pay</p>
-                                    </div>
-                                </button> */}
-
                                 <button
                                     onClick={() => setSelectedPaymentMethod("stripe")}
                                     className={`p-4 rounded-2xl border-2 transition-all flex items-center gap-4 ${selectedPaymentMethod === "stripe"
@@ -387,9 +359,23 @@ export default function SubscriptionsPage() {
     );
 }
 
-// Extra icons needed for bottom info
 function Layers({ className }: { className?: string }) {
-    return (
-        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><polygon points="12 2 2 7 12 12 22 7 12 2" /><polyline points="2 17 12 22 22 17" /><polyline points="2 12 12 17 22 12" /></svg>
-    )
+  return (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className={className}
+    >
+      <polygon points="12 2 2 7 12 12 22 7 12 2" />
+      <polyline points="2 17 12 22 22 17" />
+      <polyline points="2 12 12 17 22 12" />
+    </svg>
+  );
 }

@@ -119,7 +119,7 @@ const Footer = () => {
             <ul className="flex flex-col gap-4">
               {[
                 { key: "home", href: "/" },
-                { key: "myFavorites", href: "/favorites" },
+                // { key: "myFavorites", href: "/favorites" },
                 { key: "aboutUs", href: "/about" },
                 { key: "contactUs", href: "/contact" },
                 { key: "faqs", href: "/faq" },
