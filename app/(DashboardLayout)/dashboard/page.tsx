@@ -1,31 +1,26 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
-import {
-  Package,
-  CheckCircle2,
-  Clock,
-  Eye,
-  Loader2,
-  ChevronLeft,
-  ChevronRight,
-} from "lucide-react";
-import Image from "next/image";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import {
-  getDashboardSummaryService,
-  getRecentListingsService,
-} from "@/services/listing";
-import { cn } from "@/lib/utils";
+import React, { useState, useEffect } from "react"
+import { Package, CheckCircle2, Clock, Eye, Loader2, ChevronLeft, ChevronRight, Zap } from "lucide-react"
+import Image from "next/image"
+import { Badge } from "@/components/ui/badge"
+import { Button } from "@/components/ui/button"
+import Link from "next/link"
+import { getDashboardSummaryService, getRecentListingsService } from "@/services/listing"
+import { cn } from "@/lib/utils"
+import { useMySubscription } from "@/hooks/useMySubscription"
+import { useMyBoosts } from "@/hooks/useMyBoosts"
 
 export default function DashboardPage() {
-  const [summary, setSummary] = useState<any>(null);
-  const [recentListings, setRecentListings] = useState<any[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [isRecentLoading, setIsRecentLoading] = useState(false);
-  const [currentPage, setCurrentPage] = useState(1);
-  const [pagination, setPagination] = useState<any>(null);
+  const [summary, setSummary] = useState<any>(null)
+  const [recentListings, setRecentListings] = useState<any[]>([])
+  const [isLoading, setIsLoading] = useState(true)
+  const [isRecentLoading, setIsRecentLoading] = useState(false)
+  const [currentPage, setCurrentPage] = useState(1)
+  const [pagination, setPagination] = useState<any>(null)
+  
+  const { subscription, hasSubscription, isLoading: isSubLoading } = useMySubscription()
+  const { boosts, isLoading: isBoostsLoading } = useMyBoosts()
 
   const fetchSummary = async () => {
     try {
@@ -170,6 +165,113 @@ export default function DashboardPage() {
               ))}
         </div>
       </section>
+
+      {/* Subscription & Activity Section */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        {/* Subscription Current Status */}
+        <div className="lg:col-span-1">
+          <div className="bg-white rounded-3xl border border-slate-100 shadow-[0_8px_30px_rgba(0,0,0,0.04)] h-full overflow-hidden flex flex-col">
+            <div className="p-6 border-b border-slate-50 bg-[#1b7d81]/5">
+              <h3 className="font-bold text-slate-800 flex items-center gap-2">
+                <CheckCircle2 className="w-5 h-5 text-[#1b7d81]" />
+                Subscription Status
+              </h3>
+            </div>
+            <div className="p-8 flex-1 flex flex-col justify-center text-center space-y-6">
+              {isSubLoading ? (
+                 <div className="flex justify-center"><Loader2 className="w-8 h-8 animate-spin text-[#1b7d81]" /></div>
+              ) : hasSubscription && subscription ? (
+                <>
+                  <div className="space-y-2">
+                    <Badge className="bg-[#1b7d81] text-white rounded-full px-4 py-1 text-[10px] font-black uppercase tracking-widest border-0 mb-2">
+                      {(subscription.plan?.name || subscription.plan_name || "Free")} Plan
+                    </Badge>
+                    <p className="text-3xl font-black text-slate-900 leading-tight">
+                      Active until<br />
+                      <span className="text-[#1b7d81] font-extrabold uppercase text-lg tracking-tight">
+                        {formatDate(subscription.ends_at)}
+                      </span>
+                    </p>
+                  </div>
+                  <div className="grid grid-cols-2 gap-4 mt-4">
+                    <div className="p-4 rounded-2xl bg-slate-50 border border-slate-100">
+                      <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Boosts Left</p>
+                      <p className="text-2xl font-black text-[#1b7d81]">{subscription.free_boosts_remaining ?? 0}</p>
+                    </div>
+                    <div className="p-4 rounded-2xl bg-slate-50 border border-slate-100">
+                      <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Discount</p>
+                      <p className="text-2xl font-black text-[#1b7d81]">{subscription.plan?.boost_discount_percent ?? subscription.boost_discount_percent ?? 0}%</p>
+                    </div>
+                  </div>
+                </>
+              ) : (
+                <div className="space-y-4">
+                  <div className="w-16 h-16 bg-slate-50 rounded-full flex items-center justify-center text-slate-300 mx-auto">
+                    <Package className="w-8 h-8" />
+                  </div>
+                  <div>
+                    <p className="text-slate-800 font-bold uppercase tracking-wider text-xs">No Active Plan</p>
+                    <p className="text-slate-400 text-[10px] mt-1 uppercase font-bold tracking-widest">Upgrade to premium features</p>
+                  </div>
+                  <Link href="/dashboard/subscriptions" className="w-full">
+                    <Button className="w-full bg-[#1b7d81] hover:bg-[#16666a] rounded-xl font-black text-[10px] h-10 uppercase tracking-widest">
+                      View Plans
+                    </Button>
+                  </Link>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+
+        {/* Active Boosts */}
+        <div className="lg:col-span-2">
+          <div className="bg-white rounded-3xl border border-slate-100 shadow-[0_8px_30px_rgba(0,0,0,0.04)] h-full overflow-hidden">
+            <div className="p-6 border-b border-slate-50 flex items-center justify-between">
+              <h3 className="font-bold text-slate-800 flex items-center gap-2">
+                <Zap className="w-5 h-5 text-amber-500 fill-amber-500" />
+                Active Boosts
+              </h3>
+              <Badge variant="outline" className="bg-amber-50 text-amber-600 border-amber-100 text-[10px] font-bold px-2 py-0.5 uppercase tracking-widest">
+                {boosts.length} Boosted
+              </Badge>
+            </div>
+            <div className="p-6">
+              {isBoostsLoading ? (
+                <div className="py-10 flex justify-center"><Loader2 className="w-8 h-8 animate-spin text-[#1b7d81]" /></div>
+              ) : boosts.length > 0 ? (
+                <div className="space-y-4">
+                  {boosts.map((boost, idx) => (
+                    <div key={idx} className="flex items-center justify-between p-4 rounded-2xl bg-amber-50/30 border border-amber-100/50">
+                      <div className="flex items-center gap-4">
+                        <div className="w-12 h-12 rounded-xl bg-amber-100 flex items-center justify-center text-amber-600 shrink-0">
+                          <Zap className="w-6 h-6 fill-current" />
+                        </div>
+                        <div>
+                          <h4 className="font-bold text-slate-800 text-sm line-clamp-1">{boost.listing_title}</h4>
+                          <p className="text-[10px] text-slate-500 uppercase font-black tracking-widest">{boost.boost_plan}</p>
+                        </div>
+                      </div>
+                      <div className="text-right">
+                        <p className="text-[10px] font-black text-amber-600 uppercase tracking-widest mb-1">Expires</p>
+                        <p className="text-xs font-black text-slate-700">{formatDate(boost.expires_at)}</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="py-10 text-center space-y-3">
+                  <Zap className="w-10 h-10 text-slate-200 mx-auto" />
+                  <div>
+                    <p className="text-slate-800 font-bold text-sm">No Boosts Active</p>
+                    <p className="text-slate-400 text-xs">Boost your listings to get more visibility</p>
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      </div>
 
       <section>
         <div className="bg-white rounded-3xl border border-slate-100 shadow-[0_8px_30px_rgba(0,0,0,0.04)] overflow-hidden">
@@ -334,3 +436,6 @@ export default function DashboardPage() {
     </div>
   );
 }
+
+
+

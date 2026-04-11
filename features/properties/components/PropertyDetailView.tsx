@@ -12,7 +12,15 @@ interface PropertyDetailViewProps {
 }
 
 const PropertyDetailView: React.FC<PropertyDetailViewProps> = ({ item, onBack }) => {
-    const [mainImage, setMainImage] = useState(item.image);
+    const mainImg = item.featured_image ? (item.featured_image.startsWith('http') ? item.featured_image : `https://raymondred.thesyndicates.team/${item.featured_image}`) : (item.image || '');
+    const [mainImage, setMainImage] = useState(mainImg);
+    const city = item.location || item.city || 'Senegal';
+    const priceStr = item.price ? (item.price.toString().includes('CFA') ? item.price : `${Number(item.price).toLocaleString()} CFA`) : 'Price on request';
+    
+    // safe fallbacks
+    const meta = item.meta || { bedrooms: 0, bathrooms: 0 };
+    const seller = item.seller || { name: 'Verified Seller', since: 'Member since 2024', image: 'https://images.unsplash.com/photo-1599566150163-29194dcaad36?q=80&w=200&auto=format&fit=crop' };
+    const thumbs = Array.isArray(item.thumbs) ? item.thumbs.map((t: string) => t.startsWith('http') ? t : `https://raymondred.thesyndicates.team/${t}`) : [mainImg];
 
     return (
         <div className="w-full py-8 animate-in fade-in duration-500">
@@ -26,10 +34,10 @@ const PropertyDetailView: React.FC<PropertyDetailViewProps> = ({ item, onBack })
                     {/* Gallery Section */}
                     <div className="space-y-4">
                         <div className="relative aspect-[16/9] w-full rounded-2xl overflow-hidden bg-gray-100 shadow-sm">
-                            <Image src={mainImage} alt={item.title} fill className="object-cover transition-all duration-300" />
+                            {mainImage && <Image src={mainImage} alt={item.title || "Property"} fill className="object-cover transition-all duration-300" />}
                         </div>
                         <div className="grid grid-cols-4 gap-4">
-                            {[item.image, ...item.thumbs.slice(1)].map((thumb: string, idx: number) => (
+                            {thumbs.slice(0, 4).map((thumb: string, idx: number) => (
                                 <div 
                                     key={idx} 
                                     onClick={() => setMainImage(thumb)}
@@ -50,10 +58,10 @@ const PropertyDetailView: React.FC<PropertyDetailViewProps> = ({ item, onBack })
                                 <h1 className="text-2xl lg:text-3xl font-extrabold text-[#1B2232] mb-3 leading-tight">{item.title}</h1>
                                 <div className="flex items-center gap-2 text-gray-400 text-[14px]">
                                     <MapPin className="w-4 h-4" />
-                                    <span>{item.location}</span>
+                                    <span>{city}</span>
                                 </div>
                             </div>
-                            <span className="text-2xl lg:text-3xl font-bold text-[#F97316] whitespace-nowrap">{item.price}</span>
+                            <span className="text-2xl lg:text-3xl font-bold text-[#F97316] whitespace-nowrap">{priceStr}</span>
                         </div>
 
                         {/* Quick Stats */}
@@ -61,12 +69,12 @@ const PropertyDetailView: React.FC<PropertyDetailViewProps> = ({ item, onBack })
                             <div className="bg-gray-50 rounded-2xl p-4 flex flex-col items-center justify-center gap-2 border border-gray-100/50">
                                 <Bed className="w-6 h-6 text-[#1D7E87]" />
                                 <span className="text-[12px] text-gray-400 uppercase font-bold tracking-wider">Bedrooms</span>
-                                <span className="text-[16px] font-bold text-gray-700">{item.meta.bedrooms}</span>
+                                <span className="text-[16px] font-bold text-gray-700">{meta.bedrooms}</span>
                             </div>
                             <div className="bg-gray-50 rounded-2xl p-4 flex flex-col items-center justify-center gap-2 border border-gray-100/50">
                                 <Bath className="w-6 h-6 text-[#1D7E87]" />
                                 <span className="text-[12px] text-gray-400 uppercase font-bold tracking-wider">Bathrooms</span>
-                                <span className="text-[16px] font-bold text-gray-700">{item.meta.bathrooms}</span>
+                                <span className="text-[16px] font-bold text-gray-700">{meta.bathrooms}</span>
                             </div>
                             <div className="bg-gray-50 rounded-2xl p-4 flex flex-col items-center justify-center gap-2 border border-gray-100/50">
                                 <Wifi className="w-6 h-6 text-[#1D7E87]" />
@@ -110,11 +118,11 @@ const PropertyDetailView: React.FC<PropertyDetailViewProps> = ({ item, onBack })
                     <Card className="rounded-2xl border-gray-100 shadow-sm p-6 lg:p-8 sticky top-24">
                         <div className="flex items-center gap-5 mb-10">
                             <div className="relative w-16 h-16 rounded-full overflow-hidden bg-gray-100 border-2 border-white shadow-sm">
-                                <Image src={item.seller.image} alt={item.seller.name} fill className="object-cover" />
+                                {seller.image && <Image src={seller.image} alt={seller.name} fill className="object-cover" />}
                             </div>
                             <div>
-                                <h3 className="text-[18px] font-extrabold text-[#1B2232]">{item.seller.name}</h3>
-                                <p className="text-gray-400 text-[13px]">{item.seller.since}</p>
+                                <h3 className="text-[18px] font-extrabold text-[#1B2232]">{seller.name}</h3>
+                                <p className="text-gray-400 text-[13px]">{seller.since}</p>
                             </div>
                         </div>
 

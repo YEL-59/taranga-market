@@ -12,7 +12,15 @@ interface VehicleDetailViewProps {
 }
 
 const VehicleDetailView: React.FC<VehicleDetailViewProps> = ({ item, onBack }) => {
-    const [mainImage, setMainImage] = useState(item.image);
+    const mainImg = item.featured_image ? (item.featured_image.startsWith('http') ? item.featured_image : `https://raymondred.thesyndicates.team/${item.featured_image}`) : (item.image || '');
+    const [mainImage, setMainImage] = useState(mainImg);
+    const city = item.location || item.city || 'Senegal';
+    const priceStr = item.price ? (item.price.toString().includes('CFA') ? item.price : `${Number(item.price).toLocaleString()} CFA`) : 'Price on request';
+    
+    // safe fallbacks
+    const meta = item.meta || { make: 'Toyota', model: 'Camry', year: '2024', mileage: '0 km', transmission: 'Auto', fuelType: 'Petrol' };
+    const seller = item.seller || { name: 'Verified Seller', since: 'Member since 2024', image: 'https://images.unsplash.com/photo-1599566150163-29194dcaad36?q=80&w=200&auto=format&fit=crop' };
+    const thumbs = Array.isArray(item.thumbs) ? item.thumbs.map((t: string) => t.startsWith('http') ? t : `https://raymondred.thesyndicates.team/${t}`) : [mainImg];
 
     return (
         <div className="w-full py-8 animate-in fade-in duration-500">
@@ -25,10 +33,10 @@ const VehicleDetailView: React.FC<VehicleDetailViewProps> = ({ item, onBack }) =
                 <div className="lg:col-span-2 space-y-6">
                     <div className="space-y-4">
                         <div className="relative aspect-[16/9] w-full rounded-2xl overflow-hidden bg-gray-100 shadow-sm">
-                            <Image src={mainImage} alt={item.title} fill className="object-cover transition-all duration-300" />
+                            {mainImage && <Image src={mainImage} alt={item.title || "Vehicle"} fill className="object-cover transition-all duration-300" />}
                         </div>
                         <div className="grid grid-cols-4 gap-4">
-                            {[item.image, ...item.thumbs.slice(1)].map((thumb: string, idx: number) => (
+                            {thumbs.slice(0, 4).map((thumb: string, idx: number) => (
                                 <div 
                                     key={idx} 
                                     onClick={() => setMainImage(thumb)}
@@ -48,14 +56,14 @@ const VehicleDetailView: React.FC<VehicleDetailViewProps> = ({ item, onBack }) =
                                 <h1 className="text-xl md:text-2xl font-extrabold text-[#1B2232] mb-2">{item.title}</h1>
                                 <div className="flex items-center gap-2 text-gray-400 text-[13.5px]">
                                     <MapPin className="w-4 h-4" />
-                                    <span>{item.location}</span>
+                                    <span>{city}</span>
                                 </div>
                             </div>
-                            <span className="text-xl md:text-2xl font-bold text-[#F97316]">{item.price}</span>
+                            <span className="text-xl md:text-2xl font-bold text-[#F97316]">{priceStr}</span>
                         </div>
 
                         <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-3 mb-8">
-                            {Object.entries(item.meta).map(([key, value]) => (
+                            {Object.entries(meta).map(([key, value]) => (
                                 <div key={key} className="flex flex-col bg-gray-50/80 rounded-lg p-2 items-center text-center">
                                     <span className="text-[10px] text-gray-400 uppercase font-bold">{key}</span>
                                     <span className="text-[12px] font-bold text-gray-700 truncate w-full">{value as string}</span>
@@ -91,11 +99,11 @@ const VehicleDetailView: React.FC<VehicleDetailViewProps> = ({ item, onBack }) =
                     <Card className="rounded-2xl border-gray-100 shadow-sm p-6 sticky top-24">
                         <div className="flex items-center gap-4 mb-8">
                             <div className="relative w-14 h-14 rounded-full overflow-hidden bg-gray-100 border">
-                                <Image src={item.seller.image} alt={item.seller.name} fill className="object-cover" />
+                                {seller.image && <Image src={seller.image} alt={seller.name} fill className="object-cover" />}
                             </div>
                             <div>
-                                <h3 className="text-[16px] font-bold text-[#1B2232]">{item.seller.name}</h3>
-                                <p className="text-gray-400 text-[12px]">{item.seller.since}</p>
+                                <h3 className="text-[16px] font-bold text-[#1B2232]">{seller.name}</h3>
+                                <p className="text-gray-400 text-[12px]">{seller.since}</p>
                             </div>
                         </div>
 

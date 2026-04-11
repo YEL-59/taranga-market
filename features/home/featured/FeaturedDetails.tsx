@@ -10,6 +10,12 @@ import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
 import { useFavorites } from '@/context/FavoritesContext';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
+import { Label } from '@/components/ui/label';
+import { toast } from 'sonner';
+import { contactListingSellerService } from '@/services/listing';
 
 interface FeaturedDetailsProps {
     initialData?: any;
@@ -22,6 +28,35 @@ const FeaturedDetails = ({ initialData }: FeaturedDetailsProps) => {
     const { productDetails, isLoading, error } = useFeaturedProductDetails(id || undefined, initialData);
     const { toggleFavorite, isFavorite, isCustomer } = useFavorites();
     const [activeImage, setActiveImage] = useState<string>('');
+    const [isContactModalOpen, setIsContactModalOpen] = useState(false);
+    const [isSubmitting, setIsSubmitting] = useState(false);
+    const [contactData, setContactData] = useState({
+        sender_name: '',
+        sender_email: '',
+        message: ''
+    });
+
+    const handleContactSubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
+        if (!id) return;
+
+        setIsSubmitting(true);
+        const formData = new FormData();
+        formData.append('sender_name', contactData.sender_name);
+        formData.append('sender_email', contactData.sender_email);
+        formData.append('message', contactData.message);
+
+        const res = await contactListingSellerService(id, formData);
+
+        if (res.success) {
+            toast.success(res.message);
+            setIsContactModalOpen(false);
+            setContactData({ sender_name: '', sender_email: '', message: '' });
+        } else {
+            toast.error(res.message);
+        }
+        setIsSubmitting(false);
+    };
 
     const isFav = id ? isFavorite(id) : false;
 
@@ -59,6 +94,7 @@ const FeaturedDetails = ({ initialData }: FeaturedDetailsProps) => {
     }
 
     const item = productDetails;
+    console.log(item)
     const price = item.price ? (item.price.toString().includes('XOF') ? item.price : `${Number(item.price).toLocaleString()} XOF`) : 'Price on request';
 
     // Combine featured image and gallery images for the thumbnails
@@ -204,11 +240,18 @@ const FeaturedDetails = ({ initialData }: FeaturedDetailsProps) => {
                                     </div>
                                 </div>
                                 <div className="space-y-3">
-                                    <Button className="w-full h-14 rounded-2xl bg-[#2A8E8E] hover:bg-[#1D7E87] text-white font-bold text-lg shadow-lg shadow-[#2A8E8E]/20">
+                                    <Button
+                                        onClick={() => setIsContactModalOpen(true)}
+                                        className="w-full h-14 rounded-2xl bg-[#2A8E8E] hover:bg-[#1D7E87] text-white font-bold text-lg shadow-lg shadow-[#2A8E8E]/20"
+                                    >
                                         <MessageCircle className="mr-2 h-5 w-5" />
                                         Message Seller
                                     </Button>
-                                    <Button variant="outline" className="w-full h-14 rounded-2xl border-gray-200 text-gray-700 font-bold text-lg hover:bg-gray-50">
+                                    <Button
+                                        onClick={() => item.user?.phone_number ? window.open(`tel:${item.user.phone_number}`, '_self') : null}
+                                        variant="outline"
+                                        className="w-full h-14 rounded-2xl border-gray-200 text-gray-700 font-bold text-lg hover:bg-gray-50"
+                                    >
                                         <Phone className="mr-2 h-5 w-5 text-[#2A8E8E]" />
                                         Call Seller
                                     </Button>
@@ -218,6 +261,7 @@ const FeaturedDetails = ({ initialData }: FeaturedDetailsProps) => {
 
                         {/* Seller Card */}
                         {item.user && (
+
                             <Card className="rounded-[32px] border border-gray-100 bg-white shadow-[0_4px_20px_rgba(0,0,0,0.04)] overflow-hidden">
                                 <CardContent className="p-8">
                                     <h3 className="text-xl font-bold text-[#1B2232] mb-6">Seller Information</h3>
@@ -226,12 +270,12 @@ const FeaturedDetails = ({ initialData }: FeaturedDetailsProps) => {
                                             {(() => {
                                                 const profilePhoto = item.user.profile_photo;
                                                 const isValidUrl = profilePhoto && (profilePhoto.startsWith('http://') || profilePhoto.startsWith('https://') || profilePhoto.startsWith('/'));
-                                                const fallbackUrl = `https://ui-avatars.com/api/?name=${encodeURIComponent(item.user.first_name + ' ' + (item.user.last_name || ''))}&background=random`;
-                                                
+                                                const fallbackUrl = `https://ui-avatars.com/api/?name=${encodeURIComponent(item.user.full_name || 'User')}&background=random`;
+
                                                 return (
                                                     <Image
                                                         src={isValidUrl ? profilePhoto : fallbackUrl}
-                                                        alt={item.user.first_name}
+                                                        alt={item.user.full_name || 'User'}
                                                         fill
                                                         className="object-cover"
                                                     />
@@ -240,28 +284,95 @@ const FeaturedDetails = ({ initialData }: FeaturedDetailsProps) => {
                                         </div>
                                         <div>
                                             <h4 className="font-bold text-lg text-[#1B2232]">{item.user.first_name} {item.user.last_name}</h4>
-                                            <p className="text-sm text-gray-500 uppercase tracking-wider font-semibold">{item.user.role}</p>
+                                            {item.user.role && <p className="text-sm text-gray-500 uppercase tracking-wider font-semibold">{item.user.role}</p>}
                                         </div>
                                     </div>
+
                                     <div className="space-y-4">
                                         <div className="flex items-center justify-between text-sm">
                                             <span className="text-gray-400">Joined</span>
                                             <span className="font-bold text-[#1B2232]">{new Date(item.user.created_at).toLocaleDateString()}</span>
                                         </div>
-                                        <div className="flex items-center justify-between text-sm">
+                                        {/* <div className="flex items-center justify-between text-sm">
                                             <span className="text-gray-400">Total Listings</span>
                                             <span className="font-bold text-[#1B2232]">{item.user.limit || 0}</span>
+                                        </div> */}
+                                        <div className="flex items-center justify-between text-sm">
+                                            <span className="text-gray-400">Email</span>
+                                            <span className="font-bold text-[#1B2232]">{item.user.email || 0}</span>
                                         </div>
                                     </div>
-                                    {/* <Button variant="ghost" className="w-full mt-6 text-[#2A8E8E] font-bold hover:bg-[#2A8E8E]/5">
+                                    <Button
+                                        onClick={() => router.push(`/seller/${item.user.id}`)}
+                                        variant="ghost"
+                                        className="w-full mt-6 text-[#2A8E8E] font-bold hover:bg-[#2A8E8E]/5"
+                                    >
                                         View Seller Profile
-                                    </Button> */}
+                                    </Button>
                                 </CardContent>
                             </Card>
                         )}
                     </div>
                 </div>
             </div>
+
+            {/* Contact Seller Modal */}
+            <Dialog open={isContactModalOpen} onOpenChange={setIsContactModalOpen}>
+                <DialogContent className="sm:max-w-md rounded-3xl p-6 bg-white border-0 shadow-2xl">
+                    <DialogHeader className="mb-4">
+                        <DialogTitle className="text-2xl font-bold text-[#1B2232]">Contact Seller</DialogTitle>
+                    </DialogHeader>
+                    <form onSubmit={handleContactSubmit} className="space-y-4">
+                        <div className="space-y-2">
+                            <Label htmlFor="sender_name" className="text-gray-700 font-medium">Your Name</Label>
+                            <Input
+                                id="sender_name"
+                                value={contactData.sender_name}
+                                onChange={(e) => setContactData({ ...contactData, sender_name: e.target.value })}
+                                required
+                                className="h-12 rounded-xl bg-gray-50 border-gray-200 focus:border-[#2A8E8E] focus:ring-[#2A8E8E]"
+                                placeholder="Enter your full name"
+                            />
+                        </div>
+                        <div className="space-y-2">
+                            <Label htmlFor="sender_email" className="text-gray-700 font-medium">Your Email</Label>
+                            <Input
+                                id="sender_email"
+                                type="email"
+                                value={contactData.sender_email}
+                                onChange={(e) => setContactData({ ...contactData, sender_email: e.target.value })}
+                                required
+                                className="h-12 rounded-xl bg-gray-50 border-gray-200 focus:border-[#2A8E8E] focus:ring-[#2A8E8E]"
+                                placeholder="Enter your email address"
+                            />
+                        </div>
+                        <div className="space-y-2">
+                            <Label htmlFor="message" className="text-gray-700 font-medium">Message</Label>
+                            <Textarea
+                                id="message"
+                                value={contactData.message}
+                                onChange={(e) => setContactData({ ...contactData, message: e.target.value })}
+                                required
+                                rows={4}
+                                className="resize-none rounded-xl bg-gray-50 border-gray-200 focus:border-[#2A8E8E] focus:ring-[#2A8E8E]"
+                                placeholder="I am interested in this listing..."
+                            />
+                        </div>
+                        <Button
+                            type="submit"
+                            disabled={isSubmitting}
+                            className="w-full h-12 mt-4 rounded-xl bg-[#2A8E8E] hover:bg-[#1D7E87] text-white font-bold text-lg shadow-lg shadow-[#2A8E8E]/20 transition-all disabled:opacity-70"
+                        >
+                            {isSubmitting ? (
+                                <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+                            ) : (
+                                <MessageCircle className="mr-2 h-5 w-5" />
+                            )}
+                            {isSubmitting ? 'Sending...' : 'Send Message'}
+                        </Button>
+                    </form>
+                </DialogContent>
+            </Dialog>
         </div>
     );
 };

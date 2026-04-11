@@ -5,7 +5,8 @@ import { ChevronLeft, SlidersHorizontal, Home } from 'lucide-react';
 import FilterSidebar from './components/FilterSidebar';
 import PropertyCard from './components/PropertyCard';
 import PropertyDetailView from './components/PropertyDetailView';
-import { propertyData } from './data/properties';
+import { getProductsByCategoryService } from '@/services/listing';
+import { Loader2 } from 'lucide-react';
 import {
     Sheet,
     SheetContent,
@@ -25,6 +26,10 @@ const Properties = () => {
     const [selectedItem, setSelectedItem] = useState<any>(null);
     const [isMobileFilterOpen, setIsMobileFilterOpen] = useState(false);
     
+    // API State
+    const [propertyDataState, setPropertyDataState] = useState<any[]>([]);
+    const [isLoading, setIsLoading] = useState(true);
+    
     // ... filters ...
     const [filters, setFilters] = useState({
         city: '',
@@ -37,31 +42,55 @@ const Properties = () => {
     // Check URL params
     React.useEffect(() => {
         const id = searchParams.get('id');
-        if (id) {
-            const item = propertyData.find(v => v.id === parseInt(id));
+        if (id && propertyDataState.length > 0) {
+            const item = propertyDataState.find(v => v.id === parseInt(id));
             if (item) {
                 setSelectedItem(item);
                 setView('detail');
             }
-        } else {
+        } else if (!id) {
             setView('list');
             setSelectedItem(null);
         }
-    }, [searchParams]);
+    }, [searchParams, propertyDataState]);
+
+    React.useEffect(() => {
+        const fetchProperties = async () => {
+            setIsLoading(true);
+            try {
+                const response = await getProductsByCategoryService(4); 
+                if (response.success && response.data?.listings) {
+                    setPropertyDataState(response.data.listings);
+                } else {
+                    setPropertyDataState([]);
+                }
+            } catch (error) {
+                console.error("Error fetching properties:", error);
+            } finally {
+                setIsLoading(false);
+            }
+        };
+        fetchProperties();
+    }, []);
 
     // ... filteredData ...
     const filteredData = useMemo(() => {
-        return propertyData.filter(item => {
-            const matchesCity = !filters.city || item.city === filters.city;
-            const matchesMinPrice = !filters.minPrice || item.numericPrice >= parseInt(filters.minPrice);
-            const matchesMaxPrice = !filters.maxPrice || item.numericPrice <= parseInt(filters.maxPrice);
+        return propertyDataState.filter(item => {
+            const itemCity = item.location || item.city || '';
+            const matchesCity = !filters.city || itemCity === filters.city;
+            
+            const numericPrice = typeof item.price === 'string' ? parseFloat(item.price.replace(/[^\d.-]/g, '')) || 0 : (item.price || 0);
+            const matchesMinPrice = !filters.minPrice || numericPrice >= parseInt(filters.minPrice);
+            const matchesMaxPrice = !filters.maxPrice || numericPrice <= parseInt(filters.maxPrice);
+            
+            const metaObj = item.meta || { bedrooms: '' };
             // Property type and bedrooms can be simplified for this mock
             const matchesType = !filters.propertyType || true; // In real app, check item.meta.type
-            const matchesBedrooms = !filters.bedrooms || item.meta.bedrooms.toString() === filters.bedrooms;
+            const matchesBedrooms = !filters.bedrooms || (metaObj.bedrooms && metaObj.bedrooms.toString() === filters.bedrooms);
 
             return matchesCity && matchesMinPrice && matchesMaxPrice && matchesType && matchesBedrooms;
         });
-    }, [filters]);
+    }, [filters, propertyDataState]);
 
     const handleViewDetail = (item: any) => {
         setSelectedItem(item);
@@ -146,7 +175,11 @@ const Properties = () => {
                             </div>
 
                             <div className="flex-1 space-y-12">
-                                {filteredData.length > 0 ? (
+                                {isLoading ? (
+                                    <div className="flex justify-center items-center py-32">
+                                        <Loader2 className="animate-spin w-10 h-10 text-[#1D7E87]" />
+                                    </div>
+                                ) : filteredData.length > 0 ? (
                                     <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6 lg:gap-8">
                                         {filteredData.map((item) => (
                                             <PropertyCard 

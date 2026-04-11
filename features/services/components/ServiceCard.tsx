@@ -16,6 +16,9 @@ interface ServiceCardProps {
 const ServiceCard: React.FC<ServiceCardProps> = ({ item, onClick }) => {
     const { toggleFavorite, isFavorite } = useFavorites();
     const fav = isFavorite(item.id);
+    const image = item.featured_image ? (item.featured_image.startsWith('http') ? item.featured_image : `https://raymondred.thesyndicates.team/${item.featured_image}`) : item.image || '';
+    const city = item.location || item.city || '';
+    const priceStr = item.price ? (item.price.toString().includes('CFA') ? item.price : `${Number(item.price).toLocaleString()} CFA`) : 'Price on request';
 
     return (
         <Card 
@@ -23,7 +26,7 @@ const ServiceCard: React.FC<ServiceCardProps> = ({ item, onClick }) => {
             className="overflow-hidden border border-gray-100 bg-white shadow-[0_2px_10px_rgba(0,0,0,0.04)] transition-all hover:shadow-[0_4px_20px_rgba(0,0,0,0.08)] group flex flex-col h-full rounded-[20px] p-2.5 cursor-pointer"
         >
             <div className="relative aspect-[16/10] w-full overflow-hidden bg-gray-100 rounded-[15px]">
-                <Image src={item.image} alt={item.title} fill className="object-cover transition-transform duration-500 group-hover:scale-105" />
+                {image && <Image src={image} alt={item.title || "Image"} fill className="object-cover transition-transform duration-500 group-hover:scale-105" />}
                 <Badge className="absolute left-2.5 top-2.5 rounded-full px-3 py-0.5 text-[11px] font-semibold bg-white/95 text-gray-800 hover:bg-white border-0 shadow-sm">Service</Badge>
                 <button 
                     onClick={(e) => {
@@ -47,9 +50,9 @@ const ServiceCard: React.FC<ServiceCardProps> = ({ item, onClick }) => {
                     <div className="flex items-center justify-between mb-4">
                         <div className="flex items-center gap-1.5 text-[12.5px] text-gray-500">
                             <MapPin className="h-4 w-4 text-gray-400" />
-                            <span className="truncate">{item.city}</span>
+                            <span className="truncate">{city}</span>
                         </div>
-                        <span className="text-[13.5px] font-bold text-[#F97316] whitespace-nowrap">{item.price}</span>
+                        <span className="text-[13.5px] font-bold text-[#F97316] whitespace-nowrap">{priceStr}</span>
                     </div>
                     <Button 
                         onClick={(e) => {

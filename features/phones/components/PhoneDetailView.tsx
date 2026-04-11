@@ -12,7 +12,22 @@ interface PhoneDetailViewProps {
 }
 
 const PhoneDetailView: React.FC<PhoneDetailViewProps> = ({ item, onBack }) => {
-    const [mainImage, setMainImage] = useState(item.image);
+    const mainImg = item.featured_image ? (item.featured_image.startsWith('http') ? item.featured_image : `https://raymondred.thesyndicates.team/${item.featured_image}`) : (item.image || '');
+    const [mainImage, setMainImage] = useState(mainImg);
+    const city = item.location || item.city || 'Senegal';
+    const priceStr = item.price ? (item.price.toString().includes('CFA') ? item.price : `${Number(item.price).toLocaleString()} CFA`) : 'Price on request';
+    
+    // safe fallbacks
+    const meta = item.meta || { 
+        state: 'Used', 
+        brand: 'Apple', 
+        color: 'Space Gray', 
+        screenDimensions: '6.1 inches', 
+        ram: '6 GB', 
+        storage: '128 GB' 
+    };
+    const seller = item.seller || { name: 'Verified Seller', since: 'Member since 2024', image: 'https://images.unsplash.com/photo-1599566150163-29194dcaad36?q=80&w=200&auto=format&fit=crop' };
+    const thumbs = Array.isArray(item.thumbs) ? item.thumbs.map((t: string) => t.startsWith('http') ? t : `https://raymondred.thesyndicates.team/${t}`) : [mainImg];
 
     return (
         <div className="w-full py-8 animate-in fade-in duration-500">
@@ -26,10 +41,10 @@ const PhoneDetailView: React.FC<PhoneDetailViewProps> = ({ item, onBack }) => {
                     {/* Gallery Section */}
                     <div className="space-y-4">
                         <div className="relative aspect-[16/9] w-full rounded-2xl overflow-hidden bg-white shadow-sm border border-gray-100 p-8 flex items-center justify-center">
-                            <Image src={mainImage} alt={item.title} fill className="object-contain p-8 transition-all duration-300" />
+                            {mainImage && <Image src={mainImage} alt={item.title || "Gadget"} fill className="object-contain p-8 transition-all duration-300" />}
                         </div>
                         <div className="grid grid-cols-4 gap-4">
-                            {item.thumbs.map((thumb: string, idx: number) => (
+                            {thumbs.slice(0, 4).map((thumb: string, idx: number) => (
                                 <div 
                                     key={idx} 
                                     onClick={() => setMainImage(thumb)}
@@ -50,10 +65,10 @@ const PhoneDetailView: React.FC<PhoneDetailViewProps> = ({ item, onBack }) => {
                                 <h1 className="text-2xl lg:text-3xl font-extrabold text-[#1B2232] mb-3 leading-tight">{item.title}</h1>
                                 <div className="flex items-center gap-2 text-gray-400 text-[14px]">
                                     <MapPin className="w-4 h-4" />
-                                    <span>{item.location}</span>
+                                    <span>{city}</span>
                                 </div>
                             </div>
-                            <span className="text-2xl lg:text-3xl font-bold text-[#F97316] whitespace-nowrap">{item.price}</span>
+                            <span className="text-2xl lg:text-3xl font-bold text-[#F97316] whitespace-nowrap">{priceStr}</span>
                         </div>
 
                         {/* Quick Stats Grid */}
@@ -61,32 +76,32 @@ const PhoneDetailView: React.FC<PhoneDetailViewProps> = ({ item, onBack }) => {
                             <div className="bg-gray-50 rounded-xl p-3 flex flex-col items-center justify-center gap-1.5 border border-gray-100/50">
                                 <ShieldCheck className="w-5 h-5 text-[#1D7E87]" />
                                 <span className="text-[10px] text-gray-400 uppercase font-bold tracking-wider">State</span>
-                                <span className="text-[12px] font-bold text-gray-700">{item.meta.state}</span>
+                                <span className="text-[12px] font-bold text-gray-700">{meta.state}</span>
                             </div>
                             <div className="bg-gray-50 rounded-xl p-3 flex flex-col items-center justify-center gap-1.5 border border-gray-100/50">
                                 <Smartphone className="w-5 h-5 text-[#1D7E87]" />
                                 <span className="text-[10px] text-gray-400 uppercase font-bold tracking-wider">Brand</span>
-                                <span className="text-[12px] font-bold text-gray-700">{item.meta.brand}</span>
+                                <span className="text-[12px] font-bold text-gray-700">{meta.brand}</span>
                             </div>
                             <div className="bg-gray-50 rounded-xl p-3 flex flex-col items-center justify-center gap-1.5 border border-gray-100/50">
                                 <Palette className="w-5 h-5 text-[#1D7E87]" />
                                 <span className="text-[10px] text-gray-400 uppercase font-bold tracking-wider">Color</span>
-                                <span className="text-[12px] font-bold text-gray-700">{item.meta.color}</span>
+                                <span className="text-[12px] font-bold text-gray-700">{meta.color}</span>
                             </div>
                             <div className="bg-gray-50 rounded-xl p-3 flex flex-col items-center justify-center gap-1.5 border border-gray-100/50">
                                 <Maximize className="w-5 h-5 text-[#1D7E87]" />
                                 <span className="text-[10px] text-gray-400 uppercase font-bold tracking-wider">Screen</span>
-                                <span className="text-[12px] font-bold text-gray-700">{item.meta.screenDimensions}</span>
+                                <span className="text-[12px] font-bold text-gray-700">{meta.screenDimensions}</span>
                             </div>
                             <div className="bg-gray-50 rounded-xl p-3 flex flex-col items-center justify-center gap-1.5 border border-gray-100/50">
                                 <Cpu className="w-5 h-5 text-[#1D7E87]" />
                                 <span className="text-[10px] text-gray-400 uppercase font-bold tracking-wider">RAM</span>
-                                <span className="text-[12px] font-bold text-gray-700">{item.meta.ram}</span>
+                                <span className="text-[12px] font-bold text-gray-700">{meta.ram}</span>
                             </div>
                             <div className="bg-gray-50 rounded-xl p-3 flex flex-col items-center justify-center gap-1.5 border border-gray-100/50">
                                 <HardDrive className="w-5 h-5 text-[#1D7E87]" />
                                 <span className="text-[10px] text-gray-400 uppercase font-bold tracking-wider">Storage</span>
-                                <span className="text-[12px] font-bold text-gray-700">{item.meta.storage}</span>
+                                <span className="text-[12px] font-bold text-gray-700">{meta.storage}</span>
                             </div>
                         </div>
 
@@ -125,11 +140,11 @@ const PhoneDetailView: React.FC<PhoneDetailViewProps> = ({ item, onBack }) => {
                     <Card className="rounded-2xl border-gray-100 shadow-sm p-6 lg:p-8 sticky top-24">
                         <div className="flex items-center gap-5 mb-10">
                             <div className="relative w-16 h-16 rounded-full overflow-hidden bg-gray-100 border-2 border-white shadow-sm">
-                                <Image src={item.seller.image} alt={item.seller.name} fill className="object-cover" />
+                                {seller.image && <Image src={seller.image} alt={seller.name} fill className="object-cover" />}
                             </div>
                             <div>
-                                <h3 className="text-[18px] font-extrabold text-[#1B2232]">{item.seller.name}</h3>
-                                <p className="text-gray-400 text-[13px]">{item.seller.since}</p>
+                                <h3 className="text-[18px] font-extrabold text-[#1B2232]">{seller.name}</h3>
+                                <p className="text-gray-400 text-[13px]">{seller.since}</p>
                             </div>
                         </div>
 

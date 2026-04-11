@@ -18,6 +18,9 @@ const ListingCard = ({ item }: { item: any }) => {
     const { toggleFavorite, isFavorite, isCustomer } = useFavorites();
     const fav = isFavorite(item.id);
 
+
+    console.log(item)
+
     const image = item.featured_image || '';
     const type = item.category?.name || 'Product';
     const price = item.price ? (item.price.toString().includes('XOF') ? item.price : `${Number(item.price).toLocaleString()} XOF`) : 'Price on request';
@@ -42,6 +45,15 @@ const ListingCard = ({ item }: { item: any }) => {
                 >
                     {type}
                 </Badge>
+               {
+                item.is_featured && (
+                    <Badge
+                        className="absolute right-2.5 top-2.5 rounded-full px-3 py-0.5 text-[11px] font-semibold border border-gray-200 bg-white/95 text-gray-800 hover:bg-white shadow-sm"
+                    >
+                        Featured
+                    </Badge>
+                )
+               }
 
                 {/* Heart Button - Only for Customers */}
                 {isCustomer && (
@@ -78,7 +90,7 @@ const ListingCard = ({ item }: { item: any }) => {
                     <div className="flex items-center justify-between mb-4">
                         <div className="flex items-center gap-1.5 text-[12.5px] text-gray-500">
                             <MapPin className="h-4 w-4 text-gray-400" />
-                            <span className="truncate">{item.location}</span>
+                            <span className="truncate">{item.city} , {item.state}</span>
                         </div>
                         <span className="text-[13.5px] font-bold text-[#F97316]">
                             {price}
@@ -88,10 +100,7 @@ const ListingCard = ({ item }: { item: any }) => {
                     <Link href={getDetailLink(item)} className="block w-full">
                         <Button
                             variant={item.is_featured ? "default" : "outline"}
-                            className={`w-full rounded-xl font-semibold text-[13px] h-10 transition-all ${item.is_featured
-                                ? "bg-[#2A8E8E] hover:bg-[#1D7E87] text-white border-0"
-                                : "bg-white border-gray-100 text-gray-600 hover:bg-[#1D7E87] hover:text-white hover:border-[#1D7E87]"
-                                }`}
+                            className={`w-full rounded-xl font-semibold text-[13px] h-10 transition-all bg-white border-gray-100 text-gray-600 hover:bg-[#1D7E87] hover:text-white hover:border-[#1D7E87] cursor-pointer`}
                         >
                             View Details
                         </Button>

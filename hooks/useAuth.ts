@@ -65,11 +65,12 @@ export const useAuth = () => {
         setError(null);
         try {
             const result = await registerService(data);
-            if (result.success && result.data) {
-                setUser(result.data.user);
-                toast.success(result.message || "Registration successful");
-                router.push("/");
-                router.refresh();
+            if (result.success) {
+                if (result.data?.user) {
+                    setUser(result.data.user);
+                }
+                toast.success(result.message || "Registration successful. Please verify your email.");
+                router.push(`/verify-otp?email=${encodeURIComponent(data.email)}&mode=register`);
             } else {
                 setError(result.message || "Registration failed or missing data");
                 toast.error(result.message || "Registration failed or missing data");
@@ -108,14 +109,13 @@ export const useAuth = () => {
         }
     };
 
-    const verifyOtp = async (otp: string) => {
+    const verifyOtp = async (otp: string, email: string, purpose?: string) => {
         setIsLoading(true);
         setError(null);
         try {
-            const result = await verifyOtpService(otp);
+            const result = await verifyOtpService(otp, email, purpose);
             if (result.success) {
                 toast.success(result.message || "OTP verified successfully");
-                // Handle success (e.g., redirect to reset password page)
             } else {
                 setError(result.message);
                 toast.error(result.message);

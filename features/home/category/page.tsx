@@ -11,6 +11,7 @@ const Category = () => {
     {
       key: "services" as const,
       href: "/services",
+      // href: "/",
       bgColor: "bg-[#DCFCE7]",
       icon: (
         <svg
@@ -40,6 +41,7 @@ const Category = () => {
     {
       key: "job" as const,
       href: "/jobs",
+      // href: "/",
       bgColor: "bg-[#DBEAFE]",
       icon: (
         <svg
@@ -66,6 +68,7 @@ const Category = () => {
     {
       key: "realEstate" as const,
       href: "/properties",
+      // href: "/",
       bgColor: "bg-[#DBEAFE]",
       icon: (
         <svg
@@ -95,6 +98,7 @@ const Category = () => {
     {
       key: "products" as const,
       href: "/products",
+      // href: "/",
       bgColor: "bg-[#FCE7F3]",
       icon: (
         <svg
@@ -130,7 +134,8 @@ const Category = () => {
     },
     {
       key: "vehicles" as const,
-      href: "/vehicles",
+       href: "/vehicles",
+      // href: "/",
       bgColor: "bg-[#FED7AA]",
       icon: (
         <svg

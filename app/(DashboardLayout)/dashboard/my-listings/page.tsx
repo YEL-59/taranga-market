@@ -1,28 +1,13 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import {
-  Edit2,
-  Eye,
-  Trash2,
-  Plus,
-  ChevronLeft,
-  ChevronRight,
-  Loader2,
-  Rocket,
-} from "lucide-react";
-import Image from "next/image";
-import Link from "next/link";
-import {
-  getMyListingsService,
-  getListingDetailsService,
-  deleteListingService,
-  getBoostPlansService,
-  requestBoostService,
-} from "@/services/listing";
-import { toast } from "sonner";
+import React, { useState, useEffect } from "react"
+import { Badge } from "@/components/ui/badge"
+import { Button } from "@/components/ui/button"
+import { Edit2, Eye, Trash2, Plus, ChevronLeft, ChevronRight, Loader2, Rocket, BarChart3, Info, CreditCard, Clock } from "lucide-react"
+import Image from "next/image"
+import Link from "next/link"
+import { getMyListingsService, getListingDetailsService, deleteListingService, getBoostPlansService, requestBoostService, getBoostStatsService } from "@/services/listing"
+import { toast } from "sonner"
 import {
   Dialog,
   DialogContent,
@@ -32,7 +17,7 @@ import {
   DialogFooter,
 } from "@/components/ui/dialog";
 
-const tabs = ["All", "Active", "Pending"];
+const tabs = ["All", "Approved", "Pending"]
 
 export default function MyListingsPage() {
   const [activeTab, setActiveTab] = useState("All");
@@ -52,6 +37,30 @@ export default function MyListingsPage() {
   const [listingToDelete, setListingToDelete] = useState<any>(null);
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
+
+  // Boost Stats Modal State
+  const [isStatsOpen, setIsStatsOpen] = useState(false)
+  const [statsLoading, setStatsLoading] = useState(false)
+  const [currentStats, setCurrentStats] = useState<any>(null)
+
+  const handleViewBoostStats = async (listingId: number) => {
+    setStatsLoading(true)
+    setIsStatsOpen(true)
+    try {
+      const result = await getBoostStatsService(listingId)
+      if (result.success) {
+        setCurrentStats(result.data)
+      } else {
+        toast.error(result.message || "Failed to fetch boost stats")
+        setIsStatsOpen(false)
+      }
+    } catch (error) {
+      toast.error("An error occurred")
+      setIsStatsOpen(false)
+    } finally {
+      setStatsLoading(false)
+    }
+  }
 
   const fetchListings = async (page: number) => {
     setIsLoading(true);
@@ -76,14 +85,40 @@ export default function MyListingsPage() {
     }
   };
 
+  // Boost Modal State
+  const [isBoostModalOpen, setIsBoostModalOpen] = useState(false)
+  const [selectedPlanForBoost, setSelectedPlanForBoost] = useState<any>(null)
+  const [selectedListingForBoost, setSelectedListingForBoost] = useState<number | null>(null)
+  const [selectedPaymentMethod, setSelectedPaymentMethod] = useState<string>("orange_money")
+
   const handleRequestBoost = async (listingId: number, planId: number) => {
-    setIsBoostingItem(listingId);
+    const plan = boostPlans.find(p => p.id === planId)
+    // If plan is not free, show payment selection modal first
+    if (plan && parseFloat(plan.price) > 0) {
+      setSelectedListingForBoost(listingId)
+      setSelectedPlanForBoost(plan)
+      setIsBoostModalOpen(true)
+      return
+    }
+
+    // Otherwise (free boost), proceed immediately
+    executeBoostRequest(listingId, planId)
+  }
+
+  const executeBoostRequest = async (listingId: number, planId: number, paymentMethod?: string) => {
+    setIsBoostingItem(listingId)
     try {
-      const result = await requestBoostService(listingId, planId);
+      const result = await requestBoostService(listingId, planId, paymentMethod)
       if (result.success) {
-        toast.success("Boost request submitted successfully!");
-        // Refresh listings to show updated status
-        fetchListings(currentPage);
+        const paymentUrl = result.data?.payment_url || result.data?.data?.payment_url;
+        if (paymentUrl) {
+          toast.success("Redirecting to payment...")
+          window.location.href = paymentUrl
+          return
+        }
+        toast.success(result.message || "Boost activated successfully!")
+        setIsBoostModalOpen(false)
+        fetchListings(currentPage)
       } else {
         toast.error(result.message || "Failed to submit boost request");
       }
@@ -150,12 +185,13 @@ export default function MyListingsPage() {
 
   const getStatusColor = (status: string) => {
     switch (status.toLowerCase()) {
-      case "active":
-        return "bg-emerald-50 text-emerald-600 border-emerald-100";
-      case "pending":
-        return "bg-amber-50 text-amber-600 border-amber-100";
-      case "sold":
-        return "bg-blue-50 text-blue-600 border-blue-100";
+      case 'approved':
+      case 'active':
+        return 'bg-emerald-50 text-emerald-600 border-emerald-100'
+      case 'pending':
+        return 'bg-amber-50 text-amber-600 border-amber-100'
+      case 'sold':
+        return 'bg-blue-50 text-blue-600 border-blue-100'
       default:
         return "bg-slate-50 text-slate-600 border-slate-100";
     }
@@ -288,34 +324,41 @@ export default function MyListingsPage() {
                         </td>
                         <td className="px-6 py-5">
                           <div className="flex items-center gap-1.5">
-                            {item.is_boosted === 1 ? (
-                              <Badge className="bg-[#1b7d81] text-white rounded-lg flex items-center gap-1.5 px-3 py-1.5 border-0 font-bold text-[10px] uppercase tracking-wider">
-                                <Rocket className="w-3 h-3" />
-                                {item.boost_status === "active"
-                                  ? "Active Boost"
-                                  : "Boosted"}
-                              </Badge>
-                            ) : (
-                              <div className="flex flex-wrap gap-1.5">
-                                {boostPlans.map((plan) => (
-                                  <Button
-                                    key={plan.id}
-                                    onClick={() =>
-                                      handleRequestBoost(item.id, plan.id)
-                                    }
-                                    disabled={isBoostingItem === item.id}
-                                    variant="outline"
-                                    className="h-8 px-3 rounded-lg text-[10px] font-bold border-[#1b7d81]/20 text-[#1b7d81] hover:bg-[#1b7d81] hover:text-white transition-all whitespace-nowrap"
+                            <div className="flex flex-col gap-2">
+                              {item.is_boosted === 1 ? (
+                                <div className="flex flex-col gap-2">
+                                  <Badge className="bg-[#1b7d81] text-white rounded-lg flex items-center gap-1.5 px-3 py-1.5 border-0 font-bold text-[10px] uppercase tracking-wider w-fit">
+                                    <Rocket className="w-3 h-3" />
+                                    {item.boost_status === 'active' ? 'Active Boost' : 'Boosted'}
+                                  </Badge>
+                                  <button
+                                    onClick={() => handleViewBoostStats(item.id)}
+                                    className="flex items-center gap-1.5 text-[10px] font-black text-[#1b7d81] uppercase tracking-widest hover:underline transition-all"
                                   >
-                                    {isBoostingItem === item.id ? (
-                                      <Loader2 className="w-3 h-3 animate-spin" />
-                                    ) : (
-                                      plan.name.split("-")[0] // Show "48H", "72H" etc if name is "48-Hour Boost"
-                                    )}
-                                  </Button>
-                                ))}
-                              </div>
-                            )}
+                                    <BarChart3 className="w-3 h-3" />
+                                    View Stats
+                                  </button>
+                                </div>
+                              ) : (
+                                <div className="flex flex-wrap gap-1.5">
+                                  {boostPlans.map((plan) => (
+                                    <Button
+                                      key={plan.id}
+                                      onClick={() => handleRequestBoost(item.id, plan.id)}
+                                      disabled={isBoostingItem === item.id}
+                                      variant="outline"
+                                      className="h-8 px-3 rounded-lg text-[10px] font-bold border-[#1b7d81]/20 text-[#1b7d81] hover:bg-[#1b7d81] hover:text-white transition-all whitespace-nowrap"
+                                    >
+                                      {isBoostingItem === item.id ? (
+                                        <Loader2 className="w-3 h-3 animate-spin" />
+                                      ) : (
+                                        plan.name.split('-')[0] // Show "48H", "72H" etc if name is "48-Hour Boost"
+                                      )}
+                                    </Button>
+                                  ))}
+                                </div>
+                              )}
+                            </div>
                           </div>
                         </td>
                         <td className="px-6 py-5 text-sm text-slate-400 font-semibold whitespace-nowrap">
@@ -323,9 +366,6 @@ export default function MyListingsPage() {
                         </td>
                         <td className="px-6 py-5">
                           <div className="flex items-center justify-end gap-1.5">
-                            {/* <button className="p-2 text-blue-500 hover:bg-blue-50 rounded-xl transition-all active:scale-90" title="Edit">
-                              <Edit2 className="w-4 h-4" />
-                            </button> */}
                             <button
                               onClick={() => handleViewDetails(item.id)}
                               className="p-2 text-slate-400 hover:bg-slate-100 rounded-xl transition-all active:scale-90"
@@ -623,6 +663,135 @@ export default function MyListingsPage() {
           </div>
         </DialogContent>
       </Dialog>
+      {/* Boost Activation Modal */}
+      <Dialog open={isBoostModalOpen} onOpenChange={setIsBoostModalOpen}>
+        <DialogContent className="max-w-md p-0 rounded-[32px] border-none shadow-2xl overflow-hidden">
+          <div className="relative h-32 bg-[#1b7d81] flex items-center justify-center">
+            <Rocket className="w-12 h-12 text-white/20 absolute right-6 top-6 rotate-[25deg]" />
+            <div className="text-center relative z-10">
+              <h3 className="text-xl font-black text-white uppercase tracking-widest">Activate Boost</h3>
+              <p className="text-white/60 text-[10px] font-bold uppercase tracking-wider mt-1">{selectedPlanForBoost?.name}</p>
+            </div>
+          </div>
+
+          <div className="p-8 space-y-6 bg-white">
+            <div className="bg-slate-50 p-6 rounded-2xl border border-slate-100 flex items-center justify-between">
+              <div>
+                <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Total Amount</p>
+                <p className="text-2xl font-black text-slate-800">{selectedPlanForBoost?.price} CFA</p>
+              </div>
+              <div className="p-3 bg-[#1b7d81]/10 text-[#1b7d81] rounded-xl font-black text-xs uppercase tracking-widest">
+                {selectedPlanForBoost?.duration_hours}h Boost
+              </div>
+            </div>
+
+            <div className="space-y-3">
+              <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest px-1">Choose Payment Provider</label>
+              <div className="grid grid-cols-1 gap-3">
+                <button
+                    onClick={() => setSelectedPaymentMethod("stripe")}
+                    className={`p-4 rounded-2xl border-2 transition-all flex items-center gap-4 ${selectedPaymentMethod === "stripe"
+                        ? "border-[#6366f1] bg-[#6366f1]/5 shadow-xl shadow-[#6366f1]/10"
+                        : "border-slate-100 hover:border-slate-200"
+                        }`}
+                >
+                    <div className={`w-10 h-10 rounded-xl text-white font-black text-xs flex items-center justify-center shrink-0 transition-colors ${selectedPaymentMethod === "stripe" ? "bg-[#6366f1]" : "bg-slate-100 text-slate-400"}`}>
+                        <CreditCard className="w-5 h-5" />
+                    </div>
+                    <div className="text-left">
+                        <p className={`text-[10px] font-black uppercase ${selectedPaymentMethod === "stripe" ? "text-slate-900" : "text-slate-400"}`}>Credit / Debit Card</p>
+                        <p className="text-[9px] font-medium text-slate-400">Visa, Mastercard via Stripe</p>
+                    </div>
+                </button>
+              </div>
+            </div>
+
+            <Button
+                onClick={() => selectedListingForBoost && selectedPlanForBoost && executeBoostRequest(selectedListingForBoost, selectedPlanForBoost.id, selectedPaymentMethod)}
+                disabled={isBoostingItem !== null}
+                className="w-full h-16 rounded-[24px] bg-slate-900 hover:bg-black text-white font-black text-sm uppercase tracking-widest transition-all active:scale-[0.98] shadow-2xl shadow-slate-200"
+            >
+                {isBoostingItem !== null ? (
+                    <Loader2 className="w-5 h-5 animate-spin" />
+                ) : (
+                    <>
+                        Confirm Activation
+                        <Rocket className="w-4 h-4 ml-2 fill-current text-white/80" />
+                    </>
+                )}
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+      {/* Boost Stats Modal */}
+      <Dialog open={isStatsOpen} onOpenChange={setIsStatsOpen}>
+                <DialogContent className="max-w-md p-0 rounded-[32px] border-none shadow-2xl overflow-hidden">
+                    <div className="h-32 bg-slate-900 flex items-center justify-center relative overflow-hidden">
+                        <BarChart3 className="w-24 h-24 text-white/5 absolute -right-4 -bottom-4 rotate-12" />
+                        <div className="text-center relative z-10">
+                            <h3 className="text-xl font-black text-white uppercase tracking-widest">Boost Performance</h3>
+                            <p className="text-white/40 text-[10px] font-bold uppercase tracking-widest mt-1">Real-time engagement stats</p>
+                        </div>
+                    </div>
+
+                    <div className="p-8 space-y-8 bg-white">
+                        {statsLoading ? (
+                            <div className="py-12 flex flex-col items-center justify-center space-y-4">
+                                <Loader2 className="w-8 h-8 animate-spin text-[#1b7d81]" />
+                                <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Calculating Data...</p>
+                            </div>
+                        ) : currentStats ? (
+                            <>
+                                <div className="grid grid-cols-2 gap-4">
+                                    <div className="p-6 rounded-3xl bg-slate-50 border border-slate-100">
+                                        <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Total Views</p>
+                                        <p className="text-3xl font-black text-slate-900">{currentStats.total_views || 0}</p>
+                                    </div>
+                                    <div className="p-6 rounded-3xl bg-[#1b7d81]/5 border border-[#1b7d81]/10">
+                                        <p className="text-[10px] font-black text-[#1b7d81] uppercase tracking-widest mb-1">Boost Lift</p>
+                                        <p className="text-3xl font-black text-[#1b7d81]">+{currentStats.boost_lift || 0}%</p>
+                                    </div>
+                                </div>
+
+                                <div className="space-y-4">
+                                    <h4 className="text-[10px] font-black text-slate-400 uppercase tracking-widest px-1">Engagement Details</h4>
+                                    <div className="space-y-3">
+                                        <div className="flex items-center justify-between p-4 rounded-2xl bg-white border border-slate-100">
+                                            <div className="flex items-center gap-3">
+                                                <div className="w-8 h-8 rounded-lg bg-blue-50 flex items-center justify-center text-blue-500">
+                                                    <Info className="w-4 h-4" />
+                                                </div>
+                                                <span className="text-xs font-bold text-slate-600">Daily Average Views</span>
+                                            </div>
+                                            <span className="font-black text-slate-900 text-sm">{currentStats.daily_avg || 0}</span>
+                                        </div>
+                                        <div className="flex items-center justify-between p-4 rounded-2xl bg-white border border-slate-100">
+                                            <div className="flex items-center gap-3">
+                                                <div className="w-8 h-8 rounded-lg bg-amber-50 flex items-center justify-center text-amber-500">
+                                                    <Clock className="w-4 h-4" />
+                                                </div>
+                                                <span className="text-xs font-bold text-slate-600">Remaining Time</span>
+                                            </div>
+                                            <span className="font-black text-slate-900 text-sm">{currentStats.time_left || 'Ended'}</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <Button 
+                                    onClick={() => setIsStatsOpen(false)}
+                                    className="w-full h-14 rounded-2xl bg-slate-900 hover:bg-black text-white font-black text-[10px] uppercase tracking-widest"
+                                >
+                                    Close report
+                                </Button>
+                            </>
+                        ) : (
+                            <div className="py-10 text-center">
+                                <p className="text-slate-500 text-sm">No statistics available for this boost yet.</p>
+                            </div>
+                        )}
+                    </div>
+                </DialogContent>
+            </Dialog>
     </div>
   );
 }

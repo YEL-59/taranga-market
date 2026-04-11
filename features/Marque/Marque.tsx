@@ -1,21 +1,43 @@
 "use client";
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Autoplay } from 'swiper/modules';
+import { getSlidersService } from '@/services/listing';
 
 // Import Swiper styles
 import 'swiper/css';
 
-// Import your feature icons
+// Import your feature icons as fallbacks
 import Img1 from "@/assets/images/img1.png";
 import Img2 from "@/assets/images/img2.png";
 import Img3 from "@/assets/images/img3.png";
 import Img4 from "@/assets/images/img4.png";
 
 const Marque = () => {
-    const features = [
+    const [sliders, setSliders] = useState<any[]>([]);
+    
+    useEffect(() => {
+        const fetchSliders = async () => {
+            try {
+                const res = await getSlidersService();
+                if (res.success && res.data && res.data.length > 0) {
+                    setSliders(res.data);
+                }
+            } catch (err) {
+                console.error("Error fetching marque sliders:", err);
+            }
+        };
+        fetchSliders();
+    }, []);
+
+    const features = sliders.length > 0 ? sliders.map((item) => ({
+        id: item.id,
+        img: item.img || item.image_url || item.image || Img1,
+        title: item.title,
+        desc: item.desc || item.short_description || "Every listing is verified"
+    })) : [
         {
             id: 1,
             img: Img1,
@@ -39,31 +61,7 @@ const Marque = () => {
             img: Img4,
             title: "Fast Delivery",
             desc: "Get items in record time",
-        },
-        {
-            id: 5,
-            img: Img1,
-            title: "100% Verified",
-            desc: "Every listing is personally verified",
-        },
-        {
-            id: 6,
-            img: Img2,
-            title: "Secure Payments",
-            desc: "Your transactions are protected",
-        },
-        { 
-            id: 7, 
-            img: Img3, 
-            title: "Local Support", 
-            desc: "Help is always nearby" 
-        },
-        {
-            id: 8,
-            img: Img4,
-            title: "Fast Delivery",
-            desc: "Get items in record time",
-        },
+        }
     ];
 
     return (

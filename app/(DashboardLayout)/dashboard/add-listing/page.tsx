@@ -71,7 +71,8 @@ const addListingSchema = z.object({
   category: z.string().min(1, "Please select a category"),
   price: z.string().min(1, "Price is required"),
   currency: z.string(),
-  location: z.string().min(1, "Location is required"),
+  city: z.string().min(1, "City is required"),
+  state: z.string().min(1, "State is required"),
   description: z.string().min(20, "Description must be at least 20 characters"),
   phone: z.string().min(10, "Valid phone number is required"),
   whatsapp: z.string().optional(),
@@ -144,7 +145,8 @@ export default function AddListingPage() {
       category: "",
       price: "",
       currency: "CFA",
-      location: "",
+      city: "",
+      state: "",
       description: "",
       phone: "",
       whatsapp: "",
@@ -202,7 +204,8 @@ export default function AddListingPage() {
       formData.append("title", values.title);
       formData.append("price", values.price);
       formData.append("description", values.description);
-      formData.append("location", values.location);
+      formData.append("city", values.city);
+      formData.append("state", values.state);
       formData.append("is_featured", "1");
       formData.append("status", "1");
 
@@ -444,29 +447,35 @@ export default function AddListingPage() {
                           </div>
                         </div>
 
-                        <FormField
-                          control={form.control}
-                          name="location"
-                          render={({ field }) => (
-                            <FormItem>
-                              <FormLabel className="text-slate-600 font-bold uppercase text-[11px] tracking-wider">Where is it located?</FormLabel>
-                              <Select onValueChange={field.onChange}>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:col-span-2">
+                          <FormField
+                            control={form.control}
+                            name="city"
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormLabel className="text-slate-600 font-bold uppercase text-[11px] tracking-wider">City / Area</FormLabel>
                                 <FormControl>
-                                  <SelectTrigger className="h-14 rounded-2xl border-slate-200 font-medium">
-                                    <SelectValue placeholder="Select Area / City" />
-                                  </SelectTrigger>
+                                  <Input placeholder="e.g. Dhaka" {...field} className="h-14 rounded-2xl border-slate-200 font-medium" />
                                 </FormControl>
-                                <SelectContent>
-                                  <SelectItem value="dakar-a">Almadies, Dakar</SelectItem>
-                                  <SelectItem value="dakar-b">Plateau, Dakar</SelectItem>
-                                  <SelectItem value="thies">Thies Central</SelectItem>
-                                  <SelectItem value="st-louis">Saint-Louis North</SelectItem>
-                                </SelectContent>
-                              </Select>
-                              <FormMessage />
-                            </FormItem>
-                          )}
-                        />
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
+
+                          <FormField
+                            control={form.control}
+                            name="state"
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormLabel className="text-slate-600 font-bold uppercase text-[11px] tracking-wider">State / Region</FormLabel>
+                                <FormControl>
+                                  <Input placeholder="e.g. Bangladesh" {...field} className="h-14 rounded-2xl border-slate-200 font-medium" />
+                                </FormControl>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
+                        </div>
                       </div>
                     </div>
                   </Card>
@@ -499,10 +508,9 @@ export default function AddListingPage() {
                             render={({ field }) => (
                               <FormItem>
                                 <FormLabel className="text-slate-500 font-bold text-xs">Manufacture Year</FormLabel>
-                                <Select onValueChange={field.onChange}>
-                                  <SelectTrigger className="h-11 rounded-xl bg-white"><SelectValue placeholder="2024" /></SelectTrigger>
-                                  <SelectContent>{[2024, 2023, 2022, 2021, 2020].map(yr => <SelectItem key={yr} value={yr.toString()}>{yr}</SelectItem>)}</SelectContent>
-                                </Select>
+                                <FormControl>
+                                  <Input placeholder="e.g. 2024" {...field} className="h-11 rounded-xl bg-white" />
+                                </FormControl>
                               </FormItem>
                             )}
                           />
@@ -569,7 +577,9 @@ export default function AddListingPage() {
                             render={({ field }) => (
                               <FormItem>
                                 <FormLabel className="text-slate-500 font-bold text-xs">Type of Property</FormLabel>
-                                <Select onValueChange={field.onChange}><SelectTrigger className="h-11 bg-white rounded-xl"><SelectValue placeholder="Apartment" /></SelectTrigger><SelectContent>{["Apartment", "House", "Villa", "Land", "Office"].map(x => <SelectItem key={x} value={x}>{x}</SelectItem>)}</SelectContent></Select>
+                                <FormControl>
+                                  <Input placeholder="e.g. Duplex" {...field} className="h-11 rounded-xl bg-white" />
+                                </FormControl>
                               </FormItem>
                             )}
                           />
@@ -639,7 +649,9 @@ export default function AddListingPage() {
                             render={({ field }) => (
                               <FormItem>
                                 <FormLabel className="text-slate-500 font-bold text-xs">Internal Memory</FormLabel>
-                                <Select onValueChange={field.onChange}><SelectTrigger className="h-11 bg-white rounded-xl"><SelectValue placeholder="256 GB" /></SelectTrigger><SelectContent>{["64 GB", "128 GB", "256 GB", "512 GB", "1 TB"].map(x => <SelectItem key={x} value={x}>{x}</SelectItem>)}</SelectContent></Select>
+                                <FormControl>
+                                  <Input placeholder="e.g. 512 GB" {...field} className="h-11 rounded-xl bg-white" />
+                                </FormControl>
                               </FormItem>
                             )}
                           />
@@ -649,7 +661,9 @@ export default function AddListingPage() {
                             render={({ field }) => (
                               <FormItem>
                                 <FormLabel className="text-slate-500 font-bold text-xs">RAM Capacity</FormLabel>
-                                <Select onValueChange={field.onChange}><SelectTrigger className="h-11 bg-white rounded-xl"><SelectValue placeholder="8 GB" /></SelectTrigger><SelectContent>{["4 GB", "8 GB", "12 GB", "16 GB", "32 GB"].map(x => <SelectItem key={x} value={x}>{x}</SelectItem>)}</SelectContent></Select>
+                                <FormControl>
+                                  <Input placeholder="e.g. 16 GB" {...field} className="h-11 rounded-xl bg-white" />
+                                </FormControl>
                               </FormItem>
                             )}
                           />

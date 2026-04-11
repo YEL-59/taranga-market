@@ -1,4 +1,4 @@
-import Jobs from "@/features/jobs/Jods";
+import Jobs from "@/features/jobs/Jobs";
 import { Suspense } from "react";
 
 export default function JobsPage() {

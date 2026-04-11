@@ -13,6 +13,23 @@ interface JobDetailViewProps {
 }
 
 const JobDetailView: React.FC<JobDetailViewProps> = ({ item, onBack }) => {
+    const image = item.featured_image ? (item.featured_image.startsWith('http') ? item.featured_image : `https://raymondred.thesyndicates.team/${item.featured_image}`) : item.image || '';
+    const city = item.location || item.city || 'Senegal';
+    const priceStr = item.price ? (item.price.toString().includes('CFA') ? item.price : `${Number(item.price).toLocaleString()} CFA`) : 'Salary on request';
+    
+    // safe fallbacks
+    const meta = item.meta || { 
+        jobType: 'Full-time', 
+        experienceLevel: 'Mid Senior', 
+        employmentType: 'Permanent', 
+        remote: 'Hybrid', 
+        salaryRange: priceStr, 
+        education: 'Bachelor Degree',
+        industry: 'Technology',
+        skills: ['Communication', 'Teamwork']
+    };
+    const seller = item.seller || { name: 'Verified Employer', since: 'Member since 2024', image: 'https://images.unsplash.com/photo-1599566150163-29194dcaad36?q=80&w=200&auto=format&fit=crop' };
+
     return (
         <div className="w-full py-8 animate-in fade-in duration-500">
             <button onClick={onBack} className="flex items-center gap-2 text-[#2A8E8E] font-semibold mb-8 hover:opacity-80 transition-opacity">
@@ -24,7 +41,7 @@ const JobDetailView: React.FC<JobDetailViewProps> = ({ item, onBack }) => {
                 <div className="lg:col-span-2 space-y-6">
                     {/* Header Image */}
                     <div className="relative aspect-[16/7] w-full rounded-2xl overflow-hidden bg-gray-100 shadow-sm">
-                        <Image src={item.image} alt={item.title} fill className="object-cover" />
+                        {image && <Image src={image} alt={item.title || "Job Image"} fill className="object-cover" />}
                     </div>
 
                     {/* Content Section */}
@@ -34,10 +51,10 @@ const JobDetailView: React.FC<JobDetailViewProps> = ({ item, onBack }) => {
                                 <h1 className="text-2xl lg:text-3xl font-extrabold text-[#1B2232] mb-3 leading-tight">{item.title}</h1>
                                 <div className="flex items-center gap-2 text-gray-400 text-[14px]">
                                     <MapPin className="w-4 h-4" />
-                                    <span>{item.location}</span>
+                                    <span>{city}</span>
                                 </div>
                             </div>
-                            <span className="text-2xl lg:text-3xl font-bold text-[#F97316] whitespace-nowrap">{item.price.split(' ')[0]} {item.price.split(' ')[1]}</span>
+                            <span className="text-2xl lg:text-3xl font-bold text-[#F97316] whitespace-nowrap">{priceStr}</span>
                         </div>
 
                         {/* Job Parameters Grid */}
@@ -45,32 +62,32 @@ const JobDetailView: React.FC<JobDetailViewProps> = ({ item, onBack }) => {
                             <div className="bg-gray-50 border border-gray-100 rounded-xl p-4 flex flex-col items-center text-center gap-2">
                                 <Briefcase className="w-5 h-5 text-[#1D7E87]" />
                                 <span className="text-[11px] font-bold text-gray-400 uppercase">Job Type</span>
-                                <span className="text-[13px] font-bold text-gray-700">{item.meta.jobType}</span>
+                                <span className="text-[13px] font-bold text-gray-700">{meta.jobType}</span>
                             </div>
                             <div className="bg-gray-50 border border-gray-100 rounded-xl p-4 flex flex-col items-center text-center gap-2">
                                 <Award className="w-5 h-5 text-[#1D7E87]" />
                                 <span className="text-[11px] font-bold text-gray-400 uppercase">Experience</span>
-                                <span className="text-[13px] font-bold text-gray-700">{item.meta.experienceLevel}</span>
+                                <span className="text-[13px] font-bold text-gray-700">{meta.experienceLevel}</span>
                             </div>
                             <div className="bg-gray-50 border border-gray-100 rounded-xl p-4 flex flex-col items-center text-center gap-2">
                                 <Clock className="w-5 h-5 text-[#1D7E87]" />
                                 <span className="text-[11px] font-bold text-gray-400 uppercase">Employment</span>
-                                <span className="text-[13px] font-bold text-gray-700">{item.meta.employmentType}</span>
+                                <span className="text-[13px] font-bold text-gray-700">{meta.employmentType}</span>
                             </div>
                             <div className="bg-gray-50 border border-gray-100 rounded-xl p-4 flex flex-col items-center text-center gap-2">
                                 <Globe className="w-5 h-5 text-[#1D7E87]" />
                                 <span className="text-[11px] font-bold text-gray-400 uppercase">Remote</span>
-                                <span className="text-[13px] font-bold text-gray-700">{item.meta.remote}</span>
+                                <span className="text-[13px] font-bold text-gray-700">{meta.remote}</span>
                             </div>
                             <div className="bg-gray-50 border border-gray-100 rounded-xl p-4 flex flex-col items-center text-center gap-2">
                                 <DollarSign className="w-5 h-5 text-[#1D7E87]" />
                                 <span className="text-[11px] font-bold text-gray-400 uppercase">Salary Range</span>
-                                <span className="text-[13px] font-bold text-gray-700">{item.meta.salaryRange}</span>
+                                <span className="text-[13px] font-bold text-gray-700">{meta.salaryRange}</span>
                             </div>
                             <div className="bg-gray-50 border border-gray-100 rounded-xl p-4 flex flex-col items-center text-center gap-2">
                                 <GraduationCap className="w-5 h-5 text-[#1D7E87]" />
                                 <span className="text-[11px] font-bold text-gray-400 uppercase">Education</span>
-                                <span className="text-[13px] font-bold text-gray-700">{item.meta.education}</span>
+                                <span className="text-[13px] font-bold text-gray-700">{meta.education}</span>
                             </div>
                         </div>
 
@@ -79,13 +96,13 @@ const JobDetailView: React.FC<JobDetailViewProps> = ({ item, onBack }) => {
                             <div>
                                 <h3 className="text-[16px] font-bold text-[#1B2232] mb-3">Industry</h3>
                                 <Badge variant="secondary" className="px-4 py-1.5 rounded-lg bg-gray-100 text-gray-700 hover:bg-gray-200 border-0">
-                                    {item.meta.industry}
+                                    {meta.industry}
                                 </Badge>
                             </div>
                             <div>
                                 <h3 className="text-[16px] font-bold text-[#1B2232] mb-3">Required Skills</h3>
                                 <div className="flex flex-wrap gap-2">
-                                    {item.meta.skills.map((skill: string) => (
+                                    {meta.skills.map((skill: string) => (
                                         <Badge key={skill} className="px-4 py-1.5 rounded-lg bg-[#EBF1FF] text-[#2563EB] hover:bg-[#E1E9FF] border-0">
                                             {skill}
                                         </Badge>
@@ -129,11 +146,11 @@ const JobDetailView: React.FC<JobDetailViewProps> = ({ item, onBack }) => {
                     <Card className="rounded-2xl border-gray-100 shadow-sm p-6 lg:p-8 sticky top-24">
                         <div className="flex items-center gap-5 mb-10">
                             <div className="relative w-16 h-16 rounded-full overflow-hidden bg-gray-100 border-2 border-white shadow-sm">
-                                <Image src={item.seller.image} alt={item.seller.name} fill className="object-cover" />
+                                {seller.image && <Image src={seller.image} alt={seller.name} fill className="object-cover" />}
                             </div>
                             <div>
-                                <h3 className="text-[18px] font-extrabold text-[#1B2232]">{item.seller.name}</h3>
-                                <p className="text-gray-400 text-[13px]">{item.seller.since}</p>
+                                <h3 className="text-[18px] font-extrabold text-[#1B2232]">{seller.name}</h3>
+                                <p className="text-gray-400 text-[13px]">{seller.since}</p>
                             </div>
                         </div>
 

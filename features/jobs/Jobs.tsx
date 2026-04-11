@@ -5,7 +5,8 @@ import { ChevronLeft, SlidersHorizontal, Briefcase } from 'lucide-react';
 import FilterSidebar from './components/FilterSidebar';
 import JobCard from './components/JobCard';
 import JobDetailView from './components/JobDetailView';
-import { jobData } from './data/jobs';
+import { getProductsByCategoryService } from '@/services/listing';
+import { Loader2 } from 'lucide-react';
 import {
     Sheet,
     SheetContent,
@@ -25,6 +26,10 @@ const Jobs = () => {
     const [selectedItem, setSelectedItem] = useState<any>(null);
     const [isMobileFilterOpen, setIsMobileFilterOpen] = useState(false);
     
+    // API State
+    const [jobDataState, setJobDataState] = useState<any[]>([]);
+    const [isLoading, setIsLoading] = useState(true);
+    
     // ... filters ...
     const [filters, setFilters] = useState({
         city: '',
@@ -39,34 +44,66 @@ const Jobs = () => {
     // Check URL params
     React.useEffect(() => {
         const id = searchParams.get('id');
-        if (id) {
-            const item = jobData.find(v => v.id === parseInt(id));
+        if (id && jobDataState.length > 0) {
+            const item = jobDataState.find(v => v.id === parseInt(id));
             if (item) {
                 setSelectedItem(item);
                 setView('detail');
             }
-        } else {
+        } else if (!id) {
             setView('list');
             setSelectedItem(null);
         }
-    }, [searchParams]);
+    }, [searchParams, jobDataState]);
+
+    React.useEffect(() => {
+        const fetchJobs = async () => {
+            setIsLoading(true);
+            try {
+                // Fetch Jobs (category_id = 1, jobs = 2 maybe? I should check DB, but based on conversation, categories are 1-5. 
+                // Conversation mentioned categories fixed 1-5, ID 1 is Services. Let's assume ID 2 is Jobs based on the page call in my previous turns.)
+                const response = await getProductsByCategoryService(5); // WAIT, let me check category page mapping
+                // CATEGORIES FROM features/home/category/page.tsx:
+                // services: categoryId 1
+                // jobs: categoryId 2
+                // realEstate: categoryId 4
+                // products: categoryId 3
+                // vehicles: categoryId 5
+                
+                const responseData = await getProductsByCategoryService(2); 
+                if (responseData.success && responseData.data?.listings) {
+                    setJobDataState(responseData.data.listings);
+                } else {
+                    setJobDataState([]);
+                }
+            } catch (error) {
+                console.error("Error fetching jobs:", error);
+            } finally {
+                setIsLoading(false);
+            }
+        };
+        fetchJobs();
+    }, []);
 
     // ... filteredData ...
     const filteredData = useMemo(() => {
-        return jobData.filter(item => {
-            const matchesCity = !filters.city || item.city === filters.city;
-            const matchesJobType = !filters.jobType || item.meta.jobType === filters.jobType;
-            const matchesExperience = !filters.experienceLevel || item.meta.experienceLevel === filters.experienceLevel;
-            const matchesIndustry = !filters.industry || item.meta.industry === filters.industry;
-            const matchesRemote = !filters.remote || item.meta.remote === filters.remote;
+        return jobDataState.filter(item => {
+            const itemCity = item.location || item.city || '';
+            const matchesCity = !filters.city || itemCity === filters.city;
             
-            // Salary calculation (rough estimation for mock)
-            const matchesMinSalary = !filters.minPrice || item.numericPrice >= parseInt(filters.minPrice);
-            const matchesMaxSalary = !filters.maxPrice || item.numericPrice <= parseInt(filters.maxPrice);
+            const metaObj = item.meta || {};
+            const matchesJobType = !filters.jobType || metaObj.jobType === filters.jobType;
+            const matchesExperience = !filters.experienceLevel || metaObj.experienceLevel === filters.experienceLevel;
+            const matchesIndustry = !filters.industry || metaObj.industry === filters.industry;
+            const matchesRemote = !filters.remote || metaObj.remote === filters.remote;
+            
+            const numericPrice = typeof item.price === 'string' ? parseFloat(item.price.replace(/[^\d.-]/g, '')) || 0 : (item.price || 0);
+            const matchesMinSalary = !filters.minPrice || numericPrice >= parseInt(filters.minPrice);
+            const matchesMaxSalary = !filters.maxPrice || numericPrice <= parseInt(filters.maxPrice);
 
             return matchesCity && matchesJobType && matchesExperience && matchesIndustry && matchesRemote && matchesMinSalary && matchesMaxSalary;
         });
-    }, [filters]);
+    }, [filters, jobDataState]);
 
     const handleViewDetail = (item: any) => {
         setSelectedItem(item);
@@ -153,7 +190,11 @@ const Jobs = () => {
                             </div>
 
                             <div className="flex-1 space-y-12">
-                                {filteredData.length > 0 ? (
+                                {isLoading ? (
+                                    <div className="flex justify-center items-center py-32">
+                                        <Loader2 className="animate-spin w-10 h-10 text-[#1D7E87]" />
+                                    </div>
+                                ) : filteredData.length > 0 ? (
                                     <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6 lg:gap-8">
                                         {filteredData.map((item) => (
                                             <JobCard 

@@ -7,7 +7,8 @@ import { useSearchParams, useRouter } from 'next/navigation';
 import FilterSidebar from './components/FilterSidebar';
 import PhoneCard from './components/PhoneCard';
 import PhoneDetailView from './components/PhoneDetailView';
-import { phoneData } from './data/phones';
+import { getProductsByCategoryService } from '@/services/listing';
+import { Loader2 } from 'lucide-react';
 import {
     Sheet,
     SheetContent,
@@ -23,6 +24,10 @@ const Phones = () => {
     const [selectedItem, setSelectedItem] = useState<any>(null);
     const [isMobileFilterOpen, setIsMobileFilterOpen] = useState(false);
     
+    // API State
+    const [phoneDataState, setPhoneDataState] = useState<any[]>([]);
+    const [isLoading, setIsLoading] = useState(true);
+    
     const [filters, setFilters] = useState({
         city: '',
         category: '',
@@ -34,29 +39,53 @@ const Phones = () => {
     // Check URL params
     React.useEffect(() => {
         const id = searchParams.get('id');
-        if (id) {
-            const item = phoneData.find(v => v.id === parseInt(id));
+        if (id && phoneDataState.length > 0) {
+            const item = phoneDataState.find(v => v.id === parseInt(id));
             if (item) {
                 setSelectedItem(item);
                 setView('detail');
             }
-        } else {
+        } else if (!id) {
             setView('list');
             setSelectedItem(null);
         }
-    }, [searchParams]);
+    }, [searchParams, phoneDataState]);
+
+    React.useEffect(() => {
+        const fetchPhones = async () => {
+            setIsLoading(true);
+            try {
+                const response = await getProductsByCategoryService(3); 
+                if (response.success && response.data?.listings) {
+                    setPhoneDataState(response.data.listings);
+                } else {
+                    setPhoneDataState([]);
+                }
+            } catch (error) {
+                console.error("Error fetching products:", error);
+            } finally {
+                setIsLoading(false);
+            }
+        };
+        fetchPhones();
+    }, []);
 
     const filteredData = useMemo(() => {
-        return phoneData.filter(item => {
-            const matchesCity = !filters.city || item.city === filters.city;
-            const matchesMinPrice = !filters.minPrice || item.numericPrice >= parseInt(filters.minPrice);
-            const matchesMaxPrice = !filters.maxPrice || item.numericPrice <= parseInt(filters.maxPrice);
-            const matchesState = !filters.state || item.meta.state === filters.state;
-            const matchesCategory = !filters.category || true; // Mock logic
+        return phoneDataState.filter(item => {
+            const itemCity = item.location || item.city || '';
+            const matchesCity = !filters.city || itemCity === filters.city;
+            
+            const numericPrice = typeof item.price === 'string' ? parseFloat(item.price.replace(/[^\d.-]/g, '')) || 0 : (item.price || 0);
+            const matchesMinPrice = !filters.minPrice || numericPrice >= parseInt(filters.minPrice);
+            const matchesMaxPrice = !filters.maxPrice || numericPrice <= parseInt(filters.maxPrice);
+            
+            const metaObj = item.meta || { state: 'New' };
+            const matchesState = !filters.state || metaObj.state === filters.state;
+            const matchesCategory = !filters.category || true; 
 
             return matchesCity && matchesMinPrice && matchesMaxPrice && matchesState && matchesCategory;
         });
-    }, [filters]);
+    }, [filters, phoneDataState]);
 
     const handleViewDetail = (item: any) => {
         setSelectedItem(item);
@@ -148,7 +177,11 @@ const Phones = () => {
                             </div>
 
                             <div className="flex-1 space-y-12">
-                                {filteredData.length > 0 ? (
+                                {isLoading ? (
+                                    <div className="flex justify-center items-center py-32">
+                                        <Loader2 className="animate-spin w-10 h-10 text-[#1D7E87]" />
+                                    </div>
+                                ) : filteredData.length > 0 ? (
                                     <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6 lg:gap-8">
                                         {filteredData.map((item, index) => (
                                             <motion.div
