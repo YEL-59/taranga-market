@@ -89,7 +89,7 @@ const FavoritesPage = () => {
                             <AnimatePresence>
                                 {favorites.map((item, index) => {
                                     const image = item.featured_image || item.image || '';
-                                    const price = item.price ? (item.price.toString().includes('XOF') ? item.price : `${Number(item.price).toLocaleString()} XOF`) : 'Price on request';
+                                    const price = item.price ? (item.price.toString().includes('FCFA') ? item.price : `${Number(item.price).toLocaleString()} FCFA`) : 'Price on request';
 
                                     return (
                                         <motion.div

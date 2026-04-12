@@ -147,7 +147,7 @@ Located on the left side of category pages:
 
 #### Item Information
 - **Title**: Full item name/description
-- **Price**: Clearly displayed in XOF (or CFA for jobs)
+- **Price**: Clearly displayed in FCFA (or CFA for jobs)
 - **Location**: City/area where item is located
 - **Type Badge**: Category identifier
 
