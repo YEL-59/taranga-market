@@ -24,9 +24,9 @@ const ListingCard = ({ item }: { item: any }) => {
   const image = item.featured_image || "";
   const type = item.category?.name || "Product";
   const price = item.price
-    ? item.price.toString().includes("XOF")
+    ? item.price.toString().includes("FCFA")
       ? item.price
-      : `${Number(item.price).toLocaleString()} XOF`
+      : `${Number(item.price).toLocaleString()} FCFA`
     : "Price on request";
 
   console.log(item);
