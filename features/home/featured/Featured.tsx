@@ -32,7 +32,8 @@ const FeaturedCard = ({ item }: { item: any }) => {
     };
 
     const type = item.category?.name || categoryNames[item.category_id] || 'Product';
-    const price = item.price ? (item.price.toString().includes('XOF') ? item.price : `${Number(item.price).toLocaleString()} XOF`) : 'Price on request';
+    console.log(item);
+    const price = item.price ? (item.price.toString().includes('FCFA') ? item.price : `${Number(item.price).toLocaleString()} FCFA`) : 'Price on request';
 
     return (
         <Card className="overflow-hidden border border-gray-100 bg-white shadow-[0_2px_10px_rgba(0,0,0,0.04)] transition-all hover:shadow-[0_4px_20px_rgba(0,0,0,0.08)] group flex flex-col h-full rounded-[20px] p-2.5">
